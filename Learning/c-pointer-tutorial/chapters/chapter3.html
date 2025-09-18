@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>3. Pointer types, pointer arithmetic, void pointers | C語言指標教學</title>
+    <meta name="description" content="深入理解各種指標型別、指標運算（步幅）、以及 void* 的用途與限制。含記憶體圖解與可複製範例程式。" />
+
+    <style>
+        :root {
+            /* 淺色模式 */
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --bg-card: #ffffff;
+            --text-primary: #2c3e50;
+            --text-secondary: #6c757d;
+            --accent-primary: #3498db;
+            --accent-secondary: #2980b9;
+            --border-color: #e9ecef;
+            --shadow-light: rgba(0, 0, 0, 0.1);
+            --shadow-medium: rgba(0, 0, 0, 0.15);
+            --gradient-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --code-bg: #1e1e1e;
+            --code-text: #f8f8f2;
+            --theme-btn-bg: rgba(0, 0, 0, 0.1);
+            --theme-btn-border: rgba(0, 0, 0, 0.2);
+            --theme-btn-icon: rgba(0, 0, 0, 0.7);
+        }
+
+        [data-theme="dark"] {
+            /* 深色模式 */
+            --bg-primary: #1a1a1a;
+            --bg-secondary: #2d3748;
+            --bg-card: #2d3748;
+            --text-primary: #f7fafc;
+            --text-secondary: #a0aec0;
+            --accent-primary: #4299e1;
+            --accent-secondary: #3182ce;
+            --border-color: #4a5568;
+            --shadow-light: rgba(0, 0, 0, 0.3);
+            --shadow-medium: rgba(0, 0, 0, 0.4);
+            --gradient-bg: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+            --code-bg: #1a202c;
+            --code-text: #f7fafc;
+            --theme-btn-bg: rgba(255, 255, 255, 0.1);
+            --theme-btn-border: rgba(255, 255, 255, 0.3);
+            --theme-btn-icon: rgba(255, 255, 255, 0.8);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: var(--gradient-bg);
+            min-height: 100vh;
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 30px;
+        }
+
+        /* 左側目錄 */
+        .sidebar { position: sticky; top: 20px; height: fit-content; }
+        .toc-widget {
+            background: var(--bg-card);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px var(--shadow-light);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+        .toc-header { padding: 20px; border-bottom: 1px solid var(--border-color); text-align: center; }
+        .toc-title { font-size: 1.1em; font-weight: 600; color: var(--text-primary); }
+        .toc-body { padding: 15px; max-height: 70vh; overflow-y: auto; }
+        .toc-list { list-style: none; }
+        .toc-item { margin-bottom: 3px; }
+        .toc-link {
+            display: block; color: var(--text-secondary); text-decoration: none;
+            padding: 8px 12px; border-radius: 8px; transition: all 0.3s ease;
+            font-size: 0.85em; line-height: 1.4;
+        }
+        .toc-link:hover { background: var(--bg-secondary); color: var(--accent-primary); transform: translateX(3px); }
+        .toc-link.active { background: var(--accent-primary); color: white; }
+        .toc-link.has-submenu { cursor: pointer; position: relative; }
+        .arrow { display: inline-block; transition: transform 0.3s ease; margin-right: 8px; font-size: 0.7em; color: var(--accent-primary); }
+        .arrow.expanded { transform: rotate(90deg); }
+        .sub-menu { list-style: none; margin-left: 15px; margin-top: 5px; padding-left: 15px; border-left: 2px solid var(--border-color); max-height: 0; overflow: hidden; transition: max-height 0.4s ease; }
+        .sub-menu.show { max-height: 400px; margin-bottom: 10px; }
+        .sub-menu .toc-link { padding: 6px 10px; font-size: 0.8em; }
+
+        .section-number {
+            background: var(--accent-primary);
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        /* 主要內容區域 */
+        .main-area { min-width: 0; }
+        .header {
+            background: var(--bg-card);
+            border-radius: 15px; padding: 25px 30px; margin-bottom: 25px;
+            box-shadow: 0 8px 32px var(--shadow-light); border: 1px solid var(--border-color);
+            position: relative;
+        }
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--theme-btn-bg);
+            border: 2px solid var(--theme-btn-border);
+            color: var(--theme-btn-icon);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .theme-toggle:hover {
+            border-color: var(--accent-primary);
+            background: var(--accent-primary);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .theme-icon {
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+            transition: all 0.3s ease;
+        }
+        .breadcrumb { color: var(--text-secondary); font-size: 0.85em; margin-bottom: 12px; }
+        .breadcrumb a { color: var(--accent-primary); text-decoration: none; }
+        .breadcrumb a:hover { text-decoration: underline; }
+        .chapter-title { font-size: 1.8em; font-weight: 700; color: var(--text-primary); margin-bottom: 8px; }
+        .chapter-subtitle { color: var(--text-secondary); font-size: 1em; }
+
+        .main-content { background: var(--bg-card); border-radius: 15px; box-shadow: 0 8px 32px var(--shadow-light); border: 1px solid var(--border-color); overflow: hidden; margin-bottom: 25px; }
+        .content-section { padding: 30px; border-bottom: 1px solid var(--border-color); }
+        .content-section:last-child { border-bottom: none; }
+        .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+        .section-number { background: var(--accent-primary); color: white; width: 35px; height: 35px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: bold; }
+        .section-title { font-size: 1.3em; font-weight: 600; color: var(--text-primary); }
+        .content-text { color: var(--text-secondary); font-size: 1em; line-height: 1.6; margin-bottom: 15px; }
+        .highlight-box { background: linear-gradient(135deg, var(--accent-primary)10, var(--accent-secondary)10); border-left: 4px solid var(--accent-primary); border-radius: 8px; padding: 18px; margin: 18px 0; }
+        .highlight-title { color: var(--accent-primary); font-weight: 600; margin-bottom: 8px; }
+        .bullet-list { list-style: none; margin: 12px 0; }
+        .bullet-list li { position: relative; padding-left: 20px; margin-bottom: 6px; color: var(--text-secondary); }
+        .bullet-list li:before { content: '•'; color: var(--accent-primary); font-weight: bold; position: absolute; left: 0; }
+
+        /* 程式碼區塊 */
+        .code-container { position: relative; margin: 20px 0; }
+        .code-header { display: flex; justify-content: space-between; align-items: center; background: var(--code-bg); color: var(--code-text); padding: 10px 18px; border-radius: 10px 10px 0 0; border-bottom: 1px solid #333; }
+        .code-label { font-size: 0.85em; color: #888; }
+        .copy-btn { background: transparent; border: 1px solid #555; color: #888; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 0.75em; transition: all 0.3s ease; }
+        .copy-btn:hover { background: #333; color: #fff; border-color: #666; }
+        .copy-btn.copied { background: #27ae60; color: white; border-color: #27ae60; }
+        .code-block { background: var(--code-bg); color: var(--code-text); padding: 18px; border-radius: 0 0 10px 10px; overflow-x: auto; font-family: 'Fira Code', 'Courier New', monospace; font-size: 0.85em; line-height: 1.4; }
+        .code-block pre { margin: 0; white-space: pre-wrap; }
+
+        /* 記憶體示意圖 */
+        .memory-diagram { background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 10px; padding: 20px; margin: 20px 0; text-align: center; }
+        .memory-table { display: inline-block; border-collapse: collapse; border: 2px solid var(--accent-primary); border-radius: 6px; overflow: hidden; }
+        .memory-table th { background: var(--accent-primary); color: white; padding: 10px 18px; font-weight: 600; }
+        .memory-table td { background: var(--bg-card); color: var(--text-primary); padding: 10px 18px; border-bottom: 1px solid var(--border-color); font-family: monospace; font-size: 1em; }
+        .memory-table tr:last-child td { border-bottom: none; }
+
+        /* 導航按鈕 */
+        .navigation { display: flex; justify-content: space-between; align-items: center; background: var(--bg-card); border-radius: 15px; padding: 20px 25px; box-shadow: 0 8px 32px var(--shadow-light); border: 1px solid var(--border-color); gap: 20px; }
+        .nav-btn { display: flex; align-items: center; gap: 10px; background: var(--accent-primary); color: white; padding: 12px 20px; border-radius: 10px; text-decoration: none; transition: all 0.3s ease; font-weight: 500; flex: 1; max-width: 250px; }
+        .nav-btn:hover { background: var(--accent-secondary); transform: translateY(-2px); box-shadow: 0 8px 20px var(--shadow-medium); color: white; text-decoration: none; }
+        .nav-btn.prev { background: var(--text-secondary); }
+        .nav-btn.prev:hover { background: #5a6c7d; }
+        .nav-direction { font-size: 0.75em; opacity: 0.8; }
+        .nav-title { font-size: 0.9em; font-weight: 600; }
+        .nav-center { text-align: center; color: var(--text-secondary); }
+
+        @media (max-width: 1024px) { .container { grid-template-columns: 1fr; gap: 20px; } .sidebar { position: static; order: 2; } .main-area { order: 1; } }
+        @media (max-width: 768px) { .container { padding: 15px; } .header { padding: 20px 15px; } .content-section { padding: 20px 15px; } .chapter-title { font-size: 1.5em; } .navigation { flex-direction: column; gap: 12px; } .nav-btn { max-width: none; } }
+
+        /* 語法高亮（靜態色） */
+        .keyword { color: #ff79c6; }
+        .string { color: #f1fa8c; }
+        .comment { color: #6272a4; }
+        .number { color: #bd93f9; }
+        .function { color: #50fa7b; }
+        .type { color: #8be9fd; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <aside class="sidebar">
+        <div class="toc-widget">
+            <div class="toc-header">
+            <h3 class="toc-title">📚 課程目錄</h3>
+            </div>
+            <div class="toc-body">
+            <ul class="toc-list">
+                <li class="toc-item">
+                <a href="chapter1.html" class="toc-link">
+                    1. Introduction to pointers in C/C++
+                </a>
+                </li>
+                <li class="toc-item">
+                <a href="chapter2.html" class="toc-link">
+                    2. Work with Pointers
+                </a>
+                </li>
+                <li class="toc-item">
+                <a href="chapter3.html" class="toc-link active">
+                    3. Pointer types, pointer arithmetic, void pointers
+                </a>
+                </li>
+                <li class="toc-item">
+                <a href="chapter4.html" class="toc-link">
+                    4. Pointers to Pointers
+                </a>
+                </li>
+                <li class="toc-item">
+                <a href="chapter5.html" class="toc-link has-submenu" onclick="toggleSubMenu(this)">
+                    <span class="arrow">▶</span> 5. Call by Reference
+                </a>
+                <ul class="sub-menu">
+                    <li><a href="chapter5.html#memory-blocks" class="toc-link">記憶體區塊</a></li>
+                    <li><a href="chapter5.html#call-by-address" class="toc-link">傳址呼叫</a></li>
+                    <li><a href="chapter5.html#call-by-value" class="toc-link">傳值呼叫</a></li>
+                </ul>
+                </li>
+                <li class="toc-item">
+                <a href="chapter6.html" class="toc-link">
+                    6. Pointers and Arrays
+                </a>
+                </li>
+                <li class="toc-item">
+                <a href="chapter7.html" class="toc-link">
+                    7. Array as function argument
+                </a>
+                </li>
+                <li class="toc-item">
+                <a href="chapter8.html" class="toc-link has-submenu" onclick="toggleSubMenu(this)">
+                    <span class="arrow">▶</span> 8. Character arrays and pointers - part 1
+                </a>
+                <ul class="sub-menu">
+                    <li><a href="chapter8.html#string-basics" class="toc-link">字串基本概念</a></li>
+                    <li><a href="chapter8.html#string-pointers" class="toc-link">字串與指標</a></li>
+                    <li><a href="chapter8.html#string-functions" class="toc-link">字串傳入函式</a></li>
+                </ul>
+                </li>
+                <li class="toc-item">
+                <a href="chapter9.html" class="toc-link has-submenu" onclick="toggleSubMenu(this)">
+                    <span class="arrow">▶</span> 9. Character arrays and pointers - part 2
+                </a>
+                <ul class="sub-menu">
+                    <li><a href="chapter9.html#memory-stack" class="toc-link">記憶體與Stack解析</a></li>
+                    <li><a href="chapter9.html#readonly-memory" class="toc-link">唯讀記憶體</a></li>
+                </ul>
+                </li>
+                <li class="toc-item">
+                <a href="chapter10.html" class="toc-link has-submenu" onclick="toggleSubMenu(this)">
+                    <span class="arrow">▶</span> 10. Pointers and 2-D arrays
+                </a>
+                <ul class="sub-menu">
+                    <li><a href="chapter10.html#2d-usage" class="toc-link">2D 指標陣列的使用</a></li>
+                    <li><a href="chapter10.html#2d-access" class="toc-link">2維陣列的存取等價式</a></li>
+                </ul>
+                </li>
+                <li class="toc-item">
+                <a href="chapter11.html" class="toc-link has-submenu" onclick="toggleSubMenu(this)">
+                    <span class="arrow">▶</span> 11. Pointers and multidimensional arrays
+                </a>
+                <ul class="sub-menu">
+                    <li><a href="chapter11.html#array-types" class="toc-link">陣列傳入函式的型態規則</a></li>
+                    <li><a href="chapter11.html#3d-access" class="toc-link">三維陣列的存取等價式</a></li>
+                </ul>
+                </li>
+                <li class="toc-item">
+                <a href="chapter12.html" class="toc-link has-submenu" onclick="toggleSubMenu(this)">
+                    <span class="arrow">▶</span> 12. Pointers and dynamic memory - stack vs heap
+                </a>
+                <ul class="sub-menu">
+                    <li><a href="chapter12.html#memory-allocation" class="toc-link">C 函式執行與記憶體配置</a></li>
+                    <li><a href="chapter12.html#stack-overflow" class="toc-link">Stack Overflow 是什麼？</a></li>
+                    <li><a href="chapter12.html#heap-usage" class="toc-link">Heap 是什麼？</a></li>
+                    <li><a href="chapter12.html#malloc-diagram" class="toc-link">malloc 的記憶體配置動態與圖解</a></li>
+                </ul>
+                </li>
+                <li class="toc-item">
+                <a href="chapter13.html" class="toc-link has-submenu" onclick="toggleSubMenu(this)">
+                    <span class="arrow">▶</span> 13. Dynamic memory allocation
+                </a>
+                <ul class="sub-menu">
+                    <li><a href="chapter13.html#malloc" class="toc-link">malloc</a></li>
+                    <li><a href="chapter13.html#calloc" class="toc-link">calloc</a></li>
+                    <li><a href="chapter13.html#realloc" class="toc-link">realloc</a></li>
+                </ul>
+                </li>
+                <li class="toc-item">
+                <a href="chapter14.html" class="toc-link has-submenu" onclick="toggleSubMenu(this)">
+                    <span class="arrow">▶</span> 14. Pointers as Function Returns
+                </a>
+                <ul class="sub-menu">
+                    <li><a href="chapter14.html#malloc-free" class="toc-link">malloc 與 free 後的指標行為</a></li>
+                    <li><a href="chapter14.html#realloc-behavior" class="toc-link">realloc 調整記憶體大小</a></li>
+                    <li><a href="chapter14.html#heap-stack-diff" class="toc-link">Heap 與 Stack 回傳指標差異</a></li>
+                </ul>
+                </li>
+                <li class="toc-item">
+                <a href="chapter15.html" class="toc-link has-submenu" onclick="toggleSubMenu(this)">
+                    <span class="arrow">▶</span> 15. Function Pointers
+                </a>
+                <ul class="sub-menu">
+                    <li><a href="chapter15.html#theory" class="toc-link">function pointer原理解釋</a></li>
+                    <li><a href="chapter15.html#practice" class="toc-link">function pointer實例操作</a></li>
+                </ul>
+                </li>
+                <li class="toc-item">
+                <a href="chapter16.html" class="toc-link has-submenu" onclick="toggleSubMenu(this)">
+                    <span class="arrow">▶</span> 16. Function Pointers and Callbacks
+                </a>
+                <ul class="sub-menu">
+                    <li><a href="chapter16.html#basic-example" class="toc-link">function pointer 基本範例</a></li>
+                    <li><a href="chapter16.html#bubble-sort" class="toc-link">BubbleSort by Callback</a></li>
+                    <li><a href="chapter16.html#advanced-sort" class="toc-link">延伸應用：多種排序邏輯</a></li>
+                    <li><a href="chapter16.html#quick-sort" class="toc-link">QuickSort by Callback</a></li>
+                </ul>
+                </li>
+                <li class="toc-item"><a href="chapter17.html" class="toc-link">17. Memory Leak in C/C++</a></li>
+                <li class="toc-item"><a href="chapter18.html" class="toc-link">18. 最終總結 — C 語言 Pointer 思維地圖</a></li>
+            </ul>
+            </div>
+        </div>
+        </aside>
+
+
+        <div class="main-area">
+            <header class="header">
+                <button class="theme-toggle" onclick="toggleTheme()" title="切換深淺色模式">
+                    <svg class="theme-icon" id="theme-icon" width="20" height="20" viewBox="0 0 24 24">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                </button>
+                <div class="breadcrumb"><a href="../index.html">首頁</a> / <span>Chapter 3</span></div>
+                <h1 class="chapter-title">3. Pointer types, pointer arithmetic, void pointers</h1>
+                <p class="chapter-subtitle">型別、解參考、位元組觀察、步幅運算、及 void* 的安全使用</p>
+            </header>
+
+            <main class="main-content">
+                <section class="content-section">
+                    <div class="section-header"><div class="section-number">🖼️</div><h2 class="section-title">章節封面（占位）</h2></div>
+                    <p class="content-text">請將你的圖片放在 <code>images/</code> 資料夾，檔名例如 <code>ch3-cover.png</code>，並把下方 <code>src</code> 換成對應路徑。</p>
+                    <div class="memory-diagram">
+                        <img src="images/ch3-cover.png" alt="Chapter 3 Cover" style="max-width:100%; height:auto; opacity:.6" />
+                    </div>
+                </section>
+
+                <section class="content-section" id="pointer-types">
+                    <div class="section-header"><div class="section-number">A</div><h2 class="section-title">指標「型別」的位址邊界</h2></div>
+                    <p class="content-text">指標本身儲存的是位址，但 <strong>指標的型別</strong>（例如 <code>int*</code>、<code>double*</code>）決定了：</p>
+                    <ul class="bullet-list">
+                        <li>解參考時一次讀/寫多少位元組（<code>sizeof(所指向型別)</code>）。</li>
+                        <li>指標加減（<code>p + n</code>）時的位移步幅（以元素為單位，而不是位元組）。</li>
+                    </ul>
+
+                    <div class="code-container">
+                        <div class="code-header"><span class="code-label">範例：型別決定讀寫邊界</span><button class="copy-btn" onclick="copyCode(this,'code-a-1')">📋 複製</button></div>
+                        <div class="code-block" id="code-a-1"><pre><span class="keyword">#include</span> &lt;stdio.h&gt;
+
+<span class="type">int</span> <span class="function">main</span>(<span class="type">void</span>) {
+    <span class="type">int</span>  a = <span class="number">0x01020304</span>;  <span class="comment">// 假設 int 為 4 bytes</span>
+    <span class="type">int</span>* ip = &a;              <span class="comment">// 指向整數</span>
+    <span class="type">char</span>* cp = (<span class="type">char</span>*)&a;      <span class="comment">// 用位元組視角看同一塊記憶體</span>
+
+    printf(<span class="string">"*ip = %x\n"</span>, *ip);  <span class="comment">// 一次取 4 bytes</span>
+    printf(<span class="string">"cp[0] = %x, cp[1] = %x\n"</span>, cp[0], cp[1]); <span class="comment">// 一次取 1 byte</span>
+}
+</pre></div>
+                    </div>
+
+                    <div class="highlight-box"><div class="highlight-title">💡 提醒</div>
+                        <p>同一個位址，以不同型別解參考，視角不同、邊界不同。以 <code>char*</code> 觀察最細（1 byte）。</p>
+                    </div>
+                </section>
+
+                <section class="content-section" id="dereference">
+                    <div class="section-header"><div class="section-number">B</div><h2 class="section-title">解參考（dereference）— 取值 / 改值</h2></div>
+                    <p class="content-text">使用 <code>*p</code> 取出位址中的內容、或寫回新值。注意：對齊與有效位址是前提，否則造成未定義行為。</p>
+                    <div class="code-container">
+                        <div class="code-header"><span class="code-label">範例：透過指標讀寫同一個變數</span><button class="copy-btn" onclick="copyCode(this,'code-b-1')">📋 複製</button></div>
+                        <div class="code-block" id="code-b-1"><pre><span class="keyword">#include</span> &lt;stdio.h&gt;
+
+<span class="type">int</span> <span class="function">main</span>() {
+    <span class="type">int</span> a = <span class="number">1025</span>;
+    <span class="type">int</span>* p = &a;
+
+    printf(<span class="string">"&a = %p, p = %p\n"</span>, (void*)&a, (void*)p);
+    printf(<span class="string">"*p(before) = %d\n"</span>, *p);
+
+    *p = <span class="number">2048</span>;  <span class="comment">// 改變 a</span>
+    printf(<span class="string">"a(after) = %d\n"</span>, a);
+    <span class="keyword">return</span> <span class="number">0</span>;
+}
+</pre></div>
+                    </div>
+                </section>
+
+                <section class="content-section" id="char-view">
+                    <div class="section-header"><div class="section-number">C</div><h2 class="section-title">用 <code>char*</code> 看同一塊記憶體的「每個位元組」</h2></div>
+                    <p class="content-text">C 語言保證 <code>sizeof(char) == 1</code>，所以把任意型別的位址轉成 <code>char*</code> 後，可以逐一檢視每個位元組（常用於位元組序轉換、序列化、除錯）。</p>
+                    <div class="code-container">
+                        <div class="code-header"><span class="code-label">範例：byte 觀察（示意 little-endian）</span><button class="copy-btn" onclick="copyCode(this,'code-c-1')">📋 複製</button></div>
+                        <div class="code-block" id="code-c-1"><pre><span class="keyword">#include</span> &lt;stdio.h&gt;
+
+<span class="type">int</span> <span class="function">main</span>() {
+    <span class="type">int</span> a = <span class="number">1025</span>; <span class="comment">// 二進位 00000000 00000000 00000100 00000001 </span>
+    <span class="type">char</span>* p = (<span class="type">char</span>*)&a;
+
+    printf(<span class="string">"a = %d (0x%08x)\n"</span>, a, a);
+    printf(<span class="string">"p[0] = 0x%02x, p[1] = 0x%02x, p[2] = 0x%02x, p[3] = 0x%02x\n"</span>,
+           (<span class="type">unsigned</span> <span class="type">char</span>)p[0], (<span class="type">unsigned</span> <span class="type">char</span>)p[1],
+           (<span class="type">unsigned</span> <span class="type">char</span>)p[2], (<span class="type">unsigned</span> <span class="type">char</span>)p[3]);
+}
+</pre></div>
+                    </div>
+                    <div class="highlight-box"><div class="highlight-title">🔎 little vs big endian</div>
+                        <p>little-endian 會把最低有效位元組放在最低位址；big-endian 相反。觀察順序會不同，但 <code>a</code> 的數值不變。</p>
+                    </div>
+                </section>
+
+                <section class="content-section" id="pointer-arith">
+                    <div class="section-header"><div class="section-number">D</div><h2 class="section-title">指標運算：步幅（stride）由型別決定</h2></div>
+                    <p class="content-text">對指標做 <code>+1</code>、<code>-1</code>，不是位址 <em>加 1 byte</em>，而是位址 <strong>加上指向型別的大小</strong>。例如 <code>int*</code> 在多數平台是 4 bytes 步幅，<code>char*</code> 則是 1 byte。</p>
+
+                    <div class="code-container">
+                        <div class="code-header"><span class="code-label">範例：同一塊陣列，兩種指標走法</span><button class="copy-btn" onclick="copyCode(this,'code-d-1')">📋 複製</button></div>
+                        <div class="code-block" id="code-d-1"><pre><span class="keyword">#include</span> &lt;stdio.h&gt;
+
+<span class="type">int</span> <span class="function">main</span>() {
+    <span class="type">int</span> a[<span class="number">3</span>] = {<span class="number">10</span>, <span class="number">20</span>, <span class="number">30</span>};
+    <span class="type">int</span>* ip = a;        <span class="comment">// 等同 &a[0]</span>
+    <span class="type">char</span>* cp = (<span class="type">char</span>*)a; <span class="comment">// 以 byte 為單位移動</span>
+
+    printf(<span class="string">"ip     = %p, ip+1 = %p\n"</span>, (void*)ip, (void*)(ip+1));
+    printf(<span class="string">"cp     = %p, cp+1 = %p\n"</span>, (void*)cp, (void*)(cp+1));
+
+    <span class="comment">// 用 ip 逐元素讀</span>
+    printf(<span class="string">"*ip = %d, *(ip+1) = %d\n"</span>, *ip, *(ip+1));
+}
+</pre></div>
+                    </div>
+
+                    <div class="memory-diagram">
+                        <table class="memory-table">
+                            <thead><tr><th>位址</th><th>內容（int 陣列）</th></tr></thead>
+                            <tbody>
+                                <tr><td>0x100</td><td>a[0] = 10</td></tr>
+                                <tr><td>0x104</td><td>a[1] = 20</td></tr>
+                                <tr><td>0x108</td><td>a[2] = 30</td></tr>
+                            </tbody>
+                        </table>
+                        <p class="content-text" style="margin-top:10px">若 <code>sizeof(int)=4</code>，則 <code>ip+1</code> 跳到下一個元素位置（0x104），
+                        而 <code>cp+1</code> 只前進 1 byte。</p>
+                    </div>
+                </section>
+
+                <section class="content-section" id="void-pointer">
+                    <div class="section-header"><div class="section-number">E</div><h2 class="section-title">為什麼需要 <code>void*</code> 指標？</h2></div>
+                    <p class="content-text"><code>void*</code> 可指向任意型別的位址，常用於泛型容器或 API（例如 <code>qsort</code> 的比較函式）。
+                    但 <strong>不能直接解參考</strong>，必須<strong>先轉型</strong>回正確型別，否則編譯器不知道元素大小與語意。</p>
+
+                    <div class="code-container">
+                        <div class="code-header"><span class="code-label">範例：使用 void* 保存不同型別，再正確轉回</span><button class="copy-btn" onclick="copyCode(this,'code-e-1')">📋 複製</button></div>
+                        <div class="code-block" id="code-e-1"><pre><span class="keyword">#include</span> &lt;stdio.h&gt;
+
+<span class="type">void</span> <span class="function">print_int</span>(<span class="type">void</span>* vp) {
+    <span class="type">int</span>* ip = (<span class="type">int</span>*)vp;          <span class="comment">// 轉回 int*</span>
+    printf(<span class="string">"int: %d\n"</span>, *ip);
+}
+
+<span class="type">void</span> <span class="function">print_double</span>(<span class="type">void</span>* vp) {
+    <span class="type">double</span>* dp = (<span class="type">double</span>*)vp;  <span class="comment">// 轉回 double*</span>
+    printf(<span class="string">"double: %.2f\n"</span>, *dp);
+}
+
+<span class="type">int</span> <span class="function">main</span>() {
+    <span class="type">int</span>    a = <span class="number">42</span>;
+    <span class="type">double</span> b = <span class="number">3.14</span>;
+
+    <span class="type">void</span>* p = &a;    <span class="comment">// 暫存任意位址</span>
+    print_int(p);      <span class="comment">// ✅ 與 a 型別一致</span>
+
+    p = &b;
+    print_double(p);  <span class="comment">// ✅ 與 b 型別一致</span>
+
+    <span class="comment">// ⚠ 以下是未定義：直接 *(void*) 或用錯誤型別轉回</span>
+    <span class="comment">// printf("%d\n", *(int*)p); // 這裡 p 其實指向 double</span>
+}
+</pre></div>
+                    </div>
+
+                    <div class="highlight-box"><div class="highlight-title">🚫 禁忌</div>
+                        <ul class="bullet-list">
+                            <li>不可直接 <code>*vp</code>（因為 <code>vp</code> 沒有型別資訊）。</li>
+                            <li>轉型要「對號入座」，錯誤的型別轉換會導致未定義行為。</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <section class="content-section">
+                    <div class="section-header"><div class="section-number">✅</div><h2 class="section-title">本章重點總結</h2></div>
+                    <ul class="bullet-list">
+                        <li><strong>型別決定邊界與步幅</strong>：<code>*p</code> 讀寫幾個位元組、<code>p+1</code> 跳多遠，都由指向型別決定。</li>
+                        <li><strong><code>char*</code> 是位元組放大鏡</strong>：可逐 byte 檢視同一塊記憶體。</li>
+                        <li><strong><code>void*</code> 是萬用位址</strong>：一定要轉回正確型別再解參考。</li>
+                    </ul>
+                </section>
+            </main>
+
+            <nav class="navigation">
+                <a href="chapter2.html" class="nav-btn prev"><div><div class="nav-direction">← 上一頁</div><div class="nav-title">Work with Pointers</div></div></a>
+                <div class="nav-center"><div style="font-weight:600;">Chapter 3 / 18</div><div style="font-size:0.9em;">Pointer types & void pointers</div></div>
+                <a href="chapter4.html" class="nav-btn"><div><div class="nav-direction">下一頁 →</div><div class="nav-title">Pointers to Pointers</div></div></a>
+            </nav>
+        </div>
+    </div>
+
+    <script>
+        // 深淺色模式切換
+        function toggleTheme() {
+            const body = document.body;
+            const themeIcon = document.getElementById('theme-icon');
+            const currentTheme = body.getAttribute('data-theme');
+            if (currentTheme === 'dark') {
+                body.setAttribute('data-theme', 'light');
+                themeIcon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+                localStorage.setItem('theme', 'light');
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                themeIcon.innerHTML = '<circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        // 載入儲存的主題
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            const themeIcon = document.getElementById('theme-icon');
+            document.body.setAttribute('data-theme', savedTheme);
+            if (savedTheme === 'dark') {
+                themeIcon.innerHTML = '<circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>';
+            } else {
+                themeIcon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+            }
+        }
+        // 目錄摺疊功能
+        function toggleSubMenu(element) {
+            event.preventDefault();
+            const arrow = element.querySelector('.arrow');
+            const parentLi = element.parentElement;
+            const subMenu = parentLi.querySelector('.sub-menu');
+            if (subMenu) { arrow.classList.toggle('expanded'); subMenu.classList.toggle('show'); }
+        }
+        // 複製程式碼功能
+        function copyCode(button, codeId) {
+            const codeElement = document.getElementById(codeId);
+            const codeText = codeElement.querySelector('pre').textContent;
+            navigator.clipboard.writeText(codeText).then(() => {
+                const originalText = button.textContent;
+                button.textContent = '✅ 已複製';
+                button.classList.add('copied');
+                setTimeout(() => { button.textContent = originalText; button.classList.remove('copied'); }, 2000);
+            }).catch(err => {
+                console.error('複製失敗:', err);
+                const textArea = document.createElement('textarea');
+                textArea.value = codeText;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                const originalText = button.textContent;
+                button.textContent = '✅ 已複製';
+                button.classList.add('copied');
+                setTimeout(() => { button.textContent = originalText; button.classList.remove('copied'); }, 2000);
+            });
+        }
+        document.addEventListener('DOMContentLoaded', function(){ loadTheme(); });
+    </script>
+</body>
+</html>

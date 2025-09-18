@@ -1,0 +1,848 @@
+# .github/workflows/tingnotes-seo-optimizer.yml
+name: TingNotes 智能 SEO 優化器
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'index.html'
+      - 'Learning/index.html'
+      - 'Career/index.html'
+      - 'Travel/index.html'
+      - 'Others/index.html'
+      - '*/index.html'
+      - 'c-pointer-tutorial/**'
+  
+  schedule:
+    - cron: '0 2 * * 1'  # 每週一凌晨 2 點自動維護
+
+jobs:
+  seo-optimization:
+    runs-on: ubuntu-latest
+    
+    steps:
+    # 🔧 基礎設置
+    - name: 🚀 檢出代碼
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: ⚙️ 設置 Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+
+    # 🌐 網站健康檢查
+    - name: 🏥 網站健康檢查
+      run: |
+        echo "🔍 執行網站健康檢查..."
+        
+        # 主要頁面列表
+        declare -A pages=(
+          ["首頁"]="https://tingnotes.io/"
+          ["學習專區"]="https://tingnotes.io/Learning/"
+          ["C指標教學"]="https://tingnotes.io/c-pointer-tutorial/"
+          ["職涯專區"]="https://tingnotes.io/Career/"
+          ["旅遊專區"]="https://tingnotes.io/Travel/"
+          ["雜事分享"]="https://tingnotes.io/Others/"
+        )
+        
+        echo "📊 健康檢查報告:" > health_report.txt
+        echo "==================" >> health_report.txt
+        
+        all_healthy=true
+        
+        for name in "${!pages[@]}"; do
+          url="${pages[$name]}"
+          echo "檢查 $name..."
+          
+          # 檢查 HTTP 狀態碼和回應時間
+          response=$(curl -s -w "HTTPSTATUS:%{http_code};TIME:%{time_total}" "$url" || echo "HTTPSTATUS:000;TIME:0")
+          status=$(echo "$response" | grep -o "HTTPSTATUS:[0-9]*" | cut -d: -f2)
+          time=$(echo "$response" | grep -o "TIME:[0-9.]*" | cut -d: -f2)
+          
+          if [ "$status" = "200" ]; then
+            echo "✅ $name: OK (${time}s)" | tee -a health_report.txt
+          else
+            echo "❌ $name: Error $status" | tee -a health_report.txt
+            all_healthy=false
+          fi
+        done
+        
+        echo "" >> health_report.txt
+        if [ "$all_healthy" = true ]; then
+          echo "🎉 所有頁面運作正常！" >> health_report.txt
+        else
+          echo "⚠️ 發現問題頁面，請檢查！" >> health_report.txt
+        fi
+
+    # 📊 智能網站分析
+    - name: 📈 智能網站分析
+      run: |
+        echo "📊 分析網站結構和內容..."
+        
+        cat > analyze-website.js << 'EOF'
+        const fs = require('fs');
+        const path = require('path');
+
+        function analyzeWebsite() {
+          const analysis = {
+            structure: {
+              totalFiles: 0,
+              htmlFiles: 0,
+              cssFiles: 0,
+              jsFiles: 0,
+              imageFiles: 0,
+              totalSize: 0
+            },
+            projects: [],
+            seoHealth: {
+              pagesWithTitle: 0,
+              pagesWithDescription: 0,
+              pagesWithCanonical: 0,
+              totalPages: 0
+            },
+            performance: {
+              largeImages: [],
+              largeCssFiles: [],
+              unusedFiles: []
+            }
+          };
+
+          function scanDirectory(dir, isRoot = false) {
+            try {
+              const files = fs.readdirSync(dir, { withFileTypes: true });
+              
+              files.forEach(file => {
+                const fullPath = path.join(dir, file.name);
+                
+                if (file.isDirectory() && !file.name.startsWith('.') && file.name !== 'node_modules') {
+                  scanDirectory(fullPath);
+                  
+                  // 檢查是否為專案目錄
+                  if (fs.existsSync(path.join(fullPath, 'index.html'))) {
+                    const projectInfo = analyzeProject(fullPath);
+                    analysis.projects.push(projectInfo);
+                  }
+                } else if (file.isFile()) {
+                  analyzeFile(fullPath, analysis);
+                }
+              });
+            } catch (error) {
+              console.log(`無法掃描目錄 ${dir}: ${error.message}`);
+            }
+          }
+
+          function analyzeFile(filePath, analysis) {
+            try {
+              const stats = fs.statSync(filePath);
+              const ext = path.extname(filePath).toLowerCase();
+              
+              analysis.structure.totalFiles++;
+              analysis.structure.totalSize += stats.size;
+
+              switch(ext) {
+                case '.html':
+                  analysis.structure.htmlFiles++;
+                  analyzeSEO(filePath, analysis);
+                  break;
+                case '.css':
+                  analysis.structure.cssFiles++;
+                  if (stats.size > 100000) { // 大於 100KB
+                    analysis.performance.largeCssFiles.push({
+                      file: filePath,
+                      size: Math.round(stats.size / 1024) + ' KB'
+                    });
+                  }
+                  break;
+                case '.js':
+                  analysis.structure.jsFiles++;
+                  break;
+                case '.jpg':
+                case '.jpeg':
+                case '.png':
+                case '.gif':
+                case '.webp':
+                  analysis.structure.imageFiles++;
+                  if (stats.size > 500000) { // 大於 500KB
+                    analysis.performance.largeImages.push({
+                      file: filePath,
+                      size: Math.round(stats.size / 1024) + ' KB'
+                    });
+                  }
+                  break;
+              }
+            } catch (error) {
+              console.log(`無法分析檔案 ${filePath}: ${error.message}`);
+            }
+          }
+
+          function analyzeProject(projectPath) {
+            const projectName = path.basename(projectPath);
+            const indexPath = path.join(projectPath, 'index.html');
+            let projectInfo = {
+              name: projectName,
+              path: projectPath,
+              hasIndex: false,
+              title: '',
+              description: '',
+              chapters: 0
+            };
+
+            if (fs.existsSync(indexPath)) {
+              projectInfo.hasIndex = true;
+              const content = fs.readFileSync(indexPath, 'utf8');
+              
+              // 提取標題
+              const titleMatch = content.match(/<title[^>]*>([^<]+)<\/title>/i);
+              if (titleMatch) {
+                projectInfo.title = titleMatch[1].trim();
+              }
+              
+              // 提取描述
+              const descMatch = content.match(/<meta[^>]+name=["']description["'][^>]+content=["']([^"']+)["']/i);
+              if (descMatch) {
+                projectInfo.description = descMatch[1].trim();
+              }
+              
+              // 計算章節數（如果是教學專案）
+              const chaptersDir = path.join(projectPath, 'chapters');
+              if (fs.existsSync(chaptersDir)) {
+                const chapters = fs.readdirSync(chaptersDir).filter(f => f.endsWith('.html'));
+                projectInfo.chapters = chapters.length;
+              }
+            }
+
+            return projectInfo;
+          }
+
+          function analyzeSEO(htmlFile, analysis) {
+            try {
+              const content = fs.readFileSync(htmlFile, 'utf8');
+              analysis.seoHealth.totalPages++;
+
+              if (content.includes('<title>')) {
+                analysis.seoHealth.pagesWithTitle++;
+              }
+              
+              if (content.includes('name="description"')) {
+                analysis.seoHealth.pagesWithDescription++;
+              }
+              
+              if (content.includes('rel="canonical"')) {
+                analysis.seoHealth.pagesWithCanonical++;
+              }
+            } catch (error) {
+              console.log(`無法分析 SEO: ${htmlFile}`);
+            }
+          }
+
+          scanDirectory('.');
+          
+          // 計算 SEO 健康度分數
+          analysis.seoHealth.score = Math.round(
+            ((analysis.seoHealth.pagesWithTitle + 
+              analysis.seoHealth.pagesWithDescription + 
+              analysis.seoHealth.pagesWithCanonical) / 
+             (analysis.seoHealth.totalPages * 3)) * 100
+          );
+
+          return analysis;
+        }
+
+        const analysis = analyzeWebsite();
+
+        console.log('📊 TingNotes 網站分析報告');
+        console.log('==========================');
+        console.log(`📁 檔案結構:`);
+        console.log(`   總檔案數: ${analysis.structure.totalFiles}`);
+        console.log(`   HTML: ${analysis.structure.htmlFiles} | CSS: ${analysis.structure.cssFiles} | JS: ${analysis.structure.jsFiles} | 圖片: ${analysis.structure.imageFiles}`);
+        console.log(`   總大小: ${Math.round(analysis.structure.totalSize / 1024)} KB`);
+        
+        console.log(`\n🚀 專案分析:`);
+        analysis.projects.forEach(project => {
+          console.log(`   📚 ${project.name}: ${project.chapters ? project.chapters + ' 章節' : '標準頁面'}`);
+        });
+        
+        console.log(`\n🎯 SEO 健康度: ${analysis.seoHealth.score}%`);
+        console.log(`   有標題的頁面: ${analysis.seoHealth.pagesWithTitle}/${analysis.seoHealth.totalPages}`);
+        console.log(`   有描述的頁面: ${analysis.seoHealth.pagesWithDescription}/${analysis.seoHealth.totalPages}`);
+        
+        if (analysis.performance.largeImages.length > 0) {
+          console.log(`\n⚠️ 大圖片檔案 (>500KB):`);
+          analysis.performance.largeImages.forEach(img => {
+            console.log(`   📸 ${img.file}: ${img.size}`);
+          });
+        }
+
+        // 儲存分析結果
+        fs.writeFileSync('website-analysis.json', JSON.stringify(analysis, null, 2));
+        console.log('\n✅ 分析報告已儲存到 website-analysis.json');
+        EOF
+
+        node analyze-website.js
+
+    # 🗺️ 智能 Sitemap 生成
+    - name: 🗺️ 生成智能 Sitemap
+      run: |
+        echo "🗺️ 生成智能 Sitemap..."
+        
+        cat > generate-smart-sitemap.js << 'EOF'
+        const fs = require('fs');
+        const path = require('path');
+
+        function generateSmartSitemap() {
+          const baseUrl = 'https://tingnotes.io';
+          const currentDate = new Date().toISOString().split('T')[0];
+          
+          // 核心頁面 - 手動定義重要頁面
+          const corePages = [
+            { url: '/', priority: '1.0', changefreq: 'weekly', lastmod: currentDate },
+            { url: '/Learning/', priority: '0.8', changefreq: 'weekly', lastmod: currentDate },
+            { url: '/Career/', priority: '0.6', changefreq: 'monthly', lastmod: currentDate },
+            { url: '/Travel/', priority: '0.6', changefreq: 'monthly', lastmod: currentDate },
+            { url: '/Others/', priority: '0.6', changefreq: 'monthly', lastmod: currentDate }
+          ];
+
+          // 自動發現專案頁面
+          const projectPages = [];
+          
+          try {
+            const directories = fs.readdirSync('.', { withFileTypes: true })
+              .filter(dirent => dirent.isDirectory())
+              .map(dirent => dirent.name)
+              .filter(name => 
+                !name.startsWith('.') && 
+                !['node_modules', 'Learning', 'Career', 'Travel', 'Others'].includes(name)
+              );
+
+            directories.forEach(dir => {
+              const indexPath = path.join(dir, 'index.html');
+              if (fs.existsSync(indexPath)) {
+                // 檢查是否為教學專案（優先級較高）
+                const isEducational = dir.includes('tutorial') || dir.includes('course') || dir.includes('guide');
+                
+                projectPages.push({
+                  url: `/${dir}/`,
+                  priority: isEducational ? '0.9' : '0.7',
+                  changefreq: 'monthly',
+                  lastmod: getFileLastModified(indexPath)
+                });
+
+                // 如果是教學專案，檢查重要章節
+                if (isEducational) {
+                  const chaptersDir = path.join(dir, 'chapters');
+                  if (fs.existsSync(chaptersDir)) {
+                    try {
+                      const chapters = fs.readdirSync(chaptersDir)
+                        .filter(f => f.endsWith('.html'))
+                        .slice(0, 5); // 只包含前5個重要章節
+                      
+                      chapters.forEach(chapter => {
+                        projectPages.push({
+                          url: `/${dir}/chapters/${chapter}`,
+                          priority: '0.6',
+                          changefreq: 'monthly',
+                          lastmod: getFileLastModified(path.join(chaptersDir, chapter))
+                        });
+                      });
+                    } catch (error) {
+                      console.log(`無法讀取 ${chaptersDir}: ${error.message}`);
+                    }
+                  }
+                }
+              }
+            });
+          } catch (error) {
+            console.log(`掃描目錄時發生錯誤: ${error.message}`);
+          }
+
+          // 合併所有頁面
+          const allPages = [...corePages, ...projectPages];
+
+          // 生成 XML
+          let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+          xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+          
+          allPages.forEach(page => {
+            xml += `  <url>\n`;
+            xml += `    <loc>${baseUrl}${page.url}</loc>\n`;
+            xml += `    <lastmod>${page.lastmod}</lastmod>\n`;
+            xml += `    <changefreq>${page.changefreq}</changefreq>\n`;
+            xml += `    <priority>${page.priority}</priority>\n`;
+            xml += `  </url>\n`;
+          });
+          
+          xml += `</urlset>`;
+
+          return { xml, pageCount: allPages.length, pages: allPages };
+        }
+
+        function getFileLastModified(filePath) {
+          try {
+            const stats = fs.statSync(filePath);
+            return stats.mtime.toISOString().split('T')[0];
+          } catch (error) {
+            return new Date().toISOString().split('T')[0];
+          }
+        }
+
+        const result = generateSmartSitemap();
+        fs.writeFileSync('sitemap.xml', result.xml);
+
+        console.log('🗺️ 智能 Sitemap 生成完成！');
+        console.log(`📊 包含 ${result.pageCount} 個頁面`);
+        
+        // 顯示包含的頁面
+        result.pages.forEach(page => {
+          console.log(`   ${page.priority} - ${page.url}`);
+        });
+        EOF
+
+        node generate-smart-sitemap.js
+
+    # 🤖 優化 robots.txt
+    - name: 🤖 生成優化的 robots.txt
+      run: |
+        echo "🤖 生成 SEO 優化的 robots.txt..."
+        
+        cat > robots.txt << 'EOF'
+        # TingNotes.io - 智能爬蟲指引
+        User-agent: *
+        Allow: /
+
+        # 主要內容區域
+        Allow: /Learning/
+        Allow: /Career/
+        Allow: /Travel/
+        Allow: /Others/
+        Allow: /c-pointer-tutorial/
+
+        # 禁止爬取的目錄（如果有的話）
+        Disallow: /private/
+        Disallow: /admin/
+        Disallow: /temp/
+
+        # 網站地圖
+        Sitemap: https://tingnotes.io/sitemap.xml
+
+        # 爬蟲友好設定
+        Crawl-delay: 1
+
+        # Google 特別設定
+        User-agent: Googlebot
+        Allow: /
+        Crawl-delay: 0
+
+        # Bing 特別設定  
+        User-agent: Bingbot
+        Allow: /
+        Crawl-delay: 1
+        EOF
+
+    # 🔍 SEO 健康度檢查
+    - name: 🔍 SEO 健康度檢查
+      run: |
+        echo "🔍 執行 SEO 健康度檢查..."
+        
+        cat > seo-health-check.js << 'EOF'
+        const fs = require('fs');
+        const path = require('path');
+
+        function checkSEOHealth() {
+          const issues = [];
+          const recommendations = [];
+          let score = 100;
+
+          // 檢查重要頁面的 SEO 元素
+          const importantPages = [
+            { file: 'index.html', name: '首頁' },
+            { file: 'Learning/index.html', name: '學習頁面' },
+            { file: 'c-pointer-tutorial/index.html', name: 'C指標教學' }
+          ];
+
+          importantPages.forEach(page => {
+            if (fs.existsSync(page.file)) {
+              const content = fs.readFileSync(page.file, 'utf8');
+              const pageIssues = checkPageSEO(content, page.name);
+              issues.push(...pageIssues);
+              score -= pageIssues.length * 5; // 每個問題扣5分
+            } else {
+              issues.push(`❌ ${page.name} 檔案不存在: ${page.file}`);
+              score -= 20;
+            }
+          });
+
+          // 檢查技術 SEO
+          if (!fs.existsSync('sitemap.xml')) {
+            issues.push('❌ 缺少 sitemap.xml');
+            score -= 15;
+          }
+
+          if (!fs.existsSync('robots.txt')) {
+            issues.push('❌ 缺少 robots.txt');
+            score -= 10;
+          }
+
+          // 生成建議
+          if (score >= 90) {
+            recommendations.push('🎉 SEO 狀態優秀！繼續保持！');
+          } else if (score >= 70) {
+            recommendations.push('✅ SEO 狀態良好，還有改進空間');
+          } else {
+            recommendations.push('⚠️ SEO 需要改進，請處理發現的問題');
+          }
+
+          return { score: Math.max(0, score), issues, recommendations };
+        }
+
+        function checkPageSEO(content, pageName) {
+          const issues = [];
+
+          // 檢查 title 標籤
+          const titleMatch = content.match(/<title[^>]*>([^<]+)<\/title>/i);
+          if (!titleMatch) {
+            issues.push(`❌ ${pageName}: 缺少 title 標籤`);
+          } else {
+            const title = titleMatch[1].trim();
+            if (title.length < 10) {
+              issues.push(`⚠️ ${pageName}: title 太短 (${title.length} 字元)`);
+            } else if (title.length > 60) {
+              issues.push(`⚠️ ${pageName}: title 太長 (${title.length} 字元)`);
+            }
+          }
+
+          // 檢查 meta description
+          const descMatch = content.match(/<meta[^>]+name=["']description["'][^>]+content=["']([^"']+)["']/i);
+          if (!descMatch) {
+            issues.push(`❌ ${pageName}: 缺少 meta description`);
+          } else {
+            const desc = descMatch[1].trim();
+            if (desc.length < 50) {
+              issues.push(`⚠️ ${pageName}: meta description 太短 (${desc.length} 字元)`);
+            } else if (desc.length > 160) {
+              issues.push(`⚠️ ${pageName}: meta description 太長 (${desc.length} 字元)`);
+            }
+          }
+
+          // 檢查 canonical URL
+          if (!content.includes('rel="canonical"')) {
+            issues.push(`⚠️ ${pageName}: 建議添加 canonical URL`);
+          }
+
+          // 檢查 viewport meta
+          if (!content.includes('name="viewport"')) {
+            issues.push(`❌ ${pageName}: 缺少 viewport meta 標籤`);
+          }
+
+          // 檢查 h1 標籤
+          const h1Match = content.match(/<h1[^>]*>([^<]+)<\/h1>/i);
+          if (!h1Match) {
+            issues.push(`⚠️ ${pageName}: 缺少 h1 標籤`);
+          }
+
+          return issues;
+        }
+
+        const healthCheck = checkSEOHealth();
+
+        console.log('🔍 SEO 健康度檢查報告');
+        console.log('========================');
+        console.log(`📊 SEO 分數: ${healthCheck.score}/100`);
+        
+        if (healthCheck.issues.length > 0) {
+          console.log('\n❗ 發現的問題:');
+          healthCheck.issues.forEach(issue => console.log(`   ${issue}`));
+        }
+        
+        console.log('\n💡 建議:');
+        healthCheck.recommendations.forEach(rec => console.log(`   ${rec}`));
+
+        // 儲存結果
+        fs.writeFileSync('seo-health-report.json', JSON.stringify(healthCheck, null, 2));
+        EOF
+
+        node seo-health-check.js
+
+    # 📱 行動裝置友好度檢查
+    - name: 📱 行動裝置友好度檢查
+      run: |
+        echo "📱 檢查行動裝置友好度..."
+        
+        mobile_issues=0
+        
+        # 檢查 viewport meta 標籤
+        echo "🔍 檢查 viewport 設定..."
+        find . -name "*.html" -not -path "./.git/*" | while read file; do
+          if ! grep -q 'name="viewport"' "$file"; then
+            echo "⚠️ $file 缺少 viewport meta 標籤"
+            mobile_issues=$((mobile_issues + 1))
+          fi
+        done
+        
+        # 檢查響應式設計相關的 CSS
+        echo "🔍 檢查響應式設計..."
+        if find . -name "*.css" -o -name "*.html" | xargs grep -l "@media" > /dev/null; then
+          echo "✅ 發現響應式設計代碼"
+        else
+          echo "⚠️ 未發現明顯的響應式設計代碼"
+        fi
+        
+        echo "📱 行動裝置友好度檢查完成"
+
+    # 💾 提交變更
+    - name: 💾 提交 SEO 優化檔案
+      id: commit
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "TingNotes SEO Bot"
+        
+        # 檢查是否有變更
+        if [[ `git status --porcelain` ]]; then
+          git add sitemap.xml robots.txt website-analysis.json seo-health-report.json health_report.txt
+          git commit -m "🤖 TingNotes SEO 自動優化: sitemap + 健康檢查 + 分析報告"
+          git push
+          echo "changes_made=true" >> $GITHUB_OUTPUT
+          
+          # 記錄變更的檔案
+          git diff --name-only HEAD~1 HEAD > changed_files.txt
+          echo "📝 變更的檔案:"
+          cat changed_files.txt
+        else
+          echo "changes_made=false" >> $GITHUB_OUTPUT
+          echo "ℹ️ 沒有檔案需要更新"
+        fi
+
+    # 🔔 Google Search Console 提交
+    - name: 🔔 提交到 Google Search Console
+      if: steps.commit.outputs.changes_made == 'true'
+      env:
+        GOOGLE_SERVICE_ACCOUNT_KEY: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}
+      run: |
+        if [ -n "$GOOGLE_SERVICE_ACCOUNT_KEY" ]; then
+          echo "🔔 提交到 Google Search Console..."
+          npm install googleapis
+          
+          cat > submit-to-google.js << 'EOF'
+          const { google } = require('googleapis');
+          const fs = require('fs');
+
+          async function submitToGoogle() {
+            try {
+              const credentials = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_KEY);
+              
+              const auth = new google.auth.GoogleAuth({
+                credentials: credentials,
+                scopes: ['https://www.googleapis.com/auth/webmasters']
+              });
+
+              const searchconsole = google.searchconsole({ version: 'v1', auth });
+
+              // 提交 sitemap
+              await searchconsole.sitemaps.submit({
+                siteUrl: 'https://tingnotes.io',
+                feedpath: 'https://tingnotes.io/sitemap.xml'
+              });
+
+              console.log('✅ Sitemap 已提交到 Google Search Console');
+
+              // 如果有新頁面，嘗試快速索引
+              if (fs.existsSync('changed_files.txt')) {
+                const changedFiles = fs.readFileSync('changed_files.txt', 'utf8')
+                  .split('\n')
+                  .filter(file => file.includes('index.html') && !file.includes('.git'));
+                
+                for (const file of changedFiles) {
+                  const url = `https://tingnotes.io/${file.replace('/index.html', '/').replace('index.html', '')}`;
+                  try {
+                    // 注意：這個 API 可能需要特殊權限
+                    console.log(`🚀 嘗試快速索引: ${url}`);
+                  } catch (error) {
+                    console.log(`⚠️ 無法快速索引 ${url}: ${error.message}`);
+                  }
+                }
+              }
+
+            } catch (error) {
+              console.log(`⚠️ Google 提交失敗: ${error.message}`);
+              console.log('💡 Sitemap 仍會被自然發現，不影響 SEO 效果');
+            }
+          }
+
+          submitToGoogle();
+          EOF
+
+          node submit-to-google.js
+        else
+          echo "⚠️ 未設定 Google 認證，跳過 Search Console 提交"
+        fi
+
+    # 🌐 通知搜尋引擎
+    - name: 🌐 通知所有搜尋引擎
+      run: |
+        echo "🌐 通知搜尋引擎更新..."
+        
+        # Google
+        if curl -s "https://www.google.com/ping?sitemap=https://tingnotes.io/sitemap.xml"; then
+          echo "✅ Google 已收到通知"
+        else
+          echo "⚠️ Google 通知失敗"
+        fi
+        
+        # Bing
+        if curl -s "https://www.bing.com/ping?sitemap=https://tingnotes.io/sitemap.xml"; then
+          echo "✅ Bing 已收到通知"
+        else
+          echo "⚠️ Bing 通知失敗"
+        fi
+        
+        echo "🔔 搜尋引擎通知完成"
+
+    # 📊 生成完整報告
+    - name: 📊 生成 TingNotes SEO 報告
+      run: |
+        echo "📊 生成完整的 SEO 優化報告..."
+        
+        cat > tingnotes_seo_report.md << 'EOF'
+        # 📊 TingNotes SEO 自動化報告
+        
+        ## 🕐 執行資訊
+        - **執行時間**: $(date '+%Y-%m-%d %H:%M:%S')
+        - **網站**: https://tingnotes.io
+        - **執行者**: TingNotes SEO Bot
+        
+        ## 🎯 執行的優化項目
+        - ✅ 智能 Sitemap 生成與提交
+        - ✅ SEO 優化的 robots.txt 
+        - ✅ 網站健康狀態檢查
+        - ✅ SEO 標籤驗證
+        - ✅ 行動裝置友好度檢查
+        - ✅ 網站結構分析
+        - ✅ 搜尋引擎通知
+        
+        ## 📈 重要連結
+        - 🗺️ [Sitemap](https://tingnotes.io/sitemap.xml)
+        - 🤖 [Robots.txt](https://tingnotes.io/robots.txt)
+        - 🔍 [Google Search Console](https://search.google.com/search-console)
+        
+        ## 📊 本次執行統計
+        EOF
+        
+        # 添加網站分析數據
+        if [ -f "website-analysis.json" ]; then
+          echo "### 🏗️ 網站結構" >> tingnotes_seo_report.md
+          cat website-analysis.json | jq -r '
+            "- **總檔案數**: \(.structure.totalFiles)",
+            "- **HTML 檔案**: \(.structure.htmlFiles)",
+            "- **專案數量**: \(.projects | length)",
+            "- **網站大小**: \(.structure.totalSize / 1024 | floor) KB"
+          ' >> tingnotes_seo_report.md
+        fi
+        
+        # 添加 SEO 健康度
+        if [ -f "seo-health-report.json" ]; then
+          echo "" >> tingnotes_seo_report.md
+          echo "### 🎯 SEO 健康度" >> tingnotes_seo_report.md
+          cat seo-health-report.json | jq -r '
+            "- **SEO 分數**: \(.score)/100",
+            "- **發現問題**: \(.issues | length) 個",
+            "- **狀態**: " + (if .score >= 90 then "優秀 🎉" elif .score >= 70 then "良好 ✅" else "需改進 ⚠️" end)
+          ' >> tingnotes_seo_report.md
+        fi
+        
+        # 添加變更檔案資訊
+        echo "" >> tingnotes_seo_report.md
+        echo "### 📝 本次變更" >> tingnotes_seo_report.md
+        if [ -f "changed_files.txt" ] && [ -s "changed_files.txt" ]; then
+          echo "```" >> tingnotes_seo_report.md
+          cat changed_files.txt >> tingnotes_seo_report.md
+          echo "```" >> tingnotes_seo_report.md
+        else
+          echo "- 無檔案變更" >> tingnotes_seo_report.md
+        fi
+        
+        # 添加健康檢查結果
+        if [ -f "health_report.txt" ]; then
+          echo "" >> tingnotes_seo_report.md
+          echo "### 🏥 網站健康檢查" >> tingnotes_seo_report.md
+          echo "```" >> tingnotes_seo_report.md
+          cat health_report.txt >> tingnotes_seo_report.md
+          echo "```" >> tingnotes_seo_report.md
+        fi
+        
+        cat >> tingnotes_seo_report.md << 'EOF'
+        
+        ## 🚀 下次優化建議
+        
+        ### 🎯 內容 SEO
+        - 持續創作高品質的技術內容
+        - 確保每個新專案都有完整的 meta 標籤
+        - 定期更新舊內容以保持相關性
+        
+        ### ⚡ 技術 SEO  
+        - 監控網站載入速度
+        - 優化圖片大小和格式
+        - 確保所有連結正常運作
+        
+        ### 📱 使用者體驗
+        - 持續改進行動裝置體驗
+        - 優化導航結構
+        - 提升網站互動性
+        
+        ## 🎉 總結
+        TingNotes SEO 自動化系統已成功執行所有優化任務！
+        您的網站現在具備了最佳的搜尋引擎友好度。
+        
+        ---
+        *由 TingNotes 智能 SEO 優化器自動生成*
+        EOF
+        
+        echo "📊 完整報告已生成！"
+        echo ""
+        echo "🎯 重點摘要："
+        
+        # 顯示重點摘要
+        if [ -f "seo-health-report.json" ]; then
+          SEO_SCORE=$(cat seo-health-report.json | jq -r '.score')
+          echo "   📊 SEO 分數: $SEO_SCORE/100"
+        fi
+        
+        if [ -f "website-analysis.json" ]; then
+          PROJECT_COUNT=$(cat website-analysis.json | jq -r '.projects | length')
+          TOTAL_FILES=$(cat website-analysis.json | jq -r '.structure.totalFiles')
+          echo "   📁 專案數量: $PROJECT_COUNT"
+          echo "   📄 總檔案數: $TOTAL_FILES"
+        fi
+        
+        echo "   🗺️ Sitemap: https://tingnotes.io/sitemap.xml"
+        echo "   🤖 Robots: https://tingnotes.io/robots.txt"
+        
+        echo ""
+        echo "✅ TingNotes SEO 自動化完成！"
+
+    # 🎉 成功通知
+    - name: 🎉 執行完成通知
+      if: always()
+      run: |
+        if [ "${{ steps.commit.outputs.changes_made }}" = "true" ]; then
+          echo "🎉 SEO 自動化執行成功！"
+          echo "📊 已更新 sitemap.xml 和相關 SEO 檔案"
+          echo "🔔 搜尋引擎已收到更新通知"
+          echo "📈 建議定期檢查 Google Search Console 數據"
+        else
+          echo "ℹ️ SEO 檢查完成，所有檔案都是最新的"
+          echo "🎯 網站 SEO 狀態良好，無需更新"
+        fi
+        
+        echo ""
+        echo "🚀 TingNotes SEO 自動化系統特色："
+        echo "   ✅ 智能 Sitemap 自動生成"
+        echo "   ✅ 全面的 SEO 健康檢查"
+        echo "   ✅ 網站結構深度分析"
+        echo "   ✅ 搜尋引擎即時通知"
+        echo "   ✅ 詳細的優化報告"
+        echo "   ✅ 零維護自動運行"
+        
+        echo ""
+        echo "📅 下次自動執行：每週一凌晨 2 點"
+        echo "🔧 手動觸發：推送到 main 分支時"

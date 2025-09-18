@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>7. Array as Function Argument | C語言指標教學</title>
+  <meta name="description" content="深入理解陣列作為函式參數的機制，陣列退化為指標、sizeof 陷阱、以及正確的陣列傳遞方式。附完整可執行範例。" />
+  <style>
+    :root {
+      --bg-primary:#fff;--bg-secondary:#f8f9fa;--bg-card:#fff;--text-primary:#2c3e50;--text-secondary:#6c757d;--accent-primary:#3498db;--accent-secondary:#2980b9;--border-color:#e9ecef;--shadow-light:rgba(0,0,0,.1);--shadow-medium:rgba(0,0,0,.15);--gradient-bg:linear-gradient(135deg,#667eea 0%,#764ba2 100%);--code-bg:#1e1e1e;--code-text:#f8f8f2;
+      --theme-btn-bg: rgba(0, 0, 0, 0.1);
+      --theme-btn-border: rgba(0, 0, 0, 0.2);
+      --theme-btn-icon: rgba(0, 0, 0, 0.7);
+    }
+    [data-theme="dark"]{
+      --bg-primary:#1a1a1a;--bg-secondary:#2d3748;--bg-card:#2d3748;--text-primary:#f7fafc;--text-secondary:#a0aec0;--accent-primary:#4299e1;--accent-secondary:#3182ce;--border-color:#4a5568;--shadow-light:rgba(0,0,0,.3);--shadow-medium:rgba(0,0,0,.4);--gradient-bg:linear-gradient(135deg,#2d3748 0%,#1a202c 100%);--code-bg:#1a202c;--code-text:#f7fafc;
+      --theme-btn-bg: rgba(255, 255, 255, 0.1);
+      --theme-btn-border: rgba(255, 255, 255, 0.3);
+      --theme-btn-icon: rgba(255, 255, 255, 0.8);
+    }
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;line-height:1.6;color:var(--text-primary);background:var(--gradient-bg);min-height:100vh;transition:all .3s ease}
+    .container{max-width:1400px;margin:0 auto;padding:20px;display:grid;grid-template-columns:280px 1fr;gap:30px}
+    .sidebar{position:sticky;top:20px;height:fit-content}
+    .toc-widget{background:var(--bg-card);border-radius:15px;box-shadow:0 8px 32px var(--shadow-light);border:1px solid var(--border-color);overflow:hidden}
+    .toc-header{padding:20px;border-bottom:1px solid var(--border-color);text-align:center}
+    .toc-title{font-size:1.1em;font-weight:600;color:var(--text-primary)}
+    .toc-body{padding:15px;max-height:70vh;overflow-y:auto}
+    .toc-list{list-style:none}
+    .toc-item{margin-bottom:3px}
+    .toc-link{display:block;color:var(--text-secondary);text-decoration:none;padding:8px 12px;border-radius:8px;transition:all .3s ease;font-size:.85em;line-height:1.4}
+    .toc-link:hover{background:var(--bg-secondary);color:var(--accent-primary);transform:translateX(3px)}
+    .toc-link.active{background:var(--accent-primary);color:#fff}
+    .toc-link.has-submenu{cursor:pointer;position:relative}
+    .arrow{display:inline-block;transition:transform .3s ease;margin-right:8px;font-size:.7em;color:var(--accent-primary)}
+    .arrow.expanded{transform:rotate(90deg)}
+    .sub-menu{list-style:none;margin-left:15px;margin-top:5px;padding-left:15px;border-left:2px solid var(--border-color);max-height:0;overflow:hidden;transition:max-height .4s ease}
+    .sub-menu.show{max-height:400px;margin-bottom:10px}
+    .sub-menu .toc-link{padding:6px 10px;font-size:.8em}
+    .main-area{min-width:0}
+    .header{background:var(--bg-card);border-radius:15px;padding:25px 30px;margin-bottom:25px;box-shadow:0 8px 32px var(--shadow-light);border:1px solid var(--border-color);position:relative}
+    
+    .theme-toggle {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: var(--theme-btn-bg);
+        border: 2px solid var(--theme-btn-border);
+        color: var(--theme-btn-icon);
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 18px;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(10px);
+    }
+
+    .theme-toggle:hover {
+        border-color: var(--accent-primary);
+        background: var(--accent-primary);
+        color: white;
+        transform: scale(1.1);
+    }
+
+    .theme-icon {
+        stroke: currentColor;
+        fill: none;
+        stroke-width: 2;
+        transition: all 0.3s ease;
+    }
+
+    .breadcrumb{color:var(--text-secondary);font-size:.85em;margin-bottom:12px}
+    .breadcrumb a{color:var(--accent-primary);text-decoration:none}
+    .breadcrumb a:hover{text-decoration:underline}
+    .chapter-title{font-size:1.8em;font-weight:700;color:var(--text-primary);margin-bottom:8px}
+    .chapter-subtitle{color:var(--text-secondary);font-size:1em}
+    .main-content{background:var(--bg-card);border-radius:15px;box-shadow:0 8px 32px var(--shadow-light);border:1px solid var(--border-color);overflow:hidden;margin-bottom:25px}
+    .content-section{padding:30px;border-bottom:1px solid var(--border-color)}
+    .content-section:last-child{border-bottom:none}
+    .section-header{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+    .section-number{background:var(--accent-primary);color:#fff;width:35px;height:35px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:bold}
+    .section-title{font-size:1.3em;font-weight:600;color:var(--text-primary)}
+    .content-text{color:var(--text-secondary);font-size:1em;line-height:1.6;margin-bottom:15px}
+    .highlight-box{background:linear-gradient(135deg,var(--accent-primary)10,var(--accent-secondary)10);border-left:4px solid var(--accent-primary);border-radius:8px;padding:18px;margin:18px 0}
+    .error-box{background:linear-gradient(135deg,#e74c3c10,#c0392b10);border-left:4px solid #e74c3c;border-radius:8px;padding:18px;margin:18px 0}
+    .highlight-title{color:var(--accent-primary);font-weight:600;margin-bottom:8px}
+    .error-title{color:#e74c3c;font-weight:600;margin-bottom:8px}
+    .bullet-list{list-style:none;margin:12px 0}
+    .bullet-list li{position:relative;padding-left:20px;margin-bottom:6px;color:var(--text-secondary)}
+    .bullet-list li:before{content:'•';color:var(--accent-primary);font-weight:bold;position:absolute;left:0}
+    .code-container{position:relative;margin:20px 0}
+    .code-header{display:flex;justify-content:space-between;align-items:center;background:var(--code-bg);color:var(--code-text);padding:10px 18px;border-radius:10px 10px 0 0;border-bottom:1px solid #333}
+    .code-label{font-size:.85em;color:#888}
+    .copy-btn{background:transparent;border:1px solid #555;color:#888;padding:5px 10px;border-radius:5px;cursor:pointer;font-size:.75em;transition:all .3s ease}
+    .copy-btn:hover{background:#333;color:#fff;border-color:#666}
+    .copy-btn.copied{background:#27ae60;color:#fff;border-color:#27ae60}
+    .code-block{background:var(--code-bg);color:var(--code-text);padding:18px;border-radius:0 0 10px 10px;overflow-x:auto;font-family:'Fira Code','Courier New',monospace;font-size:.85em;line-height:1.4}
+    .code-block pre{margin:0;white-space:pre-wrap}
+    .memory-diagram{background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:10px;padding:20px;margin:20px 0;text-align:center}
+    .memory-table{display:inline-block;border-collapse:collapse;border:2px solid var(--accent-primary);border-radius:6px;overflow:hidden}
+    .memory-table th{background:var(--accent-primary);color:#fff;padding:10px 18px;font-weight:600}
+    .memory-table td{background:var(--bg-card);color:var(--text-primary);padding:10px 18px;border-bottom:1px solid var(--border-color);font-family:monospace;font-size:1em}
+    .memory-table tr:last-child td{border-bottom:none}
+    .navigation{display:flex;justify-content:space-between;align-items:center;background:var(--bg-card);border-radius:15px;padding:20px 25px;box-shadow:0 8px 32px var(--shadow-light);border:1px solid var(--border-color);gap:20px}
+    .nav-btn{display:flex;align-items:center;gap:10px;background:var(--accent-primary);color:#fff;padding:12px 20px;border-radius:10px;text-decoration:none;transition:all .3s ease;font-weight:500;flex:1;max-width:250px}
+    .nav-btn:hover{background:var(--accent-secondary);transform:translateY(-2px);box-shadow:0 8px 20px var(--shadow-medium);color:#fff;text-decoration:none}
+    .nav-btn.prev{background:var(--text-secondary)}
+    .nav-btn.prev:hover{background:#5a6c7d}
+    .nav-direction{font-size:.75em;opacity:.8}
+    .nav-title{font-size:.9em;font-weight:600}
+    .nav-center{text-align:center;color:var(--text-secondary)}
+    @media (max-width:1024px){.container{grid-template-columns:1fr;gap:20px}.sidebar{position:static;order:2}.main-area{order:1}}
+    @media (max-width:768px){.container{padding:15px}.header{padding:20px 15px}.content-section{padding:20px 15px}.chapter-title{font-size:1.5em}.navigation{flex-direction:column;gap:12px}.nav-btn{max-width:none}}
+    .keyword{color:#ff79c6}.string{color:#f1fa8c}.comment{color:#6272a4}.number{color:#bd93f9}.function{color:#50fa7b}.type{color:#8be9fd}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <aside class="sidebar">
+    <div class="toc-widget">
+        <div class="toc-header">
+        <h3 class="toc-title">📚 課程目錄</h3>
+        </div>
+        <div class="toc-body">
+        <ul class="toc-list">
+            <li class="toc-item">
+            <a href="chapter1.html" class="toc-link">
+                1. Introduction to pointers in C/C++
+            </a>
+            </li>
+            <li class="toc-item">
+            <a href="chapter2.html" class="toc-link">
+                2. Work with Pointers
+            </a>
+            </li>
+            <li class="toc-item">
+            <a href="chapter3.html" class="toc-link">
+                3. Pointer types, pointer arithmetic, void pointers
+            </a>
+            </li>
+            <li class="toc-item">
+            <a href="chapter4.html" class="toc-link">
+                4. Pointers to Pointers
+            </a>
+            </li>
+            <li class="toc-item">
+            <a href="chapter5.html" class="toc-link has-submenu" onclick="toggleSubMenu(this)">
+                <span class="arrow">▶</span> 5. Call by Reference
+            </a>
+            <ul class="sub-menu">
+                <li><a href="chapter5.html#memory-blocks" class="toc-link">記憶體區塊</a></li>
+                <li><a href="chapter5.html#call-by-address" class="toc-link">傳址呼叫</a></li>
+                <li><a href="chapter5.html#call-by-value" class="toc-link">傳值呼叫</a></li>
+            </ul>
+            </li>
+            <li class="toc-item">
+            <a href="chapter6.html" class="toc-link">
+                6. Pointers and Arrays
+            </a>
+            </li>
+            <li class="toc-item">
+            <a href="chapter7.html" class="toc-link active">
+                7. Array as function argument
+            </a>
+            </li>
+            <li class="toc-item">
+            <a href="chapter8.html" class="toc-link has-submenu" onclick="toggleSubMenu(this)">
+                <span class="arrow">▶</span> 8. Character arrays and pointers - part 1
+            </a>
+            <ul class="sub-menu">
+                <li><a href="chapter8.html#string-basics" class="toc-link">字串基本概念</a></li>
+                <li><a href="chapter8.html#string-pointers" class="toc-link">字串與指標</a></li>
+                <li><a href="chapter8.html#string-functions" class="toc-link">字串傳入函式</a></li>
+            </ul>
+            </li>
+            <li class="toc-item">
+            <a href="chapter9.html" class="toc-link has-submenu" onclick="toggleSubMenu(this)">
+                <span class="arrow">▶</span> 9. Character arrays and pointers - part 2
+            </a>
+            <ul class="sub-menu">
+                <li><a href="chapter9.html#memory-stack" class="toc-link">記憶體與Stack解析</a></li>
+                <li><a href="chapter9.html#readonly-memory" class="toc-link">唯讀記憶體</a></li>
+            </ul>
+            </li>
+            <li class="toc-item">
+            <a href="chapter10.html" class="toc-link has-submenu" onclick="toggleSubMenu(this)">
+                <span class="arrow">▶</span> 10. Pointers and 2-D arrays
+            </a>
+            <ul class="sub-menu">
+                <li><a href="chapter10.html#2d-usage" class="toc-link">2D 指標陣列的使用</a></li>
+                <li><a href="chapter10.html#2d-access" class="toc-link">2維陣列的存取等價式</a></li>
+            </ul>
+            </li>
+            <li class="toc-item">
+            <a href="chapter11.html" class="toc-link has-submenu" onclick="toggleSubMenu(this)">
+                <span class="arrow">▶</span> 11. Pointers and multidimensional arrays
+            </a>
+            <ul class="sub-menu">
+                <li><a href="chapter11.html#array-types" class="toc-link">陣列傳入函式的型態規則</a></li>
+                <li><a href="chapter11.html#3d-access" class="toc-link">三維陣列的存取等價式</a></li>
+            </ul>
+            </li>
+            <li class="toc-item">
+            <a href="chapter12.html" class="toc-link has-submenu" onclick="toggleSubMenu(this)">
+                <span class="arrow">▶</span> 12. Pointers and dynamic memory - stack vs heap
+            </a>
+            <ul class="sub-menu">
+                <li><a href="chapter12.html#memory-allocation" class="toc-link">C 函式執行與記憶體配置</a></li>
+                <li><a href="chapter12.html#stack-overflow" class="toc-link">Stack Overflow 是什麼？</a></li>
+                <li><a href="chapter12.html#heap-usage" class="toc-link">Heap 是什麼？</a></li>
+                <li><a href="chapter12.html#malloc-diagram" class="toc-link">malloc 的記憶體配置動態與圖解</a></li>
+            </ul>
+            </li>
+            <li class="toc-item">
+            <a href="chapter13.html" class="toc-link has-submenu" onclick="toggleSubMenu(this)">
+                <span class="arrow">▶</span> 13. Dynamic memory allocation
+            </a>
+            <ul class="sub-menu">
+                <li><a href="chapter13.html#malloc" class="toc-link">malloc</a></li>
+                <li><a href="chapter13.html#calloc" class="toc-link">calloc</a></li>
+                <li><a href="chapter13.html#realloc" class="toc-link">realloc</a></li>
+            </ul>
+            </li>
+            <li class="toc-item">
+            <a href="chapter14.html" class="toc-link has-submenu" onclick="toggleSubMenu(this)">
+                <span class="arrow">▶</span> 14. Pointers as Function Returns
+            </a>
+            <ul class="sub-menu">
+                <li><a href="chapter14.html#malloc-free" class="toc-link">malloc 與 free 後的指標行為</a></li>
+                <li><a href="chapter14.html#realloc-behavior" class="toc-link">realloc 調整記憶體大小</a></li>
+                <li><a href="chapter14.html#heap-stack-diff" class="toc-link">Heap 與 Stack 回傳指標差異</a></li>
+            </ul>
+            </li>
+            <li class="toc-item">
+            <a href="chapter15.html" class="toc-link has-submenu" onclick="toggleSubMenu(this)">
+                <span class="arrow">▶</span> 15. Function Pointers
+            </a>
+            <ul class="sub-menu">
+                <li><a href="chapter15.html#theory" class="toc-link">function pointer原理解釋</a></li>
+                <li><a href="chapter15.html#practice" class="toc-link">function pointer實例操作</a></li>
+            </ul>
+            </li>
+            <li class="toc-item">
+            <a href="chapter16.html" class="toc-link has-submenu" onclick="toggleSubMenu(this)">
+                <span class="arrow">▶</span> 16. Function Pointers and Callbacks
+            </a>
+            <ul class="sub-menu">
+                <li><a href="chapter16.html#basic-example" class="toc-link">function pointer 基本範例</a></li>
+                <li><a href="chapter16.html#bubble-sort" class="toc-link">BubbleSort by Callback</a></li>
+                <li><a href="chapter16.html#advanced-sort" class="toc-link">延伸應用：多種排序邏輯</a></li>
+                <li><a href="chapter16.html#quick-sort" class="toc-link">QuickSort by Callback</a></li>
+            </ul>
+            </li>
+            <li class="toc-item"><a href="chapter17.html" class="toc-link">17. Memory Leak in C/C++</a></li>
+            <li class="toc-item"><a href="chapter18.html" class="toc-link">18. 最終總結 — C 語言 Pointer 思維地圖</a></li>
+        </ul>
+        </div>
+    </div>
+    </aside>
+ 
+
+    <div class="main-area">
+      <header class="header">
+        <button class="theme-toggle" onclick="toggleTheme()" title="切換深淺色模式">
+            <svg class="theme-icon" id="theme-icon" width="20" height="20" viewBox="0 0 24 24">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+        </button>
+        <div class="breadcrumb"><a href="../index.html">首頁</a> / <span>Chapter 7</span></div>
+        <h1 class="chapter-title">7. Array as Function Argument</h1>
+        <p class="chapter-subtitle">陣列作為函式參數的機制、陣列退化、sizeof 陷阱與解決方案</p>
+      </header>
+
+      <main class="main-content">
+        <section class="content-section">
+          <div class="section-header"><div class="section-number">🖼️</div><h2 class="section-title">章節封面（占位）</h2></div>
+          <p class="content-text">請將你的封面圖放到 <code>images/</code>，檔名例如 <code>ch7-cover.png</code>，並更新 <code>src</code>。</p>
+          <div class="memory-diagram"><img src="images/ch7-cover.png" alt="Chapter 7 Cover" style="max-width:100%;height:auto;opacity:.6"/></div>
+        </section>
+
+        <section class="content-section" id="wrong-way">
+          <div class="section-header"><div class="section-number">❌</div><h2 class="section-title">錯誤寫法 - sizeof 陷阱</h2></div>
+          <p class="content-text">當陣列作為參數傳入函式時，會發生「陣列退化」(Array Decay) 現象，導致 sizeof 計算錯誤。</p>
+          
+          <div class="error-box">
+            <div class="error-title">⚠️ 錯誤原因</div>
+            <ul class="bullet-list">
+              <li>當陣列作為參數傳入函式時，會退化 (decay) 成指標</li>
+              <li><code>sizeof(A)</code> 在 <code>sum()</code> 裡回傳的是指標大小 (64 位元系統為 8 bytes)</li>
+              <li>實際上陣列有 5 個元素，但 size 會變成 8 / 4 = 2</li>
+            </ul>
+          </div>
+
+          <div class="code-container">
+            <div class="code-header"><span class="code-label">錯誤範例：array_wrong_demo.c</span><button class="copy-btn" onclick="copyCode(this,'code-1')">📋 複製</button></div>
+            <div class="code-block" id="code-1"><pre><span class="comment">// 錯誤寫法</span>
+<span class="keyword">#include</span> &lt;stdio.h&gt;
+
+<span class="comment">// 函式：計算陣列元素總和</span>
+<span class="type">int</span> <span class="function">sum</span>(<span class="type">int</span> A[]) {
+    <span class="type">int</span> sum = <span class="number">0</span>;
+    
+    <span class="comment">// ⚠️ sizeof(A) 這裡的 A 是「指標」，不是完整陣列</span>
+    <span class="comment">// 因此 sizeof(A) 會回傳指標大小（在 64 位元系統通常是 8 bytes）</span>
+    <span class="comment">// 而不是陣列的總大小</span>
+    <span class="type">int</span> size = <span class="keyword">sizeof</span>(A) / <span class="keyword">sizeof</span>(A[<span class="number">0</span>]); 
+    
+    <span class="comment">// 印出在函式內的 A 大小</span>
+    printf(<span class="string">"In the function, size of A: %zu bytes. Size of A[0]: %zu bytes\n"</span>, 
+           <span class="keyword">sizeof</span>(A), <span class="keyword">sizeof</span>(A[<span class="number">0</span>]));
+    
+    <span class="comment">// 用迴圈累加陣列元素</span>
+    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; size; i++) {
+        sum += A[i];
+    }
+    <span class="keyword">return</span> sum; <span class="comment">// 回傳總和</span>
+}
+
+<span class="type">int</span> <span class="function">main</span>() {
+    <span class="comment">// 宣告並初始化陣列 A</span>
+    <span class="type">int</span> A[] = {<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>};
+    
+    <span class="comment">// 在 main 中計算陣列大小</span>
+    <span class="comment">// sizeof(A) → 整個陣列的大小（5 × 4 bytes = 20 bytes）</span>
+    <span class="comment">// sizeof(A[0]) → 陣列單一元素大小（int = 4 bytes）</span>
+    printf(<span class="string">"In the main, size of A: %zu bytes. Size of A[0]: %zu bytes\n"</span>, 
+           <span class="keyword">sizeof</span>(A), <span class="keyword">sizeof</span>(A[<span class="number">0</span>]));
+    
+    <span class="comment">// 呼叫 sum 函式計算總和並輸出結果</span>
+    printf(<span class="string">"Total of A is %d\n"</span>, sum(A));
+    
+    <span class="keyword">return</span> <span class="number">0</span>; 
+}
+</pre></div>
+          </div>
+        </section>
+
+        <section class="content-section" id="array-decay">
+          <div class="section-header"><div class="section-number">📚</div><h2 class="section-title">陣列退化現象解析</h2></div>
+          <p class="content-text">了解陣列作為函式參數時的重要特性：</p>
+          
+          <div class="highlight-box">
+            <div class="highlight-title">🔍 重點筆記</div>
+            <ul class="bullet-list">
+              <li><strong>陣列在函式外</strong>：<code>sizeof(A)</code> 會回傳整個陣列大小 (例如 5 × 4 = 20 bytes)</li>
+              <li><strong>陣列在函式內</strong>：A 會退化成指標，<code>sizeof(A)</code> 變成指標大小 (64 位元系統為 8 bytes)</li>
+              <li><strong>傳遞陣列時</strong>：必須額外傳遞「陣列大小」進入函式</li>
+              <li><strong>等價性</strong>：<code>*(A + i)</code> 和 <code>A[i]</code> 兩者等效</li>
+            </ul>
+          </div>
+        </section>
+
+        <section class="content-section" id="correct-way">
+          <div class="section-header"><div class="section-number">✅</div><h2 class="section-title">正確版本：陣列傳遞到函式 (指標方式)</h2></div>
+          <p class="content-text">正確的做法是將陣列大小作為額外的參數傳入函式。</p>
+          
+          <div class="code-container">
+            <div class="code-header"><span class="code-label">完整可執行：array_correct_demo.c</span><button class="copy-btn" onclick="copyCode(this,'code-2')">📋 複製</button></div>
+            <div class="code-block" id="code-2"><pre><span class="comment">// 正確寫法</span>
+<span class="keyword">#include</span> &lt;stdio.h&gt;
+
+<span class="type">int</span> <span class="function">sum</span>(<span class="type">int</span>* A, <span class="type">int</span> size) { <span class="comment">// int *A 同等於 int A[]</span>
+    <span class="type">int</span> sum = <span class="number">0</span>;
+    
+    <span class="comment">// 這裡的 A 是指標，因此 sizeof(A) 會回傳指標大小（64 位元系統通常為 8 bytes）</span>
+    printf(<span class="string">"In the function, size of A: %zu bytes. Size of A[0]: %zu bytes\n"</span>,
+           <span class="keyword">sizeof</span>(A), <span class="keyword">sizeof</span>(A[<span class="number">0</span>]));
+    
+    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; size; i++) {
+        sum += *(A + i); <span class="comment">// *(A + i) 等同於 A[i]</span>
+    }
+    
+    <span class="keyword">return</span> sum;
+}
+
+<span class="type">int</span> <span class="function">main</span>() {
+    <span class="type">int</span> A[] = {<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>};
+    
+    <span class="comment">// 在 main() 中，A 是陣列，因此 sizeof(A) 會計算整個陣列大小（5 × 4 = 20 bytes）</span>
+    printf(<span class="string">"In the main, size of A: %zu bytes. Size of A[0]: %zu bytes\n"</span>,
+           <span class="keyword">sizeof</span>(A), <span class="keyword">sizeof</span>(A[<span class="number">0</span>]));
+    
+    <span class="comment">// 計算陣列元素個數</span>
+    <span class="type">int</span> size = <span class="keyword">sizeof</span>(A) / <span class="keyword">sizeof</span>(A[<span class="number">0</span>]); 
+    
+    <span class="comment">// 將陣列首位址 &A[0] 和大小 size 傳入函式</span>
+    printf(<span class="string">"Total of A is %d\n"</span>, sum(&A[<span class="number">0</span>], size));
+    
+    <span class="keyword">return</span> <span class="number">0</span>;
+}
+</pre></div>
+          </div>
+        </section>
+
+        <section class="content-section" id="call-by-address">
+          <div class="section-header"><div class="section-number">📍</div><h2 class="section-title">Call Array by Address 詳解</h2></div>
+          <p class="content-text">當我們將陣列傳遞給函式時，實際上是傳遞陣列第一個元素的位址。</p>
+          
+          <div class="highlight-box">
+            <div class="highlight-title">🔍 重點筆記</div>
+            <ul class="bullet-list">
+              <li><code>int *A</code> 在函式參數中等同於 <code>int A[]</code>，陣列在傳遞時會退化為指標</li>
+              <li><code>pow(x, 2)</code> 回傳 <code>double</code>，但在這裡會被自動轉型成 <code>int</code> 存回陣列</li>
+              <li><code>&A[0]</code> 取得陣列第一個元素的位址，用來傳遞給指標參數</li>
+              <li><code>sizeof(A) / sizeof(A[0])</code> 用於計算陣列長度，避免死亡陣列大小</li>
+            </ul>
+          </div>
+
+          <div class="code-container">
+            <div class="code-header"><span class="code-label">完整可執行：call_by_address_demo.c</span><button class="copy-btn" onclick="copyCode(this,'code-3')">📋 複製</button></div>
+            <div class="code-block" id="code-3"><pre><span class="comment">// call by address</span>
+<span class="keyword">#include</span> &lt;stdio.h&gt;
+<span class="keyword">#include</span> &lt;math.h&gt;
+
+<span class="comment">// 函式：將陣列中每個元素平方</span>
+<span class="type">void</span> <span class="function">twotimes</span>(<span class="type">int</span>* A, <span class="type">int</span> size) {
+    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; size; i++) {
+        <span class="comment">// pow(A[i], 2) 回傳 double，但會自動轉型成 int</span>
+        *(A + i) = (<span class="type">int</span>)pow(*(A + i), <span class="number">2</span>);
+    }
+}
+
+<span class="type">void</span> <span class="function">show</span>(<span class="type">int</span> *p, <span class="type">int</span> size) {
+    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; size; i++) {
+        <span class="comment">// *(p+i) 等價於 p[i]，透過指標位移存取陣列元素</span>
+        printf(<span class="string">"%d\t"</span>, *(p + i));
+    }
+    printf(<span class="string">"\n"</span>);
+}
+
+<span class="type">int</span> <span class="function">main</span>() {
+    <span class="type">int</span> A[] = {<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>};
+    
+    <span class="comment">// 計算陣列元素個數</span>
+    <span class="type">int</span> size = <span class="keyword">sizeof</span>(A) / <span class="keyword">sizeof</span>(A[<span class="number">0</span>]); 
+    
+    printf(<span class="string">"原始陣列: "</span>);
+    show(&A[<span class="number">0</span>], size);
+    
+    <span class="comment">// 將每個元素平方</span>
+    twotimes(&A[<span class="number">0</span>], size);
+    
+    printf(<span class="string">"平方後陣列: "</span>);
+    show(&A[<span class="number">0</span>], size);
+    
+    <span class="keyword">return</span> <span class="number">0</span>;
+}
+</pre></div>
+          </div>
+        </section>
+
+        <section class="content-section" id="memory-layout">
+          <div class="section-header"><div class="section-number">🧠</div><h2 class="section-title">記憶體布局圖解</h2></div>
+          <p class="content-text">理解陣列在記憶體中的實際配置和函式呼叫時的參數傳遞：</p>
+          
+          <div class="memory-diagram">
+            <div style="text-align:left;max-width:600px;margin:0 auto;">
+              <h4 style="color:var(--accent-primary);margin-bottom:10px;">main() 函式中：</h4>
+              <table class="memory-table" style="margin-bottom:20px;">
+                <tr>
+                  <th>變數</th>
+                  <th>位址</th>
+                  <th>值</th>
+                  <th>sizeof 結果</th>
+                </tr>
+                <tr>
+                  <td>A[0]</td>
+                  <td>0x1000</td>
+                  <td>1</td>
+                  <td rowspan="5">sizeof(A) = 20 bytes<br/>(整個陣列)</td>
+                </tr>
+                <tr>
+                  <td>A[1]</td>
+                  <td>0x1004</td>
+                  <td>2</td>
+                </tr>
+                <tr>
+                  <td>A[2]</td>
+                  <td>0x1008</td>
+                  <td>3</td>
+                </tr>
+                <tr>
+                  <td>A[3]</td>
+                  <td>0x100C</td>
+                  <td>4</td>
+                </tr>
+                <tr>
+                  <td>A[4]</td>
+                  <td>0x1010</td>
+                  <td>5</td>
+                </tr>
+              </table>
+              
+              <h4 style="color:var(--accent-primary);margin-bottom:10px;">sum() 函式中：</h4>
+              <table class="memory-table">
+                <tr>
+                  <th>參數</th>
+                  <th>型別</th>
+                  <th>值</th>
+                  <th>sizeof 結果</th>
+                </tr>
+                <tr>
+                  <td>A</td>
+                  <td>int*</td>
+                  <td>0x1000</td>
+                  <td>sizeof(A) = 8 bytes<br/>(指標大小)</td>
+                </tr>
+                <tr>
+                  <td>size</td>
+                  <td>int</td>
+                  <td>5</td>
+                  <td>sizeof(size) = 4 bytes</td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section class="content-section">
+          <div class="section-header"><div class="section-number">✅</div><h2 class="section-title">本章重點總結</h2></div>
+          <ul class="bullet-list">
+            <li><strong>陣列退化</strong>：陣列作為函式參數時會退化成指標，失去原始大小資訊</li>
+            <li><strong>sizeof 陷阱</strong>：在函式內對陣列參數使用 sizeof 只會得到指標大小，不是陣列大小</li>
+            <li><strong>正確做法</strong>：將陣列大小作為額外參數一起傳入函式</li>
+            <li><strong>參數等價性</strong>：<code>int *A</code>、<code>int A[]</code>、<code>int A[10]</code> 在函式參數中完全等價</li>
+            <li><strong>傳址特性</strong>：陣列傳遞本質上是傳址呼叫，函式內的修改會影響原陣列</li>
+            <li><strong>記憶體布局</strong>：理解陣列在記憶體中連續存放，函式只接收首元素位址</li>
+          </ul>
+          
+          <div class="error-box">
+            <div class="error-title">⚠️ 重要提醒</div>
+            <p>記住：在 main() 函式中 <code>sizeof(array)</code> 可以正確計算陣列大小，但在其他函式中的陣列參數只能得到指標大小。這是 C 語言的重要特性，務必牢記！</p>
+          </div>
+          
+          <div class="highlight-box">
+            <div class="highlight-title">🎯 核心概念</div>
+            <p>陣列作為函式參數的核心概念是「陣列退化為指標」。這個特性讓陣列傳遞變得高效（只傳遞位址），但也要求程式設計師額外管理陣列大小資訊。掌握這個概念是理解 C 語言函式設計的關鍵。</p>
+          </div>
+        </section>
+      </main>
+
+      <nav class="navigation">
+        <a href="chapter6.html" class="nav-btn prev"><div><div class="nav-direction">← 上一頁</div><div class="nav-title">Pointers and Arrays</div></div></a>
+        <div class="nav-center"><div style="font-weight:600;">Chapter 7 / 18</div><div style="font-size:.9em;">Array as Function Argument</div></div>
+        <a href="chapter8.html" class="nav-btn"><div><div class="nav-direction">下一頁 →</div><div class="nav-title">Character Arrays and Pointers - part 1</div></div></a>
+      </nav>
+    </div>
+  </div>
+
+  <script>
+    function toggleTheme(){const body=document.body,themeIcon=document.getElementById('theme-icon');const cur=body.getAttribute('data-theme');if(cur==='dark'){body.setAttribute('data-theme','light');themeIcon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';localStorage.setItem('theme','light');}else{body.setAttribute('data-theme','dark');themeIcon.innerHTML = '<circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>';localStorage.setItem('theme','dark');}}
+    function loadTheme(){const saved=localStorage.getItem('theme')||'light';const themeIcon=document.getElementById('theme-icon');document.body.setAttribute('data-theme',saved);if(saved==='dark'){themeIcon.innerHTML = '<circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>';}else{themeIcon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';}}
+    function toggleSubMenu(element){event.preventDefault();const arrow=element.querySelector('.arrow');const subMenu=element.parentElement.querySelector('.sub-menu');if(subMenu){arrow.classList.toggle('expanded');subMenu.classList.toggle('show');}}
+    function copyCode(btn,id){const code=document.getElementById(id).querySelector('pre').textContent;navigator.clipboard.writeText(code).then(()=>{const t=btn.textContent;btn.textContent='✅ 已複製';btn.classList.add('copied');setTimeout(()=>{btn.textContent=t;btn.classList.remove('copied')},2000)}).catch(()=>{const ta=document.createElement('textarea');ta.value=code;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);const t=btn.textContent;btn.textContent='✅ 已複製';btn.classList.add('copied');setTimeout(()=>{btn.textContent=t;btn.classList.remove('copied')},2000)})}
+    document.addEventListener('DOMContentLoaded',()=>loadTheme());
+  </script>
+</body>
+</html>

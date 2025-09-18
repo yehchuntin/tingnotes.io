@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C語言指標完整教學 | 從零開始學指標</title>
+    <meta name="description" content="最完整的C語言指標教學，包含記憶體管理、函式指標、動態配置等實用範例，讓你真正掌握指標的核心概念。">
+    <meta name="keywords" content="C語言, 指標, pointer, 教學, 程式設計, 記憶體管理">
+    
+    <!-- Google AdSense 代碼 -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-YOUR_ADSENSE_ID"
+            crossorigin="anonymous"></script>
+    
+    <style>
+        :root {
+            /* 淺色模式 */
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --bg-card: #ffffff;
+            --text-primary: #2c3e50;
+            --text-secondary: #6c757d;
+            --accent-primary: #3498db;
+            --accent-secondary: #2980b9;
+            --border-color: #e9ecef;
+            --shadow-light: rgba(0, 0, 0, 0.1);
+            --shadow-medium: rgba(0, 0, 0, 0.15);
+            --gradient-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --glass-bg-light: rgba(255, 255, 255, 0.2);
+            --glass-bg-dark: rgba(255, 255, 255, 0.1);
+            --glass-border-light: rgba(255, 255, 255, 0.3);
+            --glass-border-dark: rgba(255, 255, 255, 0.15);
+            --ad-bg: #ffffff;
+            --ad-border: #e6f3ff;
+            --ad-label-bg: #3498db;
+            --ad-label-text: #ffffff;
+        }
+
+        [data-theme="dark"] {
+            /* 深色模式 */
+            --bg-primary: #1a1a1a;
+            --bg-secondary: #2d3748;
+            --bg-card: #2d3748;
+            --text-primary: #f7fafc;
+            --text-secondary: #a0aec0;
+            --accent-primary: #4299e1;
+            --accent-secondary: #3182ce;
+            --border-color: #4a5568;
+            --shadow-light: rgba(0, 0, 0, 0.3);
+            --shadow-medium: rgba(0, 0, 0, 0.4);
+            --gradient-bg: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+            --glass-bg-light: rgba(255, 255, 255, 0.08);
+            --glass-bg-dark: rgba(255, 255, 255, 0.04);
+            --glass-border-light: rgba(255, 255, 255, 0.15);
+            --glass-border-dark: rgba(255, 255, 255, 0.08);
+            --ad-bg: #2d3748;
+            --ad-border: #4a5568;
+            --ad-label-bg: #4299e1;
+            --ad-label-text: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: var(--gradient-bg);
+            min-height: 100vh;
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* 玻璃效果基礎類別 */
+        .glass-effect {
+            background: linear-gradient(135deg, var(--glass-bg-light), var(--glass-bg-dark));
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border-light);
+            box-shadow: 
+                0 8px 32px var(--shadow-light),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        /* Header 設計 */
+        .header {
+            background: var(--bg-card);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 48px 40px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 8px 32px var(--shadow-light);
+            border: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--accent-primary);
+            border: none;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .theme-toggle:hover {
+            background: var(--accent-secondary);
+            transform: scale(1.1);
+        }
+
+        .blog-title {
+            font-size: 2.8em;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 15px;
+            background: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .blog-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.3em;
+            margin-bottom: 30px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .stats-row {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 20px;
+            background: var(--bg-secondary);
+            border-radius: 15px;
+            min-width: 120px;
+            border: 1px solid var(--border-color);
+        }
+
+        .stat-number {
+            font-size: 2.2em;
+            font-weight: 700;
+            color: var(--accent-primary);
+            display: block;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        /* 主要內容區域 */
+        .main-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1.8fr) minmax(300px, 1fr);
+            gap: 36px;
+            margin-bottom: 30px;
+        }
+
+        .content-area {
+            background: var(--bg-card);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px var(--shadow-light);
+            border: 1px solid var(--border-color);
+        }
+
+        .content-header {
+            padding: 30px 40px 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .content-body {
+            padding: 30px 40px;
+        }
+
+        .section-title {
+            font-size: 1.8em;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .intro-text {
+            font-size: 1.1em;
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-bottom: 25px;
+        }
+
+        /* 特色方框 */
+        .feature-highlight {
+            background: linear-gradient(135deg, var(--accent-primary)15, var(--accent-secondary)15);
+            border-left: 4px solid var(--accent-primary);
+            border-radius: 12px;
+            padding: 22px;
+            margin: 22px 0;
+        }
+
+        .feature-title {
+            color: var(--accent-primary);
+            font-weight: 600;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
+        .feature-desc {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* 程式碼區塊 */
+        .code-showcase {
+            background: #1e1e1e;
+            color: #f8f8f2;
+            padding: 25px;
+            border-radius: 12px;
+            overflow-x: auto;
+            margin: 25px 0;
+            font-family: 'Fira Code', 'Courier New', monospace;
+            border: 1px solid var(--border-color);
+        }
+
+        /* 玻璃卡片效果 */
+        .glass-card {
+            position: relative;
+            padding: 24px;
+            border-radius: 18px;
+            text-decoration: none;
+            color: var(--text-primary);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+
+        .glass-card::before {
+            content: "";
+            position: absolute;
+            inset: 0 0 auto 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+            border-radius: 18px 18px 0 0;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-6px) scale(1.02);
+            text-decoration: none;
+            color: var(--text-primary);
+            background: linear-gradient(135deg, 
+                rgba(255, 255, 255, 0.25),
+                rgba(255, 255, 255, 0.12)
+            );
+            border-color: var(--glass-border-light);
+            box-shadow: 
+                0 20px 44px var(--shadow-medium),
+                inset 0 1px 0 rgba(255, 255, 255, 0.35);
+        }
+
+        [data-theme="dark"] .glass-card:hover {
+            background: linear-gradient(135deg, 
+                rgba(255, 255, 255, 0.15),
+                rgba(255, 255, 255, 0.08)
+            );
+        }
+
+        /* 章節卡片 */
+        .chapter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-top: 25px;
+        }
+
+        .chapter-card {
+            background: linear-gradient(135deg, var(--glass-bg-light), var(--glass-bg-dark));
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border-light);
+            box-shadow: 
+                0 8px 32px var(--shadow-light),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .chapter-number {
+            color: var(--accent-primary);
+            font-size: 0.8em;
+            font-weight: 700;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.9;
+        }
+
+        .chapter-title {
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-bottom: 12px;
+            line-height: 1.4;
+            color: var(--text-primary);
+        }
+
+        .chapter-desc {
+            color: var(--text-secondary);
+            font-size: 0.95em;
+            line-height: 1.5;
+            opacity: 0.9;
+        }
+
+        /* 側邊欄 */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .widget {
+            background: var(--bg-card);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px var(--shadow-light);
+            border: 1px solid var(--border-color);
+        }
+
+        .widget-header {
+            padding: 25px 25px 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .widget-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .widget-body {
+            padding: 20px 25px 25px;
+        }
+
+        /* 目錄樣式 */
+        .toc-list {
+            list-style: none;
+        }
+
+        .toc-item {
+            margin-bottom: 8px;
+        }
+
+        .toc-link {
+            display: block;
+            color: var(--text-secondary);
+            text-decoration: none;
+            padding: 12px 15px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+            font-size: 0.95em;
+        }
+
+        .toc-link:hover {
+            background: var(--bg-secondary);
+            color: var(--accent-primary);
+            border-color: var(--border-color);
+            transform: translateX(5px);
+        }
+
+        .toc-link.has-submenu {
+            cursor: pointer;
+            position: relative;
+        }
+
+        .arrow {
+            display: inline-block;
+            transition: transform 0.3s ease;
+            margin-right: 10px;
+            font-size: 0.8em;
+            color: var(--accent-primary);
+        }
+
+        .arrow.expanded {
+            transform: rotate(90deg);
+        }
+
+        .sub-menu {
+            list-style: none;
+            margin-left: 25px;
+            margin-top: 8px;
+            padding-left: 20px;
+            border-left: 2px solid var(--border-color);
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease;
+        }
+
+        .sub-menu.show {
+            max-height: 600px;
+            margin-bottom: 15px;
+        }
+
+        .sub-menu .toc-link {
+            padding: 8px 12px;
+            font-size: 0.9em;
+            color: var(--text-secondary);
+        }
+
+        .sub-menu .toc-link:hover {
+            color: var(--accent-primary);
+            background: var(--bg-secondary);
+        }
+
+        /* 廣告區域 */
+        .ad-section {
+            margin: 40px 0;
+        }
+
+        .ad-container {
+            background: var(--ad-bg);
+            border: 2px solid var(--ad-border);
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(52, 152, 219, 0.1);
+            position: relative;
+            min-height: 250px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .ad-label {
+            position: absolute;
+            top: 12px;
+            left: 16px;
+            background: var(--ad-label-bg);
+            color: var(--ad-label-text);
+            font-size: 0.7em;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .ad-placeholder {
+            color: var(--text-secondary);
+            font-size: 1.1em;
+            opacity: 0.7;
+        }
+
+        .ad-widget {
+            background: var(--ad-bg);
+            border: 2px solid var(--ad-border);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            min-height: 280px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .ad-widget .ad-label {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            font-size: 0.65em;
+            padding: 2px 8px;
+        }
+
+        /* 按鈕樣式 */
+        .btn {
+            display: inline-block;
+            background: var(--accent-primary);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: var(--accent-secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px var(--shadow-medium);
+            color: white;
+            text-decoration: none;
+        }
+
+        /* 底部 */
+        .footer {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            margin-top: 30px;
+            box-shadow: 0 8px 32px var(--shadow-light);
+            border: 1px solid var(--border-color);
+        }
+
+        .footer-content {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .footer h3 {
+            color: var(--text-primary);
+            margin-bottom: 15px;
+        }
+
+        .footer p {
+            color: var(--text-secondary);
+            margin-bottom: 25px;
+        }
+
+        .footer-links {
+            margin-top: 30px;
+            padding-top: 25px;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            font-size: 0.9em;
+        }
+
+        .footer-links a {
+            color: var(--accent-primary);
+            text-decoration: none;
+        }
+
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+
+        /* 行動裝置響應式 */
+        @media (max-width: 1024px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-row {
+                gap: 20px;
+            }
+            
+            .blog-title {
+                font-size: 2.2em;
+            }
+            
+            .header {
+                padding: 30px 20px;
+            }
+            
+            .content-body {
+                padding: 25px 20px;
+            }
+            
+            .theme-toggle {
+                top: 15px;
+                right: 15px;
+                width: 45px;
+                height: 45px;
+            }
+
+            .chapter-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <button class="theme-toggle" onclick="toggleTheme()" title="切換深淺色模式">
+                <span id="theme-icon">🌙</span>
+            </button>
+            
+            <h1 class="blog-title">C語言指標完整教學</h1>
+            <p class="blog-subtitle">深入淺出學會指標，從基礎概念到實際應用，讓你真正掌握記憶體操作的精髓</p>
+            
+            <div class="stats-row">
+                <div class="stat-item">
+                    <span class="stat-number">18</span>
+                    <div class="stat-label">完整章節</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">50+</span>
+                    <div class="stat-label">程式範例</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">100%</span>
+                    <div class="stat-label">免費學習</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">∞</span>
+                    <div class="stat-label">終身更新</div>
+                </div>
+            </div>
+        </header>
+
+        <div class="main-layout">
+            <main class="content-area">
+                <div class="content-header">
+                    <h2 class="section-title">🎯 為什麼要學習指標？</h2>
+                </div>
+                
+                <div class="content-body">
+                    <p class="intro-text">
+                        指標是C語言最重要也是最具挑戰性的概念。掌握指標，就像拿到了程式設計世界的「萬能鑰匙」，
+                        讓你能夠直接操作記憶體、提升程式效能、設計靈活的資料結構。
+                    </p>
+
+                    <div class="feature-highlight">
+                        <div class="feature-title">🚀 高效記憶體管理</div>
+                        <div class="feature-desc">
+                            學會動態配置記憶體，處理大型資料結構，避免記憶體洩漏，讓你的程式更加穩定高效。
+                        </div>
+                    </div>
+
+                    <div class="feature-highlight">
+                        <div class="feature-title">🔧 靈活的函式設計</div>
+                        <div class="feature-desc">
+                            使用函式指標實現回呼函式，讓程式碼更模組化，實現更優雅的程式架構。
+                        </div>
+                    </div>
+
+                    <div class="feature-highlight">
+                        <div class="feature-title">⚡ 提升程式效能</div>
+                        <div class="feature-desc">
+                            直接操作記憶體位址，減少不必要的資料複製，讓你的程式運行如飛。
+                        </div>
+                    </div>
+
+                    <div class="code-showcase">
+<pre><span style="color: #ff79c6;">#include</span> &lt;stdio.h&gt;
+
+<span style="color: #8be9fd;">int</span> <span style="color: #50fa7b;">main</span>() {
+    <span style="color: #8be9fd;">int</span> a = <span style="color: #bd93f9;">10</span>;
+    <span style="color: #8be9fd;">int</span> *p = &a;     <span style="color: #6272a4;">// p 指向 a 的位址</span>
+    
+    printf(<span style="color: #f1fa8c;">"a 的值: %d\n"</span>, a);
+    printf(<span style="color: #f1fa8c;">"a 的位址: %p\n"</span>, &a);
+    printf(<span style="color: #f1fa8c;">"指標 p 的值: %p\n"</span>, p);
+    printf(<span style="color: #f1fa8c;">"透過指標取得的值: %d\n"</span>, *p);
+    
+    <span style="color: #ff79c6;">return</span> <span style="color: #bd93f9;">0</span>;
+}</pre>
+                    </div>
+
+                    <section id="basics">
+                        <h2 class="section-title">🎯 基礎概念章節</h2>
+                        <div class="chapter-grid">
+                            <a href="chapters/chapter1.html" class="chapter-card glass-card glass-effect">
+                                <div class="chapter-number">Chapter 01</div>
+                                <div class="chapter-title">指標基礎介紹</div>
+                                <div class="chapter-desc">什麼是指標？位址與值的關係，第一個指標程式</div>
+                            </a>
+
+                            <a href="chapters/chapter2.html" class="chapter-card glass-card glass-effect">
+                                <div class="chapter-number">Chapter 02</div>
+                                <div class="chapter-title">指標型別與運算</div>
+                                <div class="chapter-desc">int*、char*、void*，指標運算與型別轉換</div>
+                            </a>
+
+                            <a href="chapters/chapter3.html" class="chapter-card glass-card glass-effect">
+                                <div class="chapter-number">Chapter 03</div>
+                                <div class="chapter-title">指標與陣列</div>
+                                <div class="chapter-desc">陣列名稱就是指標？一維二維陣列的指標操作</div>
+                            </a>
+
+                            <a href="chapters/chapter4.html" class="chapter-card glass-card glass-effect">
+                                <div class="chapter-number">Chapter 04</div>
+                                <div class="chapter-title">傳值 vs 傳址</div>
+                                <div class="chapter-desc">Call by Value 與 Call by Reference 的差異</div>
+                            </a>
+                        </div>
+                    </section>
+
+                    <!-- Google AdSense 廣告區域 -->
+                    <section class="ad-section">
+                        <div class="ad-container">
+                            <div class="ad-label">廣告</div>
+                            <ins class="adsbygoogle"
+                                 style="display:block"
+                                 data-ad-client="ca-pub-YOUR_ADSENSE_ID"
+                                 data-ad-slot="YOUR_AD_SLOT_ID"
+                                 data-ad-format="auto"
+                                 data-full-width-responsive="true"></ins>
+                            <script>
+                                 (adsbygoogle = window.adsbygoogle || []).push({});
+                            </script>
+                        </div>
+                    </section>
+
+                    <section id="advanced">
+                        <h2 class="section-title">🚀 進階應用章節</h2>
+                        <div class="chapter-grid">
+                            <a href="chapters/chapter12.html" class="chapter-card glass-card glass-effect">
+                                <div class="chapter-number">Chapter 12</div>
+                                <div class="chapter-title">動態記憶體配置</div>
+                                <div class="chapter-desc">malloc、calloc、realloc、free 完整教學</div>
+                            </a>
+
+                            <a href="chapters/chapter15.html" class="chapter-card glass-card glass-effect">
+                                <div class="chapter-number">Chapter 15</div>
+                                <div class="chapter-title">函式指標</div>
+                                <div class="chapter-desc">儲存函式位址，實現回呼函式與動態呼叫</div>
+                            </a>
+
+                            <a href="chapters/chapter17.html" class="chapter-card glass-card glass-effect">
+                                <div class="chapter-number">Chapter 17</div>
+                                <div class="chapter-title">記憶體洩漏</div>
+                                <div class="chapter-desc">如何避免Memory Leak，偵測與修復技巧</div>
+                            </a>
+
+                            <a href="chapters/chapter18.html" class="chapter-card glass-card glass-effect">
+                                <div class="chapter-number">Chapter 18</div>
+                                <div class="chapter-title">完整總結</div>
+                                <div class="chapter-desc">指標思維地圖，常見錯誤與最佳實踐</div>
+                            </a>
+                        </div>
+                    </section>
+                </div>
+            </main>
+
+            <aside class="sidebar">
+                <div class="widget">
+                    <div class="widget-header">
+                        <h3 class="widget-title">📑 完整目錄</h3>
+                    </div>
+                    <div class="widget-body">
+                        <ul class="toc-list">
+                            <li class="toc-item">
+                                <a href="chapters/chapter1.html" class="toc-link">
+                                    1. Introduction to pointers in C/C++
+                                </a>
+                            </li>
+                            <li class="toc-item">
+                                <a href="chapters/chapter2.html" class="toc-link">
+                                    2. Work with Pointers
+                                </a>
+                            </li>
+                            <li class="toc-item">
+                                <a href="chapters/chapter3.html" class="toc-link">
+                                    3. Pointer types, pointer arithmetic, void pointers
+                                </a>
+                            </li>
+                            <li class="toc-item">
+                                <a href="chapters/chapter4.html" class="toc-link">
+                                    4. Pointers to Pointers
+                                </a>
+                            </li>
+                            <li class="toc-item">
+                                <a href="chapters/chapter5.html" class="toc-link has-submenu" onclick="toggleSubMenu(this)">
+                                    <span class="arrow">▶</span> 5. Call by Reference
+                                </a>
+                                <ul class="sub-menu">
+                                    <li><a href="chapters/chapter5.html#memory-blocks" class="toc-link">記憶體區塊</a></li>
+                                    <li><a href="chapters/chapter5.html#call-by-address" class="toc-link">傳址呼叫 (Call by Address)</a></li>
+                                    <li><a href="chapters/chapter5.html#call-by-value" class="toc-link">傳值呼叫 (Call by Value)</a></li>
+                                </ul>
+                            </li>
+                            <li class="toc-item">
+                                <a href="chapters/chapter6.html" class="toc-link">
+                                    6. Pointers and Arrays
+                                </a>
+                            </li>
+                            <li class="toc-item">
+                                <a href="chapters/chapter7.html" class="toc-link">
+                                    7. Array as function argument
+                                </a>
+                            </li>
+                            <li class="toc-item">
+                                <a href="chapters/chapter8.html" class="toc-link has-submenu" onclick="toggleSubMenu(this)">
+                                    <span class="arrow">▶</span> 8. Character arrays and pointers - part 1
+                                </a>
+                                <ul class="sub-menu">
+                                    <li><a href="chapters/chapter8.html#string-basics" class="toc-link">字串基本概念</a></li>
+                                    <li><a href="chapters/chapter8.html#string-pointers" class="toc-link">字串與指標</a></li>
+                                    <li><a href="chapters/chapter8.html#string-functions" class="toc-link">用字元指標將字串傳入函式</a></li>
+                                </ul>
+                            </li>
+                            <li class="toc-item">
+                                <a href="chapters/chapter9.html" class="toc-link has-submenu" onclick="toggleSubMenu(this)">
+                                    <span class="arrow">▶</span> 9. Character arrays and pointers - part 2
+                                </a>
+                                <ul class="sub-menu">
+                                    <li><a href="chapters/chapter9.html#memory-stack" class="toc-link">記憶體與Stack解析</a></li>
+                                    <li><a href="chapters/chapter9.html#readonly-memory" class="toc-link">唯讀記憶體 (Read-Only Data Segment)</a></li>
+                                </ul>
+                            </li>
+                            <li class="toc-item">
+                                <a href="chapters/chapter10.html" class="toc-link has-submenu" onclick="toggleSubMenu(this)">
+                                    <span class="arrow">▶</span> 10. Pointers and 2-D arrays
+                                </a>
+                                <ul class="sub-menu">
+                                    <li><a href="chapters/chapter10.html#2d-usage" class="toc-link">2D 指標陣列的使用</a></li>
+                                    <li><a href="chapters/chapter10.html#2d-access" class="toc-link">2維陣列的存取等價式</a></li>
+                                </ul>
+                            </li>
+                            <li class="toc-item">
+                                <a href="chapters/chapter11.html" class="toc-link has-submenu" onclick="toggleSubMenu(this)">
+                                    <span class="arrow">▶</span> 11. Pointers and multidimensional arrays
+                                </a>
+                                <ul class="sub-menu">
+                                    <li><a href="chapters/chapter11.html#array-types" class="toc-link">陣列傳入函式的型態規則</a></li>
+                                    <li><a href="chapters/chapter11.html#3d-access" class="toc-link">三維陣列的存取等價式</a></li>
+                                </ul>
+                            </li>
+                            <li class="toc-item">
+                                <a href="chapters/chapter12.html" class="toc-link has-submenu" onclick="toggleSubMenu(this)">
+                                    <span class="arrow">▶</span> 12. Pointers and dynamic memory - stack vs heap
+                                </a>
+                                <ul class="sub-menu">
+                                    <li><a href="chapters/chapter12.html#memory-allocation" class="toc-link">C 函式執行與記憶體配置</a></li>
+                                    <li><a href="chapters/chapter12.html#stack-overflow" class="toc-link">Stack Overflow 是什麼？</a></li>
+                                    <li><a href="chapters/chapter12.html#heap-usage" class="toc-link">Heap 是什麼？該如何使用它？</a></li>
+                                    <li><a href="chapters/chapter12.html#malloc-diagram" class="toc-link">malloc 的記憶體配置動態與圖解</a></li>
+                                </ul>
+                            </li>
+                            <li class="toc-item">
+                                <a href="chapters/chapter13.html" class="toc-link has-submenu" onclick="toggleSubMenu(this)">
+                                    <span class="arrow">▶</span> 13. Dynamic memory allocation in C - malloc calloc realloc free
+                                </a>
+                                <ul class="sub-menu">
+                                    <li><a href="chapters/chapter13.html#malloc" class="toc-link">malloc (Memory Allocation)</a></li>
+                                    <li><a href="chapters/chapter13.html#calloc" class="toc-link">calloc (Contiguous Allocation)</a></li>
+                                    <li><a href="chapters/chapter13.html#realloc" class="toc-link">realloc (Reallocate Memory)</a></li>
+                                </ul>
+                            </li>
+                            <li class="toc-item">
+                                <a href="chapters/chapter14.html" class="toc-link has-submenu" onclick="toggleSubMenu(this)">
+                                    <span class="arrow">▶</span> 14. Pointers as Function Returns in C/C++
+                                </a>
+                                <ul class="sub-menu">
+                                    <li><a href="chapters/chapter14.html#malloc-free" class="toc-link">使用 malloc 與 free 後的指標行為說明</a></li>
+                                    <li><a href="chapters/chapter14.html#realloc-behavior" class="toc-link">使用 realloc 調整記憶體大小的行為說明</a></li>
+                                    <li><a href="chapters/chapter14.html#heap-stack-diff" class="toc-link">Heap 與 Stack 回傳指標的差異</a></li>
+                                </ul>
+                            </li>
+                            <li class="toc-item">
+                                <a href="chapters/chapter15.html" class="toc-link has-submenu" onclick="toggleSubMenu(this)">
+                                    <span class="arrow">▶</span> 15. Function Pointers in C / C++
+                                </a>
+                                <ul class="sub-menu">
+                                    <li><a href="chapters/chapter15.html#theory" class="toc-link">function pointer原理解釋</a></li>
+                                    <li><a href="chapters/chapter15.html#practice" class="toc-link">function pointer實例操作</a></li>
+                                </ul>
+                            </li>
+                            <li class="toc-item">
+                                <a href="chapters/chapter16.html" class="toc-link has-submenu" onclick="toggleSubMenu(this)">
+                                    <span class="arrow">▶</span> 16. Function Pointers and Callbacks
+                                </a>
+                                <ul class="sub-menu">
+                                    <li><a href="chapters/chapter16.html#basic-example" class="toc-link">function pointer 基本範例</a></li>
+                                    <li><a href="chapters/chapter16.html#bubble-sort" class="toc-link">BubbleSort by Callback</a></li>
+                                    <li><a href="chapters/chapter16.html#advanced-sort" class="toc-link">延伸應用：多種排序邏輯</a></li>
+                                    <li><a href="chapters/chapter16.html#quick-sort" class="toc-link">QuickSort by Callback</a></li>
+                                </ul>
+                            </li>
+                            <li class="toc-item">
+                                <a href="chapters/chapter17.html" class="toc-link">
+                                    17. Memory Leak in C/C++
+                                </a>
+                            </li>
+                            <li class="toc-item">
+                                <a href="chapters/chapter18.html" class="toc-link">
+                                    18. 最終總結 — C 語言 Pointer 思維地圖
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Google AdSense 側邊欄廣告 -->
+                <div class="widget">
+                    <div class="ad-widget">
+                        <div class="ad-label">廣告</div>
+                        <ins class="adsbygoogle"
+                             style="display:block"
+                             data-ad-client="ca-pub-YOUR_ADSENSE_ID"
+                             data-ad-slot="YOUR_SIDEBAR_AD_SLOT"
+                             data-ad-format="auto"
+                             data-full-width-responsive="true"></ins>
+                        <script>
+                             (adsbygoogle = window.adsbygoogle || []).push({});
+                        </script>
+                    </div>
+                </div>
+            </aside>
+        </div>
+
+        <!-- Google AdSense 橫幅廣告 -->
+        <section class="ad-section">
+            <div class="ad-container">
+                <div class="ad-label">廣告</div>
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-YOUR_ADSENSE_ID"
+                     data-ad-slot="YOUR_HORIZONTAL_AD_SLOT"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>
+                     (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <div class="footer-content">
+                <h3>🎓 開始你的指標學習之旅</h3>
+                <p>這套教學將帶你從零開始，一步步掌握C語言指標的所有重要概念，讓你成為真正的C語言高手。</p>
+                <a href="chapters/chapter1.html" class="btn" style="margin-right: 15px;">立即開始學習</a>
+                
+                <div class="footer-links">
+                    <p>&copy; 2025 C語言指標教學網站. 版權所有 | 
+                    <a href="#">隱私權政策</a> | 
+                    <a href="#">使用條款</a> | 
+                    <a href="#">聯絡我們</a></p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // 深淺色模式切換
+        function toggleTheme() {
+            const body = document.body;
+            const themeIcon = document.getElementById('theme-icon');
+            const currentTheme = body.getAttribute('data-theme');
+            
+            if (currentTheme === 'dark') {
+                body.setAttribute('data-theme', 'light');
+                themeIcon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                themeIcon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        // 載入儲存的主題
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            const themeIcon = document.getElementById('theme-icon');
+            
+            document.body.setAttribute('data-theme', savedTheme);
+            themeIcon.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+        }
+
+        // 目錄摺疊功能
+        function toggleSubMenu(element) {
+            event.preventDefault();
+            
+            const arrow = element.querySelector('.arrow');
+            const parentLi = element.parentElement;
+            const subMenu = parentLi.querySelector('.sub-menu');
+            
+            if (subMenu) {
+                arrow.classList.toggle('expanded');
+                subMenu.classList.toggle('show');
+            }
+        }
+
+        // 頁面載入完成後的動畫
+        document.addEventListener('DOMContentLoaded', function() {
+            loadTheme();
+            
+            // 卡片動畫
+            const cards = document.querySelectorAll('.chapter-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(30px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 150);
+            });
+
+            // Widget 動畫
+            const widgets = document.querySelectorAll('.widget');
+            widgets.forEach((widget, index) => {
+                widget.style.opacity = '0';
+                widget.style.transform = 'translateX(30px)';
+                setTimeout(() => {
+                    widget.style.transition = 'all 0.8s ease';
+                    widget.style.opacity = '1';
+                    widget.style.transform = 'translateX(0)';
+                }, 300 + index * 200);
+            });
+        });
+
+        // Google Analytics 追蹤
+        function initGoogleAnalytics() {
+            if (typeof gtag !== 'undefined') {
+                gtag('config', 'GA_TRACKING_ID', {
+                    page_title: 'C語言指標教學首頁',
+                    page_location: window.location.href
+                });
+            }
+        }
+
+        // 平滑滾動
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            loadTheme();
+            initGoogleAnalytics();
+        });
+    </script>
+
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=GA_TRACKING_ID"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'GA_TRACKING_ID');
+    </script>
+
+    
+    
+</body>
+</html>
