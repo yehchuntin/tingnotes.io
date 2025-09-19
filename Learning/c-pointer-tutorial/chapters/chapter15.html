@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>15. Function Pointers | C語言指標教學</title>
+  <meta name="description" content="深入探討C語言函式指標的原理與應用，理解函式在記憶體中的儲存方式與呼叫機制。" />
+  <style>
+    :root {
+      --bg-primary: #fff;
+      --bg-secondary: #f8f9fa;
+      --bg-card: #fff;
+      --text-primary: #2c3e50;
+      --text-secondary: #6c757d;
+      --accent-primary: #3498db;
+      --accent-secondary: #2980b9;
+      --border-color: #e9ecef;
+      --shadow-light: rgba(0, 0, 0, .1);
+      --shadow-medium: rgba(0, 0, 0, .15);
+      --gradient-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --code-bg: #1e1e1e;
+      --code-text: #f1fa8c;
+      --theme-btn-bg: #f5f5f5;
+      --theme-btn-border: #d1d5db;
+      --theme-btn-icon: #6b7280;
+    }
+    [data-theme="dark"] {
+      --bg-primary: #1a1a1a;
+      --bg-secondary: #2d3748;
+      --bg-card: #2d3748;
+      --text-primary: #f7fafc;
+      --text-secondary: #a0aec0;
+      --accent-primary: #4299e1;
+      --accent-secondary: #3182ce;
+      --border-color: #4a5568;
+      --shadow-light: rgba(0, 0, 0, .3);
+      --shadow-medium: rgba(0, 0, 0, .4);
+      --gradient-bg: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+      --code-bg: #1a202c;
+      --code-text: #f1fa8c;
+      --theme-btn-bg: rgba(255, 255, 255, 0.1);
+      --theme-btn-border: rgba(255, 255, 255, 0.3);
+      --theme-btn-icon: rgba(255, 255, 255, 0.8);
+    }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      line-height: 1.6;
+      color: var(--text-primary);
+      background: var(--gradient-bg);
+      min-height: 100vh;
+      transition: all .3s ease;
+    }
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 20px;
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 30px;
+    }
+    .sidebar {
+      position: sticky;
+      top: 20px;
+      height: fit-content;
+    }
+    .toc-widget {
+      background: var(--bg-card);
+      border-radius: 15px;
+      box-shadow: 0 8px 32px var(--shadow-light);
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+    }
+    .toc-header {
+      padding: 20px;
+      border-bottom: 1px solid var(--border-color);
+      text-align: center;
+    }
+    .toc-title {
+      font-size: 1.1em;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    .toc-body {
+      padding: 15px;
+      max-height: 70vh;
+      overflow-y: auto;
+    }
+    .toc-list {
+      list-style: none;
+    }
+    .toc-item {
+      margin-bottom: 3px;
+    }
+    .toc-link {
+      display: block;
+      color: var(--text-secondary);
+      text-decoration: none;
+      padding: 8px 12px;
+      border-radius: 8px;
+      transition: all .3s ease;
+      font-size: .85em;
+      line-height: 1.4;
+    }
+    .toc-link:hover {
+      background: var(--bg-secondary);
+      color: var(--accent-primary);
+      transform: translateX(3px);
+    }
+    .toc-link.active {
+      background: var(--accent-primary);
+      color: #fff;
+    }
+    .toc-link.has-submenu {
+      cursor: pointer;
+      position: relative;
+    }
+    .arrow {
+      display: inline-block;
+      transition: transform .3s ease;
+      margin-right: 8px;
+      font-size: .7em;
+      color: var(--accent-primary);
+    }
+    .arrow.expanded {
+      transform: rotate(90deg);
+    }
+    .sub-menu {
+      list-style: none;
+      margin-left: 15px;
+      margin-top: 5px;
+      padding-left: 15px;
+      border-left: 2px solid var(--border-color);
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height .4s ease;
+    }
+    .sub-menu.show {
+      max-height: 400px;
+      margin-bottom: 10px;
+    }
+    .sub-menu .toc-link {
+      padding: 6px 10px;
+      font-size: .8em;
+    }
+    .main-area {
+      min-width: 0;
+    }
+    .header {
+      background: var(--bg-card);
+      border-radius: 15px;
+      padding: 25px 30px;
+      margin-bottom: 25px;
+      box-shadow: 0 8px 32px var(--shadow-light);
+      border: 1px solid var(--border-color);
+      position: relative;
+    }
+    .theme-toggle {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: var(--theme-btn-bg);
+        border: 2px solid var(--theme-btn-border);
+        color: var(--theme-btn-icon);
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 18px;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .theme-toggle:hover {
+        border-color: var(--accent-primary);
+        background: var(--accent-primary);
+        color: white;
+        transform: scale(1.1);
+    }
+
+    .theme-icon {
+        stroke: currentColor;
+        fill: none;
+        stroke-width: 2;
+        transition: all 0.3s ease;
+    }
+    .breadcrumb {
+      color: var(--text-secondary);
+      font-size: .85em;
+      margin-bottom: 12px;
+    }
+    .breadcrumb a {
+      color: var(--accent-primary);
+      text-decoration: none;
+    }
+    .breadcrumb a:hover {
+      text-decoration: underline;
+    }
+    .chapter-title {
+      font-size: 1.8em;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+    .chapter-subtitle {
+      color: var(--text-secondary);
+      font-size: 1em;
+    }
+    .main-content {
+      background: var(--bg-card);
+      border-radius: 15px;
+      box-shadow: 0 8px 32px var(--shadow-light);
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+      margin-bottom: 25px;
+    }
+    .content-section {
+      padding: 30px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .content-section:last-child {
+      border-bottom: none;
+    }
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .section-number {
+      background: var(--accent-primary);
+      color: #fff;
+      width: 35px;
+      height: 35px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: bold;
+    }
+    .section-title {
+      font-size: 1.3em;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    .content-text {
+      color: var(--text-secondary);
+      font-size: 1em;
+      line-height: 1.6;
+      margin-bottom: 15px;
+    }
+    /* .highlight-box {
+        background: linear-gradient(135deg, var(--accent-primary)10%, var(--accent-secondary)10%);
+        border-left: 4px solid var(--accent-primary);
+        border-radius: 8px;
+        padding: 18px;
+        margin: 18px 0;
+    } */
+    .highlight-title {
+        color: var(--accent-primary);
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+    .bullet-list {
+      list-style: none;
+      margin: 12px 0;
+    }
+    .bullet-list li {
+      position: relative;
+      padding-left: 20px;
+      margin-bottom: 6px;
+      color: var(--text-secondary);
+    }
+    .bullet-list li:before {
+      content: '•';
+      color: var(--accent-primary);
+      font-weight: bold;
+      position: absolute;
+      left: 0;
+    }
+    .memory-diagram {
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        padding: 20px;
+        margin: 20px 0;
+        text-align: center;
+        overflow: hidden;
+    }
+    
+    .memory-diagram img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px var(--shadow-light);
+        background: white;
+        padding: 10px;
+    }
+    
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      font-size: 0.9em;
+      box-shadow: 0 4px 15px var(--shadow-light);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .comparison-table th, .comparison-table td {
+      border-bottom: 1px solid var(--border-color);
+      padding: 12px 15px;
+      text-align: left;
+    }
+    .comparison-table th {
+      background-color: var(--bg-secondary);
+      font-weight: 600;
+    }
+    .comparison-table tr:last-child td {
+        border-bottom: none;
+    }
+    .comparison-table code { font-size: 1em; }
+    .warning-box {
+        background: linear-gradient(135deg, #f39c1210, #e67e2210);
+        border-left: 4px solid #f39c12;
+        border-radius: 8px;
+        padding: 18px;
+        margin: 18px 0;
+    }
+    .warning-title {
+        color: #f39c12;
+        font-weight: 600;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .success-box {
+        background: linear-gradient(135deg, #27ae6010, #2ecc7110);
+        border-left: 4px solid #27ae60;
+        border-radius: 8px;
+        padding: 18px;
+        margin: 18px 0;
+    }
+    .success-title {
+        color: #27ae60;
+        font-weight: 600;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .danger-box {
+        background: linear-gradient(135deg, #e7454410, #c0392b10);
+        border-left: 4px solid #e74c3c;
+        border-radius: 8px;
+        padding: 18px;
+        margin: 18px 0;
+    }
+    .danger-title {
+        color: #e74c3c;
+        font-weight: 600;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .navigation {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg-card);
+      border-radius: 15px;
+      padding: 20px 25px;
+      box-shadow: 0 8px 32px var(--shadow-light);
+      border: 1px solid var(--border-color);
+      gap: 20px;
+      margin-top: 30px;
+    }
+    .nav-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--accent-primary);
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 10px;
+      text-decoration: none;
+      transition: all .3s ease;
+      font-weight: 500;
+      flex: 1;
+      max-width: 250px;
+    }
+    .nav-btn:hover {
+      background: var(--accent-secondary);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px var(--shadow-medium);
+      color: #fff;
+      text-decoration: none;
+    }
+    .nav-btn.prev {
+      background: var(--text-secondary);
+    }
+    .nav-btn.prev:hover {
+      background: #5a6c7d;
+    }
+    .nav-direction {
+      font-size: .75em;
+      opacity: .8;
+    }
+    .nav-title {
+      font-size: .9em;
+      font-weight: 600;
+    }
+    .nav-center {
+      text-align: center;
+      color: var(--text-secondary);
+    }
+    .code-container {
+      position: relative;
+      margin: 20px 0;
+    }
+    .code-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--code-bg);
+      color: var(--code-text);
+      padding: 10px 18px;
+      border-radius: 10px 10px 0 0;
+      border-bottom: 1px solid #333;
+    }
+    .code-label {
+      font-size: .85em;
+      color: #888;
+    }
+    .copy-btn {
+      background: transparent;
+      border: 1px solid #555;
+      color: #888;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: .75em;
+      transition: all .3s ease;
+    }
+    .copy-btn:hover {
+      background: #333;
+      color: #fff;
+      border-color: #666;
+    }
+    .copy-btn.copied {
+      background: #27ae60;
+      color: #fff;
+      border-color: #27ae60;
+    }
+    .code-block {
+      background: var(--code-bg);
+      color: var(--code-text);
+      padding: 18px;
+      border-radius: 0 0 10px 10px;
+      overflow-x: auto;
+      font-family: 'Fira Code', 'Courier New', monospace;
+      font-size: .85em;
+      line-height: 1.4;
+    }
+    .code-block pre {
+      margin: 0;
+      white-space: pre-wrap;
+    }
+    .keyword { color: #ff79c6; }
+    .string { color: #f1fa8c; }
+    .comment { color: #6272a4; }
+    .number { color: #bd93f9; }
+    .function { color: #50fa7b; }
+    .type { color: #8be9fd; }
+    
+    /* VSCode 風格的 inline code 樣式 */
+    code {
+        background: #f4f4f4;
+        color: var(--text-primary);
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-family: 'SFMono-Regular', 'Consolas', 'Liberation Mono', 'Menlo', monospace;
+        font-size: 0.85em;
+        font-weight: 500;
+        border: 1px solid var(--border-color);
+    }
+
+    [data-theme="dark"] code {
+        background: #2d3748;
+        color: var(--text-primary);
+        border: 1px solid var(--border-color);
+    }
+    
+    @media (max-width: 1024px) {
+      .container {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+      .sidebar {
+        position: static;
+        order: 2;
+      }
+      .main-area {
+        order: 1;
+      }
+      .memory-diagram img {
+        max-width: 90%;
+      }
+    }
+    @media (max-width: 768px) {
+      .container {
+        padding: 15px;
+      }
+      .header {
+        padding: 20px 15px;
+      }
+      .content-section {
+        padding: 20px 15px;
+      }
+      .chapter-title {
+        font-size: 1.5em;
+      }
+      .memory-diagram img {
+        max-width: 100%;
+        padding: 5px;
+      }
+    }
+    html {
+      scroll-behavior: smooth;
+    }
+    .content-section {
+      scroll-margin-top: 80px;
+    }
+    :target .section-title {
+      outline: 0;
+      box-shadow: 0 0 0 4px rgba(52, 152, 219, .2) inset;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <aside class="sidebar">
+      <div class="toc-widget">
+        <div class="toc-header">
+          <h3 class="toc-title">📚 課程目錄</h3>
+        </div>
+        <div class="toc-body">
+          <ul class="toc-list">
+            <li class="toc-item">
+              <a href="chapter1.html" class="toc-link">1. Introduction to pointers in C/C++</a>
+            </li>
+            <li class="toc-item">
+              <a href="chapter2.html" class="toc-link">2. Work with Pointers</a>
+            </li>
+            <li class="toc-item">
+              <a href="chapter3.html" class="toc-link">3. Pointer types, pointer arithmetic, void pointers</a>
+            </li>
+            <li class="toc-item">
+              <a href="chapter4.html" class="toc-link">4. Pointers to Pointers</a>
+            </li>
+            <li class="toc-item">
+              <a href="chapter5.html" class="toc-link has-submenu" onclick="toggleSubMenu(this)">
+                <span class="arrow">▶</span> 5. Call by Reference
+              </a>
+              <ul class="sub-menu">
+                <li><a href="chapter5.html#memory-blocks" class="toc-link">記憶體區塊</a></li>
+                <li><a href="chapter5.html#call-by-address" class="toc-link">傳址呼叫</a></li>
+                <li><a href="chapter5.html#call-by-value" class="toc-link">傳值呼叫</a></li>
+              </ul>
+            </li>
+            <li class="toc-item">
+              <a href="chapter6.html" class="toc-link">6. Pointers and Arrays</a>
+            </li>
+            <li class="toc-item">
+              <a href="chapter7.html" class="toc-link">7. Array as function argument</a>
+            </li>
+            <li class="toc-item">
+                <a href="chapter8.html" class="toc-link has-submenu" onclick="toggleSubMenu(this)">
+                    <span class="arrow">▶</span> 8. Character arrays and pointers - part 1
+                </a>
+                <ul class="sub-menu">
+                    <li><a href="chapter8.html#string-basics" class="toc-link">字串基本概念</a></li>
+                    <li><a href="chapter8.html#string-pointers" class="toc-link">字串與指標</a></li>
+                    <li><a href="chapter8.html#string-functions" class="toc-link">字串傳入函式</a></li>
+                </ul>
+            </li>
+            <li class="toc-item">
+              <a href="chapter9.html" class="toc-link has-submenu" onclick="toggleSubMenu(this)">
+                <span class="arrow">▶</span> 9. Character arrays and pointers - part 2
+              </a>
+              <ul class="sub-menu">
+                <li><a href="chapter9.html#memory-stack" class="toc-link">記憶體與Stack解析</a></li>
+                <li><a href="chapter9.html#readonly-memory" class="toc-link">唯讀記憶體</a></li>
+              </ul>
+            </li>
+            <li class="toc-item">
+              <a href="chapter10.html" class="toc-link has-submenu" onclick="toggleSubMenu(this)">
+                <span class="arrow">▶</span> 10. Pointers and 2-D arrays
+              </a>
+              <ul class="sub-menu">
+                <li><a href="chapter10.html#2d-usage" class="toc-link">2D 指標陣列的使用</a></li>
+                <li><a href="chapter10.html#2d-access" class="toc-link">2維陣列的存取等價式</a></li>
+              </ul>
+            </li>
+            <li class="toc-item">
+              <a href="chapter11.html" class="toc-link has-submenu" onclick="toggleSubMenu(this)">
+                <span class="arrow">▶</span> 11. Pointers and multidimensional arrays
+              </a>
+              <ul class="sub-menu">
+                <li><a href="chapter11.html#array-types" class="toc-link">陣列傳入函式的型態規則</a></li>
+                <li><a href="chapter11.html#3d-access" class="toc-link">三維陣列的存取等價式</a></li>
+              </ul>
+            </li>
+            <li class="toc-item">
+              <a href="chapter12.html" class="toc-link has-submenu" onclick="toggleSubMenu(this)">
+                <span class="arrow">▶</span> 12. Pointers and dynamic memory - stack vs heap
+              </a>
+              <ul class="sub-menu">
+                <li><a href="chapter12.html#memory-allocation" class="toc-link">C 函式執行與記憶體配置</a></li>
+                <li><a href="chapter12.html#stack-overflow" class="toc-link">Stack Overflow 是什麼？</a></li>
+                <li><a href="chapter12.html#heap-usage" class="toc-link">Heap 是什麼？</a></li>
+                <li><a href="chapter12.html#malloc-diagram" class="toc-link">malloc 的記憶體配置動態與圖解</a></li>
+              </ul>
+            </li>
+            <li class="toc-item">
+              <a href="chapter13.html" class="toc-link has-submenu" onclick="toggleSubMenu(this)">
+                <span class="arrow">▶</span> 13. Dynamic memory allocation
+              </a>
+              <ul class="sub-menu">
+                <li><a href="chapter13.html#malloc" class="toc-link">malloc</a></li>
+                <li><a href="chapter13.html#calloc" class="toc-link">calloc</a></li>
+                <li><a href="chapter13.html#realloc" class="toc-link">realloc</a></li>
+              </ul>
+            </li>
+            <li class="toc-item">
+              <a href="chapter14.html" class="toc-link has-submenu" onclick="toggleSubMenu(this)">
+                <span class="arrow">▶</span> 14. Pointers as Function Returns
+              </a>
+              <ul class="sub-menu">
+                <li><a href="chapter14.html#malloc-free" class="toc-link">malloc 與 free 後的指標行為</a></li>
+                <li><a href="chapter14.html#safe-practices" class="toc-link">安全做法</a></li>
+              </ul>
+            </li>
+            <li class="toc-item">
+              <a href="chapter15.html" class="toc-link has-submenu active" onclick="toggleSubMenu(this)">
+                <span class="arrow expanded">▶</span> 15. Function Pointers
+              </a>
+              <ul class="sub-menu show">
+                <li><a href="#theory" class="toc-link">function pointer 原理解釋</a></li>
+                <li><a href="#practice" class="toc-link">function pointer 實例操作</a></li>
+              </ul>
+            </li>
+            <li class="toc-item">
+              <a href="chapter16.html" class="toc-link has-submenu" onclick="toggleSubMenu(this)">
+                <span class="arrow">▶</span> 16. Function Pointers and Callbacks
+              </a>
+              <ul class="sub-menu">
+                <li><a href="chapter16.html#basic-example" class="toc-link">function pointer 基本範例</a></li>
+                <li><a href="chapter16.html#bubble-sort" class="toc-link">BubbleSort by Callback</a></li>
+                <li><a href="chapter16.html#advanced-sort" class="toc-link">延伸應用：多種排序邏輯</a></li>
+                <li><a href="chapter16.html#quick-sort" class="toc-link">QuickSort by Callback</a></li>
+              </ul>
+            </li>
+            <li class="toc-item"><a href="chapter17.html" class="toc-link">17. Memory Leak in C/C++</a></li>
+            <li class="toc-item"><a href="chapter18.html" class="toc-link">18. 最終總結 — C 語言 Pointer 思維地圖</a></li>
+          </ul>
+        </div>
+      </div>
+    </aside>
+
+    <div class="main-area">
+      <header class="header">
+        <button class="theme-toggle" onclick="toggleTheme()" title="切換深淺色模式">
+            <svg class="theme-icon" id="theme-icon" width="20" height="20" viewBox="0 0 24 24">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+        </button>
+        <div class="breadcrumb"><a href="../index.html">首頁</a> / <span>Chapter 15</span></div>
+        <h1 class="chapter-title">15. Function Pointers in C / C++</h1>
+        <p class="chapter-subtitle">函式指標的原理與應用</p>
+      </header>
+
+      <main class="main-content">
+        <section class="content-section" id="theory">
+          <div class="section-header"><div class="section-number">🧠</div><h2 class="section-title">function pointer 原理解釋</h2></div>
+          
+          <div class="memory-diagram">
+            <img src="../images/function_pointer_concept.png" alt="Function Pointer 概念圖解" />
+          </div>
+
+          <h3>❓ (1) 問題起源</h3>
+          <p class="content-text">在 C 語言中，我們可以使用「函式指標 (Function Pointer)」來儲存並呼叫函式。</p>
+          
+          <div class="success-box">
+            <div class="highlight-title">🤔 這時就會有一個問題：</div>
+            <p style="color: var(--text-primary); font-size: 1.1em;">函式的位址到底是什麼？</p>
+          </div>
+
+          <h3>📱 (2) 從程式碼到記憶體</h3>
+          
+          <h4>2.1 範例程式</h4>
+          <div class="code-container">
+            <div class="code-header"><span class="code-label">簡單的 C 程式範例</span><button class="copy-btn" onclick="copyCode(this,'code1')">📋 複製</button></div>
+            <div class="code-block" id="code1"><pre><span class="type">int</span> <span class="function">main</span>() {
+    <span class="function">printf</span>(<span class="string">"Hello"</span>);
+}</pre></div>
+          </div>
+
+          <p class="content-text">這是 Source Code（原始碼，需要透過編譯器(Compiler)轉換成 CPU 能讀懂的 Machine Code（機器碼）。</p>
+
+          <h4>2.2 編譯後的變化</h4>
+          <p class="content-text">編譯器會將程式碼轉換成二進位機器碼，例如：</p>
+          
+          <div class="code-container">
+            <div class="code-header"><span class="code-label">機器碼範例</span><button class="copy-btn" onclick="copyCode(this,'code2')">📋 複製</button></div>
+            <div class="code-block" id="code2"><pre><span class="number">10010010</span>
+<span class="number">11001100</span>
+<span class="number">11100011</span>
+<span class="number">10000011</span>
+<span class="number">10101010</span></pre></div>
+          </div>
+
+          <p class="content-text">在 Windows 上可能生成 <code>program.exe</code> 這樣的執行檔。</p>
+
+          <h3>🏗️ (3) 應用程式的記憶體結構</h3>
+          <p class="content-text">當程式被載入到記憶體中，會有幾個主要區段：</p>
+
+          <table class="comparison-table">
+            <thead>
+              <tr>
+                <th>區段名稱</th>
+                <th>用途</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Heap</strong></td>
+                <td>動態記憶體配置（malloc / new）</td>
+              </tr>
+              <tr>
+                <td><strong>Stack</strong></td>
+                <td>區域變數、函式呼叫紀錄（stack frames）</td>
+              </tr>
+              <tr>
+                <td><strong>Static/Global</strong></td>
+                <td>全域變數與靜態變數</td>
+              </tr>
+              <tr>
+                <td><strong>Code (Text)</strong></td>
+                <td>程式的機器碼（指令），包含所有函式的實作</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h3>⚡ (4) Function 與 Instruction 的關係</h3>
+          <ul class="bullet-list">
+            <li><strong>Function (函式)：</strong>一段有名字的程式碼，完成特定任務。</li>
+            <li><strong>Instruction (指令)：</strong>CPU 可以直接執行的最小命令（如資料載入、加法、跳躍、呼叫函式）。</li>
+          </ul>
+
+          <p class="content-text">當我們寫一個函式，例如：</p>
+          
+          <div class="code-container">
+            <div class="code-header"><span class="code-label">函式範例</span><button class="copy-btn" onclick="copyCode(this,'code3')">📋 複製</button></div>
+            <div class="code-block" id="code3"><pre><span class="type">void</span> <span class="function">func1</span>() {
+    <span class="comment">// ...</span>
+}</pre></div>
+          </div>
+
+          <p class="content-text">編譯器會將它轉成多條連續的指令 (instructions)，並放在Code/Text區段。假設 <code>func1()</code> 編譯後如下：</p>
+
+          <table class="comparison-table">
+            <thead>
+              <tr>
+                <th>位址</th>
+                <th>指令名稱</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>216</td>
+                <td>Instr-05</td>
+              </tr>
+              <tr>
+                <td>220</td>
+                <td>Instr-06</td>
+              </tr>
+              <tr>
+                <td>224</td>
+                <td>Instr-07</td>
+              </tr>
+              <tr>
+                <td>228</td>
+                <td>Instr-08</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="highlight-box">
+            <div class="highlight-title">⭐ 重點：</div>
+            <ul class="bullet-list" style="color: var(--text-primary);">
+              <li>函式的「位址」= 該函式第一條指令的記憶體位址（這裡是 216）。</li>
+              <li>呼叫函式時，CPU 會從這個位址開始，依序執行該函式的所有指令直到結束。</li>
+            </ul>
+          </div>
+        </section>
+
+        <section class="content-section" id="practice">
+          <div class="section-header"><div class="section-number">🛠️</div><h2 class="section-title">function pointer 實例操作</h2></div>
+          
+          <h3>🔧 (5) 函式指標的運作方式</h3>
+          <p class="content-text">我們可以宣告一個函式指標指向 <code>func1</code>：</p>
+
+          <div class="code-container">
+            <div class="code-header"><span class="code-label">函式指標宣告</span><button class="copy-btn" onclick="copyCode(this,'code4')">📋 複製</button></div>
+            <div class="code-block" id="code4"><pre><span class="type">void</span> (*fp)() = func1;</pre></div>
+          </div>
+
+          <h4>🧩 語法拆解說明</h4>
+          <table class="comparison-table">
+            <thead>
+              <tr>
+                <th>部分</th>
+                <th>代表意義</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>void</code></td>
+                <td>函式的回傳型別 — 這個指標指向的函式必須回傳 <code>void</code>（不回傳任何值）。這裡用 <code>void</code> 只是範例，你也可以改成 <code>int</code>、<code>float</code>、或任何指標型別，例如 <code>char*</code>，視函式需要而定。</td>
+              </tr>
+              <tr>
+                <td><code>(*fp)</code></td>
+                <td>指標變數名稱 — <code>fp</code> 是指標變數，<code>*</code> 表示它儲存的是一個位址（函式的起始位址第一條指令的位址）。括號不可省略，否則會被誤解成「回傳函式指標的函式」。</td>
+              </tr>
+              <tr>
+                <td><code>()</code></td>
+                <td>參數型別列表 — 空括號表示該函式不接受任何參數。如果需要參數，應在括號內指定型別，例如 <code>(int, char*)</code>。</td>
+              </tr>
+              <tr>
+                <td><code>= func1</code></td>
+                <td>賦值動作 — 將 <code>func1</code> 函式的位址（第一條指令所在的記憶體位址，例如 216）存入 <code>fp</code>。<code>func1</code> 與 <code>&func1</code> 在此等價。</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="success-box">
+            <div class="highlight-title">⚡ 呼叫</div>
+            <p style="color: var(--text-primary);">呼叫 <code>fp()</code> 等同於呼叫 <code>func1()</code>，CPU 會從該位址開始依序執行 <code>func1</code> 的指令。</p>
+          </div>
+
+          <h3>🤔 (6) 為什麼要知道這些？</h3>
+          <p class="content-text">理解函式位址與指令的關係，可以幫助你：</p>
+          
+          <ul class="bullet-list">
+            <li>使用callback（回呼函式）。</li>
+            <li>在函式表（function table）中儲存不同的功能，動態選擇執行。</li>
+            <li>進一步學習系統層與嵌入式開發中函式指標的應用。</li>
+          </ul>
+
+          <h3>📝 總結</h3>
+          <div class="success-box">
+            <div class="success-title">📚 重點整理</div>
+            <ul class="bullet-list" style="color: var(--text-primary);">
+              <li>函式位址 = 第一條指令的位址。</li>
+              <li>Instruction是 CPU 執行的最小單位，函式是多條指令的集合。</li>
+              <li>函式指標實際上儲存的是「函式的起始位址」。</li>
+            </ul>
+          </div>
+        </section>
+
+        <section class="content-section" id="practical-example">
+          <div class="section-header"><div class="section-number">💻</div><h2 class="section-title">function pointer 實例操作</h2></div>
+          
+          <div class="code-container">
+            <div class="code-header"><span class="code-label">完整程式碼範例</span><button class="copy-btn" onclick="copyCode(this,'code-full')">📋 複製</button></div>
+            <div class="code-block" id="code-full"><pre><span class="keyword">#include</span> &lt;stdio.h&gt;
+
+<span class="comment">// 一個普通的函式，計算兩整數的和</span>
+<span class="type">int</span> <span class="function">Add</span>(<span class="type">int</span> a, <span class="type">int</span> b) {
+    <span class="keyword">return</span> a + b;
+}
+
+<span class="comment">// 一個普通的函式，印出 Hello + 名字</span>
+<span class="type">void</span> <span class="function">PrintHello</span>(<span class="type">char</span>* name) {
+    <span class="function">printf</span>(<span class="string">"Hello %s\n"</span>, name);
+}
+
+<span class="type">int</span> <span class="function">main</span>() {
+    <span class="comment">// 宣告一個函式指標 p，可指向「參數為 (int, int)，回傳 int」的函式</span>
+    <span class="type">int</span> (*p)(<span class="type">int</span>, <span class="type">int</span>);
+    
+    <span class="comment">// 將 Add 函式的位址指定給 p</span>
+    <span class="comment">// &Add 與 Add 寫法等價，都代表函式的起始位址</span>
+    p = &Add; <span class="comment">// same as p = Add;</span>
+    
+    <span class="comment">// 使用函式指標呼叫 Add(3,5)，並將回傳值存入 sum</span>
+    <span class="type">int</span> sum = p(<span class="number">3</span>, <span class="number">5</span>); <span class="comment">//也可用(*p)(3,5)</span>
+    
+    <span class="comment">// 印出計算結果</span>
+    <span class="function">printf</span>(<span class="string">"%d\n"</span>, sum);
+    
+    <span class="comment">// 宣告一個函式指標 ptr，可指向「參數為 (char*)，回傳 void」的函式</span>
+    <span class="type">void</span> (*ptr)(<span class="type">char</span>*);
+    
+    <span class="comment">// 將 PrintHello 函式的位址指定給 ptr</span>
+    ptr = PrintHello; <span class="comment">//same as ptr = &PrintHello;</span>
+    
+    <span class="comment">// 使用函式指標呼叫 PrintHello("Mia")</span>
+    ptr(<span class="string">"Mia"</span>);
+    
+    <span class="keyword">return</span> <span class="number">0</span>;
+}</pre></div>
+          </div>
+
+          <h3>📝 (1) 宣告函式</h3>
+          <ul class="bullet-list">
+            <li><code>Add</code>：接收兩個 <code>int</code> 參數，回傳它們的和。</li>
+            <li><code>PrintHello</code>：接收一個字串（<code>char*</code>），輸出問候語。</li>
+          </ul>
+
+          <h3>🎯 (2) 宣告函式指標</h3>
+          <div class="code-container">
+            <div class="code-header"><span class="code-label">函式指標宣告</span><button class="copy-btn" onclick="copyCode(this,'code5')">📋 複製</button></div>
+            <div class="code-block" id="code5"><pre><span class="type">int</span> (*p)(<span class="type">int</span>, <span class="type">int</span>);
+<span class="type">void</span> (*ptr)(<span class="type">char</span>*);</pre></div>
+          </div>
+
+          <ul class="bullet-list">
+            <li><code>p</code>：指向回傳<code>int</code>、參數型別為 <code>(int, int)</code> 的函式。</li>
+            <li><code>ptr</code>：指向回傳 <code>void</code>、參數型別為 <code>(char*)</code> 的函式。</li>
+          </ul>
+
+          <div class="warning-box">
+            <div class="warning-title">⚠️ 語法提醒：</div>
+            <p style="color: var(--text-primary);">小括號 <code>()</code> 在 <code>*p</code> 外面很重要，否則會變成宣告「回傳函式指標的函式」。</p>
+            <div class="code-container" style="margin-top: 10px;">
+              <div class="code-header"><span class="code-label">語法對比</span><button class="copy-btn" onclick="copyCode(this,'code6')">📋 複製</button></div>
+              <div class="code-block" id="code6"><pre><span class="type">int</span> (*p)(<span class="type">int</span>, <span class="type">int</span>)    <span class="comment">// p 是函式指標</span>
+<span class="type">int</span> *p(<span class="type">int</span>, <span class="type">int</span>)     <span class="comment">// p 是回傳 int* 的函式</span></pre></div>
+            </div>
+          </div>
+
+          <h3>🔗 (3) 函式指標的賦值</h3>
+          <div class="code-container">
+            <div class="code-header"><span class="code-label">賦值操作</span><button class="copy-btn" onclick="copyCode(this,'code7')">📋 複製</button></div>
+            <div class="code-block" id="code7"><pre>p = &Add;    <span class="comment">// 或 p = Add; 都可以</span>
+ptr = PrintHello;</pre></div>
+          </div>
+
+          <ul class="bullet-list">
+            <li><code>Add</code> 和 <code>&Add</code> 的值是一樣的：函式的起始位址（第一條指令的位置）。</li>
+            <li>將這個位址存進函式指標後，就可以透過指標呼叫它。</li>
+          </ul>
+
+          <h3>⚡ (4) 透過指標呼叫函式</h3>
+          <div class="code-container">
+            <div class="code-header"><span class="code-label">呼叫方式</span><button class="copy-btn" onclick="copyCode(this,'code8')">📋 複製</button></div>
+            <div class="code-block" id="code8"><pre><span class="type">int</span> sum = p(<span class="number">3</span>, <span class="number">5</span>);  <span class="comment">// 呼叫 Add(3,5)</span>
+<span class="function">printf</span>(<span class="string">"%d\n"</span>, sum);
+
+ptr(<span class="string">"Mia"</span>);        <span class="comment">// 呼叫 PrintHello("Mia")</span></pre></div>
+          </div>
+
+          <ul class="bullet-list">
+            <li>呼叫語法和直接呼叫函式一樣，不需要特別寫 <code>(*p)(...)</code>，但 <code>(*p)(...)</code> 也是合法寫法。</li>
+            <li>CPU 在執行時，會依照指標儲存的位址跳到該函式的機器碼起始位置，執行函式內容。</li>
+          </ul>
+
+          <div class="highlight-box">
+            <div class="highlight-title">🎯 這段程式碼的用意：</div>
+            <div style="color: var(--text-primary);">
+              <p style="margin-bottom: 12px;"><strong>1. 示範如何宣告函式指標，包含有回傳值與無回傳值的情況。</strong></p>
+              <p style="margin-bottom: 12px;"><strong>2. 理解函式位址的本質：函式名稱其實就是一個指向該函式起始位址的常數。</strong></p>
+              <p style="margin-bottom: 12px;"><strong>3. 展示函式指標的應用：可將函式位址儲存到變數中，再動態呼叫，常用於：</strong></p>
+              <ul class="bullet-list" style="margin-left: 20px;">
+                <li><strong>Callback（回呼函式）</strong></li>
+                <li><strong>事件處理（event handling）</strong></li>
+                <li><strong>函式表（function table）異動態分派</strong></li>
+              </ul>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <nav class="navigation">
+        <a href="chapter14.html" class="nav-btn prev">
+          <div>
+            <div class="nav-direction">← 上一頁</div>
+            <div class="nav-title">Pointers as Function Returns</div>
+          </div>
+        </a>
+        <div class="nav-center">
+          <div style="font-weight:600;">Chapter 15 / 18</div>
+          <div style="font-size:.9em;">Function Pointers</div>
+        </div>
+        <a href="chapter16.html" class="nav-btn">
+          <div>
+            <div class="nav-direction">下一頁 →</div>
+            <div class="nav-title">Function Pointers and Callbacks</div>
+          </div>
+        </a>
+      </nav>
+    </div>
+  </div>
+
+  <script>
+    function toggleTheme() {
+        const body = document.body;
+        const icon = document.getElementById('theme-icon');
+        const current = body.getAttribute('data-theme');
+        if (current === 'dark') {
+            body.setAttribute('data-theme', 'light');
+            icon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+            localStorage.setItem('theme', 'light');
+        } else {
+            body.setAttribute('data-theme', 'dark');
+            icon.innerHTML = '<circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>';
+            localStorage.setItem('theme', 'dark');
+        }
+    }
+    function loadTheme() {
+        const saved = localStorage.getItem('theme') || 'light';
+        const icon = document.getElementById('theme-icon');
+        document.body.setAttribute('data-theme', saved);
+        if (saved === 'dark') {
+            icon.innerHTML = '<circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>';
+        } else {
+            icon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+        }
+    }
+    function toggleSubMenu(el) {
+        event.preventDefault();
+        const arrow = el.querySelector('.arrow');
+        const sub = el.parentElement.querySelector('.sub-menu');
+        if (sub) {
+            arrow.classList.toggle('expanded');
+            sub.classList.toggle('show');
+        }
+    }
+    function copyCode(btn, id) {
+        const code = document.getElementById(id).querySelector('pre').textContent;
+        navigator.clipboard.writeText(code).then(() => {
+            const text = btn.textContent;
+            btn.textContent = '✅ 已複製';
+            btn.classList.add('copied');
+            setTimeout(() => {
+                btn.textContent = text;
+                btn.classList.remove('copied');
+            }, 2000);
+        }).catch(() => {
+            const ta = document.createElement('textarea');
+            ta.value = code;
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            const text = btn.textContent;
+            btn.textContent = '✅ 已複製';
+            btn.classList.add('copied');
+            setTimeout(() => {
+                btn.textContent = text;
+                btn.classList.remove('copied');
+            }, 2000);
+        });
+    }
+    document.addEventListener('DOMContentLoaded', () => loadTheme());
+  </script>
+</body>
+</html>
