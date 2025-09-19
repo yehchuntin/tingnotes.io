@@ -19,7 +19,10 @@
       --shadow-medium: rgba(0, 0, 0, .15);
       --gradient-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       --code-bg: #1e1e1e;
-      --code-text: #f1fa8c;
+      --code-text: #f8f8f2;
+      --theme-btn-bg: rgba(0, 0, 0, 0.1);
+      --theme-btn-border: rgba(0, 0, 0, 0.2);
+      --theme-btn-icon: rgba(0, 0, 0, 0.7);
     }
     [data-theme="dark"] {
       --bg-primary: #1a1a1a;
@@ -34,7 +37,10 @@
       --shadow-medium: rgba(0, 0, 0, .4);
       --gradient-bg: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
       --code-bg: #1a202c;
-      --code-text: #f1fa8c;
+      --code-text: #f7fafc;
+      --theme-btn-bg: rgba(255, 255, 255, 0.1);
+      --theme-btn-border: rgba(255, 255, 255, 0.3);
+      --theme-btn-icon: rgba(255, 255, 255, 0.8);
     }
     * {
       margin: 0;
@@ -154,25 +160,36 @@
       position: relative;
     }
     .theme-toggle {
-      position: absolute;
-      top: 15px;
-      right: 15px;
-      background: var(--accent-primary);
-      border: none;
-      color: #fff;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      cursor: pointer;
-      font-size: 16px;
-      transition: all .3s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: var(--theme-btn-bg);
+        border: 2px solid var(--theme-btn-border);
+        color: var(--theme-btn-icon);
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 18px;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(10px);
     }
+
     .theme-toggle:hover {
-      background: var(--accent-secondary);
-      transform: scale(1.1);
+        border-color: var(--accent-primary);
+        background: var(--accent-primary);
+        color: white;
+        transform: scale(1.1);
+    }
+
+    .theme-icon {
+        stroke: currentColor;
+        fill: none;
+        stroke-width: 2;
+        transition: all 0.3s ease;
     }
     .breadcrumb {
       color: var(--text-secondary);
@@ -408,16 +425,21 @@
     .number { color: #bd93f9; }
     .function { color: #50fa7b; }
     .type { color: #8be9fd; }
-    /* --- UPDATED STYLE FOR INLINE CODE --- */
+    
+    /* VSCode 風格的 inline code 樣式 */
     code {
-        background-color: transparent;
-        color: var(--text-secondary);
-        font-family: 'Fira Code', 'Courier New', monospace;
-        font-size: 0.9em;
-        font-weight: 500;
-        padding: 0 2px;
+        color: #e8eaed;
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-family: 'SFMono-Regular', 'Consolas', 'Liberation Mono', 'Menlo', monospace;
+        font-size: 0.85em;
+        font-weight: 400;
     }
-    /* --- END UPDATED STYLE --- */
+
+    [data-theme="dark"] code {
+        color: #e8eaed;
+    }
+    
     @media (max-width: 1024px) {
       .container {
         grid-template-columns: 1fr;
@@ -592,7 +614,11 @@
 
     <div class="main-area">
       <header class="header">
-        <button class="theme-toggle" onclick="toggleTheme()" title="切換深淺色模式"><span id="theme-icon">🌙</span></button>
+        <button class="theme-toggle" onclick="toggleTheme()" title="切換深淺色模式">
+            <svg class="theme-icon" id="theme-icon" width="20" height="20" viewBox="0 0 24 24">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+        </button>
         <div class="breadcrumb"><a href="../index.html">首頁</a> / <span>Chapter 10</span></div>
         <h1 class="chapter-title">10. Pointers and 2-D arrays</h1>
         <p class="chapter-subtitle">二維陣列的指標表示法與存取方式</p>
@@ -725,11 +751,11 @@
         const current = body.getAttribute('data-theme');
         if (current === 'dark') {
             body.setAttribute('data-theme', 'light');
-            icon.textContent = '🌙';
+            icon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
             localStorage.setItem('theme', 'light');
         } else {
             body.setAttribute('data-theme', 'dark');
-            icon.textContent = '☀️';
+            icon.innerHTML = '<circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>';
             localStorage.setItem('theme', 'dark');
         }
     }
@@ -737,7 +763,11 @@
         const saved = localStorage.getItem('theme') || 'light';
         const icon = document.getElementById('theme-icon');
         document.body.setAttribute('data-theme', saved);
-        icon.textContent = saved === 'dark' ? '☀️' : '🌙';
+        if (saved === 'dark') {
+            icon.innerHTML = '<circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>';
+        } else {
+            icon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+        }
     }
     function toggleSubMenu(el) {
         event.preventDefault();
