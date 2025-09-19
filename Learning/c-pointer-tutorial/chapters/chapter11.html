@@ -685,7 +685,7 @@ C[<span class="number">0</span>][<span class="number">0</span>]     <span class=
           
           <div class="code-container">
             <div class="code-header"><span class="code-label">三維陣列的存取等價式</span><button class="copy-btn" onclick="copyCode(this,'code4')">📋 複製</button></div>
-            <div class="code-block" id="code4"><pre>C[i][j][k] = *(*(*(C + i) + j) + k)
+            <div class="code-block" id="code4"><pre>C[i][j][k] = *(*(C[i] + j) + k)
            = *(*(*(C + i) + j) + k)</pre></div>
           </div>
 
