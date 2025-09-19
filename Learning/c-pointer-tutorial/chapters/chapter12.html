@@ -292,13 +292,18 @@
         padding: 20px;
         margin: 20px 0;
         text-align: center;
-        min-height: 200px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--text-secondary);
-        font-style: italic;
+        overflow: hidden;
     }
+    
+    .memory-diagram img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px var(--shadow-light);
+        background: white;
+        padding: 10px;
+    }
+    
     .comparison-table {
       width: 100%;
       border-collapse: collapse;
@@ -448,16 +453,20 @@
     
     /* VSCode 風格的 inline code 樣式 */
     code {
-        color: #e8eaed;
+        background: #f4f4f4;
+        color: var(--text-primary);
         padding: 2px 6px;
         border-radius: 3px;
         font-family: 'SFMono-Regular', 'Consolas', 'Liberation Mono', 'Menlo', monospace;
         font-size: 0.85em;
-        font-weight: 400;
+        font-weight: 500;
+        border: 1px solid var(--border-color);
     }
 
     [data-theme="dark"] code {
-        color: #e8eaed;
+        background: #2d3748;
+        color: var(--text-primary);
+        border: 1px solid var(--border-color);
     }
     
     @media (max-width: 1024px) {
@@ -472,6 +481,9 @@
       .main-area {
         order: 1;
       }
+      .memory-diagram img {
+        max-width: 90%;
+      }
     }
     @media (max-width: 768px) {
       .container {
@@ -485,6 +497,10 @@
       }
       .chapter-title {
         font-size: 1.5em;
+      }
+      .memory-diagram img {
+        max-width: 100%;
+        padding: 5px;
       }
     }
     html {
@@ -650,7 +666,8 @@
           <p class="content-text">在 C 語言中，記憶體主要分為四個重要的區域，每個區域都有其特定的用途和特性。</p>
           
           <div class="memory-diagram">
-            [圖片位置：C函式執行與記憶體配置圖]
+            <!-- 檔名：memory_layout.png - 顯示 Heap、Stack、Static/Global、Code 四個記憶體區域的垂直分布圖 -->
+            <img src="../images/memory_layout.png" alt="C函式執行與記憶體配置圖" />
           </div>
 
           <div class="highlight-box">
@@ -717,6 +734,11 @@
           <div class="section-header"><div class="section-number">⚠️</div><h2 class="section-title">Stack Overflow 是什麼？</h2></div>
           <p class="content-text">在 C 語言中，<strong>Stack Overflow</strong>（堆疊溢位）是指：</p>
           <p class="content-text">程式使用過多的 stack 記憶體，導致超出系統所配置的限制，進而程式崩潰或產生未定義行為。</p>
+          
+          <div class="memory-diagram">
+            <!-- 檔名：stack_overflow.png - 遞迴呼叫過深導致 Stack 溢位的示意圖，顯示 Stack frame 堆疊 -->
+            <img src="../images/stack_overflow.png" alt="Stack Overflow 概念圖" />
+          </div>
           
           <h3>🔧 Stack 是什麼？</h3>
           <p class="content-text">Stack 是 C 程式中用來儲存：</p>
@@ -798,7 +820,8 @@
           <p class="content-text">在 <strong>C++</strong>程式中，<strong>Heap</strong>（堆積區）是一塊專門給程式<strong>動態配置記憶體的空間</strong>，也就是我們「需要多少、什麼時候配置、何時釋放」都由程式設計師來決定。</p>
           
           <div class="memory-diagram">
-            [圖片位置：Heap記憶體配置圖]
+            <!-- 檔名：heap_structure.png - Heap 記憶體結構圖，顯示動態配置區域和 Application memory 關係 -->
+            <img src="../images/heap_structure.png" alt="Heap記憶體配置圖" />
           </div>
 
           <h3>🔧 Heap 的基本概念</h3>
@@ -842,11 +865,12 @@
         </section>
 
         <section class="content-section" id="malloc-diagram">
-          <div class="section-header"><div class="section-number">🧠</div><h2 class="section-title">記憶體區域解析</h2></div>
+          <div class="section-header"><div class="section-number">🧠</div><h2 class="section-title">malloc 的記憶體配置動態與圖解</h2></div>
           <p class="content-text">讓我們透過具體的程式碼範例來理解 malloc 如何在 Heap 中配置記憶體。</p>
           
           <div class="memory-diagram">
-            [圖片位置：malloc記憶體配置圖解]
+            <!-- 檔名：malloc_process.png - malloc 執行流程圖，展示配置→使用→釋放→重新配置的完整過程 -->
+            <img src="../images/malloc_process.png" alt="malloc記憶體配置圖解" />
           </div>
 
           <h3>程式一開始的配置</h3>

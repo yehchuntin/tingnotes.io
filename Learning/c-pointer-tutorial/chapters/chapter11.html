@@ -397,16 +397,20 @@
     
     /* VSCode 風格的 inline code 樣式 */
     code {
-        color: #e8eaed;
+        background: #f4f4f4;
+        color: var(--text-primary);
         padding: 2px 6px;
         border-radius: 3px;
         font-family: 'SFMono-Regular', 'Consolas', 'Liberation Mono', 'Menlo', monospace;
         font-size: 0.85em;
-        font-weight: 400;
+        font-weight: 500;
+        border: 1px solid var(--border-color);
     }
 
     [data-theme="dark"] code {
-        color: #e8eaed;
+        background: #2d3748;
+        color: var(--text-primary);
+        border: 1px solid var(--border-color);
     }
     
     @media (max-width: 1024px) {
