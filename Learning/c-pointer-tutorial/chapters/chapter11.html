@@ -669,6 +669,62 @@
             <li>若沒有這些資訊，<code>B+1</code> 或 <code>C+1</code> 會無法正確跨過一整列或一整個 block。</li>
           </ul>
 
+          <h3>完整實作範例</h3>
+          <div class="code-container">
+            <div class="code-header"><span class="code-label">多維陣列函式實作</span><button class="copy-btn" onclick="copyCode(this,'code-complete')">📋 複製</button></div>
+            <div class="code-block" id="code-complete"><pre><span class="keyword">#include</span>&lt;stdio.h&gt;
+
+<span class="type">void</span> <span class="function">Funcfor1D</span>(<span class="type">int</span> *A){
+    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>; i&lt;<span class="number">3</span>; i++){
+        <span class="function">printf</span>(<span class="string">"%d "</span>, *(A+i));
+    }
+    <span class="function">printf</span>(<span class="string">"\n"</span>);
+}
+
+<span class="type">void</span> <span class="function">Funcfor2D</span>(<span class="type">int</span> (*B)[<span class="number">4</span>]){
+    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>; i&lt;<span class="number">2</span>; i++){
+        <span class="keyword">for</span>(<span class="type">int</span> j=<span class="number">0</span>; j&lt;<span class="number">4</span>; j++){
+            <span class="function">printf</span>(<span class="string">"%d "</span>, *(*(B+i)+j));
+        }
+        <span class="function">printf</span>(<span class="string">"\n"</span>);
+    }
+}
+
+<span class="type">void</span> <span class="function">Funcfor3D</span>(<span class="type">int</span> (*C)[<span class="number">2</span>][<span class="number">2</span>]){
+    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>; i&lt;<span class="number">3</span>; i++){
+        <span class="keyword">for</span>(<span class="type">int</span> j=<span class="number">0</span>; j&lt;<span class="number">2</span>; j++){
+            <span class="keyword">for</span>(<span class="type">int</span> k=<span class="number">0</span>; k&lt;<span class="number">2</span>; k++){
+                <span class="function">printf</span>(<span class="string">"%d "</span>, *(*(*(C+i)+j)+k));
+            }
+            <span class="function">printf</span>(<span class="string">"\t"</span>);
+        }
+        <span class="function">printf</span>(<span class="string">"\n"</span>);
+    }
+}
+
+<span class="type">int</span> <span class="function">main</span>(){
+    <span class="type">int</span> A[<span class="number">3</span>]={<span class="number">5</span>,<span class="number">8</span>,<span class="number">9</span>};
+    <span class="type">int</span> B[<span class="number">2</span>][<span class="number">4</span>]={{<span class="number">1</span>,<span class="number">3</span>,<span class="number">5</span>,<span class="number">7</span>},
+                 {<span class="number">2</span>,<span class="number">4</span>,<span class="number">6</span>,<span class="number">8</span>}
+                };
+    <span class="type">int</span> C[<span class="number">3</span>][<span class="number">2</span>][<span class="number">2</span>]={{{<span class="number">2</span>,<span class="number">5</span>},{<span class="number">7</span>,<span class="number">9</span>}},
+                    {{<span class="number">3</span>,<span class="number">4</span>},{<span class="number">6</span>,<span class="number">1</span>}},
+                    {{<span class="number">0</span>,<span class="number">8</span>},{<span class="number">11</span>,<span class="number">13</span>}}};
+
+    <span class="function">printf</span>(<span class="string">"%d %d %d %d\n"</span>,C, *C, C[<span class="number">0</span>], C[<span class="number">0</span>][<span class="number">0</span>]); <span class="comment">//都是第一個元素的位址</span>
+    <span class="function">printf</span>(<span class="string">"Value of address(%d) is %d\n"</span>,C[<span class="number">0</span>][<span class="number">0</span>]+<span class="number">1</span>,*(C[<span class="number">0</span>][<span class="number">0</span>]+<span class="number">1</span>)); <span class="comment">// same as C[0][0][1]</span>
+                                        <span class="comment">//&C[0][0][1]  C[0][0][1]</span>
+    
+    <span class="function">printf</span>(<span class="string">"1D:\n"</span>);
+    <span class="function">Funcfor1D</span>(A);
+    <span class="function">printf</span>(<span class="string">"2D:\n"</span>);
+    <span class="function">Funcfor2D</span>(B);
+    <span class="function">printf</span>(<span class="string">"3D:\n"</span>);
+    <span class="function">Funcfor3D</span>(C);
+    <span class="keyword">return</span> <span class="number">0</span>;
+}</pre></div>
+          </div>
+
           <h3>記憶體對應</h3>
           <div class="code-container">
             <div class="code-header"><span class="code-label">記憶體對應範例</span><button class="copy-btn" onclick="copyCode(this,'code3')">📋 複製</button></div>
