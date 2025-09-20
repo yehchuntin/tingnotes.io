@@ -917,9 +917,13 @@ B(A);  <span class="comment">// 直接傳遞函式名，效果相同</span></pre
           </ul>
           <hr style="border: none; border-top: 2px solid var(--border-color); margin: 30px 0;">
 
-          <h3>🚀 延伸應用：多種排序邏輯</h3>
-          <p class="content-text">上面範例中，我們只用一個 <code>compare</code> 函式實現單一的比較規則（升暮）。
-但如果需求增加，例如要支援 升暮 / 降暮、正常值 / 絕對值 四種不同模式，
+          <section class="content-section" id="advanced-sort">
+            <div class="section-header">
+                <div class="section-number">🚀</div>
+                <h2 class="section-title">延伸應用：多種排序邏輯</h2>
+            </div>
+          <p class="content-text">上面範例中，我們只用一個 <code>compare</code> 函式實現單一的比較規則（升冪）。
+但如果需求增加，例如要支援 升冪 / 降冪、正常值 / 絕對值 四種不同模式，
 就可以定義多個比較函式，並在 <code>main</code> 中根據使用者選擇傳入對應的函式指標。</p>
 
           <p class="content-text">這樣可以：</p>
