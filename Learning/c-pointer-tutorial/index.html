@@ -11,6 +11,10 @@
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-YOUR_ADSENSE_ID"
             crossorigin="anonymous"></script>
     
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    
     <style>
         :root {
             /* 淺色模式 */
@@ -33,6 +37,9 @@
             --ad-border: #e6f3ff;
             --ad-label-bg: #3498db;
             --ad-label-text: #ffffff;
+            --theme-btn-bg: #f5f5f5;
+            --theme-btn-border: #d1d5db;
+            --theme-btn-icon: #6b7280;
         }
 
         [data-theme="dark"] {
@@ -56,6 +63,9 @@
             --ad-border: #4a5568;
             --ad-label-bg: #4299e1;
             --ad-label-text: #ffffff;
+            --theme-btn-bg: rgba(255, 255, 255, 0.1);
+            --theme-btn-border: rgba(255, 255, 255, 0.3);
+            --theme-btn-icon: rgba(255, 255, 255, 0.8);
         }
 
         * {
@@ -107,14 +117,14 @@
             position: absolute;
             top: 20px;
             right: 20px;
-            background: var(--accent-primary);
-            border: none;
-            color: white;
+            background: var(--theme-btn-bg);
+            border: 2px solid var(--theme-btn-border);
+            color: var(--theme-btn-icon);
             width: 50px;
             height: 50px;
             border-radius: 50%;
             cursor: pointer;
-            font-size: 20px;
+            font-size: 18px;
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
@@ -122,8 +132,17 @@
         }
 
         .theme-toggle:hover {
-            background: var(--accent-secondary);
+            border-color: var(--accent-primary);
+            background: var(--accent-primary);
+            color: white;
             transform: scale(1.1);
+        }
+
+        .theme-icon {
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+            transition: all 0.3s ease;
         }
 
         .blog-title {
@@ -608,7 +627,9 @@
     <div class="container">
         <header class="header">
             <button class="theme-toggle" onclick="toggleTheme()" title="切換深淺色模式">
-                <span id="theme-icon">🌙</span>
+                <svg class="theme-icon" id="theme-icon" width="20" height="20" viewBox="0 0 24 24">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
             </button>
             
             <h1 class="blog-title">C語言指標完整教學</h1>
@@ -628,8 +649,8 @@
                     <div class="stat-label">免費學習</div>
                 </div>
                 <div class="stat-item">
-                    <span class="stat-number">∞</span>
-                    <div class="stat-label">終身更新</div>
+                    <span class="stat-number" id="total-views">0</span>
+                    <div class="stat-label">總觀看次數</div>
                 </div>
             </div>
         </header>
@@ -959,19 +980,88 @@
     </div>
 
     <script>
+        // Firebase 配置 - 請替換為您的實際配置
+        const firebaseConfig = {
+            apiKey: "AIzaSyAbEhPO8lUDT4nCPmfw1fZg3t2eGO6JUaI",
+            authDomain: "tingnotes-ccb46.firebaseapp.com",
+            databaseURL: "https://tingnotes-ccb46-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "tingnotes-ccb46",
+            storageBucket: "tingnotes-ccb46.firebasestorage.app",
+            messagingSenderId: "297732922233",
+            appId: "1:297732922233:web:aab5a5d20ab2006a736da8",
+            measurementId: "G-NG8BMXM21R"
+        };
+
+        // 初始化 Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // 格式化數字顯示
+        function formatNumber(num) {
+            if (num >= 1000000) {
+                return (num / 1000000).toFixed(1) + 'M';
+            } else if (num >= 1000) {
+                return (num / 1000).toFixed(1) + 'K';
+            }
+            return num.toString();
+        }
+
+        // 更新觀看次數顯示
+        function updateViewCount(count) {
+            const viewElement = document.getElementById('total-views');
+            if (viewElement) {
+                viewElement.textContent = formatNumber(count);
+                
+                // 添加動畫效果
+                viewElement.style.transform = 'scale(1.1)';
+                setTimeout(() => {
+                    viewElement.style.transform = 'scale(1)';
+                }, 200);
+            }
+        }
+
+        // 增加觀看次數
+        function incrementViewCount() {
+            const viewCountRef = database.ref('Learning/c-pointer-tutorial/totalViews');
+            
+            viewCountRef.transaction((currentCount) => {
+                return (currentCount || 0) + 1;
+            }).then((result) => {
+                if (result.committed) {
+                    console.log('觀看次數已更新:', result.snapshot.val());
+                }
+            }).catch((error) => {
+                console.error('更新觀看次數時發生錯誤:', error);
+            });
+        }
+
+        // 監聽觀看次數變化
+        function listenToViewCount() {
+            const viewCountRef = database.ref('Learning/c-pointer-tutorial/totalViews');
+            
+            viewCountRef.on('value', (snapshot) => {
+                const count = snapshot.val() || 0;
+                updateViewCount(count);
+            }, (error) => {
+                console.error('讀取觀看次數時發生錯誤:', error);
+                // 發生錯誤時顯示預設值
+                updateViewCount(0);
+            });
+        }
+
         // 深淺色模式切換
         function toggleTheme() {
             const body = document.body;
-            const themeIcon = document.getElementById('theme-icon');
-            const currentTheme = body.getAttribute('data-theme');
+            const icon = document.getElementById('theme-icon');
+            const current = body.getAttribute('data-theme');
             
-            if (currentTheme === 'dark') {
+            if (current === 'dark') {
                 body.setAttribute('data-theme', 'light');
-                themeIcon.textContent = '🌙';
+                icon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
                 localStorage.setItem('theme', 'light');
             } else {
                 body.setAttribute('data-theme', 'dark');
-                themeIcon.textContent = '☀️';
+                icon.innerHTML = '<circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>';
                 localStorage.setItem('theme', 'dark');
             }
         }
@@ -979,10 +1069,14 @@
         // 載入儲存的主題
         function loadTheme() {
             const savedTheme = localStorage.getItem('theme') || 'light';
-            const themeIcon = document.getElementById('theme-icon');
+            const icon = document.getElementById('theme-icon');
             
             document.body.setAttribute('data-theme', savedTheme);
-            themeIcon.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+            if (savedTheme === 'dark') {
+                icon.innerHTML = '<circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>';
+            } else {
+                icon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+            }
         }
 
         // 目錄摺疊功能
@@ -999,9 +1093,52 @@
             }
         }
 
-        // 頁面載入完成後的動畫
+        // 防止重複計數的機制
+        let hasCountedThisSession = false;
+
+        // 檢查是否應該計數
+        function shouldCount() {
+            // 檢查是否已經在此會話中計數過
+            if (hasCountedThisSession) {
+                return false;
+            }
+
+            // 檢查 localStorage 中的時間戳
+            const lastCountTime = localStorage.getItem('lastViewCountTime');
+            const now = Date.now();
+            const hourInMs = 60 * 60 * 1000; // 1小時
+
+            if (!lastCountTime || (now - parseInt(lastCountTime)) > hourInMs) {
+                return true;
+            }
+
+            return false;
+        }
+
+        // 記錄計數
+        function recordCount() {
+            hasCountedThisSession = true;
+            localStorage.setItem('lastViewCountTime', Date.now().toString());
+        }
+
+        // 頁面載入完成後的動畫和初始化
         document.addEventListener('DOMContentLoaded', function() {
             loadTheme();
+            
+            // 初始化 Firebase 監聽
+            try {
+                listenToViewCount();
+                
+                // 檢查是否應該增加觀看次數
+                if (shouldCount()) {
+                    incrementViewCount();
+                    recordCount();
+                }
+            } catch (error) {
+                console.error('Firebase 初始化失敗:', error);
+                // Firebase 失敗時顯示預設值
+                updateViewCount(0);
+            }
             
             // 卡片動畫
             const cards = document.querySelectorAll('.chapter-card');
@@ -1052,9 +1189,8 @@
             });
         });
 
-        // 初始化
+        // 初始化 Google Analytics
         document.addEventListener('DOMContentLoaded', function() {
-            loadTheme();
             initGoogleAnalytics();
         });
     </script>
