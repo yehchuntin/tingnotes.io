@@ -806,11 +806,11 @@
     </footer>
 
     <!-- Firebase SDK -->
-    <script type="module">
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    
+    <script>
         // Firebase 配置
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getDatabase, ref, get, runTransaction } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
-
         const firebaseConfig = {
             apiKey: "AIzaSyAbEhPO8lUDT4nCPmfw1fZg3t2eGO6JUaI",
             authDomain: "tingnotes-ccb46.firebaseapp.com",
@@ -823,8 +823,8 @@
         };
 
         // 初始化 Firebase
-        const app = initializeApp(firebaseConfig);
-        const database = getDatabase(app);
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
 
         // 全站專案數據庫 - 包含所有主題的專案
         const allProjectsData = [
@@ -840,7 +840,8 @@
                 publishDate: '2025-08',
                 chapters: 18,
                 estimatedTime: '8-12小時',
-                difficulty: '初級-進階'
+                difficulty: '初級-進階',
+                firebasePath: 'Learning/c-pointer-tutorial/totalViews'
             }
             // 未來可以添加更多其他主題的專案於此
         ];
@@ -856,29 +857,31 @@
         }
 
         // 獲取專案觀看次數
-        async function getProjectViews(projectId) {
+        async function getProjectViews(firebasePath) {
             try {
-                const snapshot = await get(ref(database, `counters/content_${projectId}`));
+                const snapshot = await new Promise((resolve, reject) => {
+                    database.ref(firebasePath).once('value', resolve, reject);
+                });
                 return snapshot.exists() ? snapshot.val() : 0;
             } catch (error) {
-                console.error(`Failed to get views for ${projectId}:`, error);
+                console.error(`Failed to get views for ${firebasePath}:`, error);
                 return 0; // 發生錯誤時返回 0
             }
         }
 
         // 增加專案觀看次數
-        async function incrementProjectViews(projectId) {
-            try {
-                const counterRef = ref(database, `counters/content_${projectId}`);
-                const result = await runTransaction(counterRef, (currentValue) => {
-                    return (currentValue || 0) + 1;
-                });
-                console.log(`專案 ${projectId} 觀看次數增加到: ${result.snapshot.val()}`);
-                return result.snapshot.val();
-            } catch (error) {
-                console.error(`Failed to increment views for ${projectId}:`, error);
-                return null;
-            }
+        function incrementProjectViews(firebasePath) {
+            const viewCountRef = database.ref(firebasePath);
+            
+            viewCountRef.transaction((currentCount) => {
+                return (currentCount || 0) + 1;
+            }).then((result) => {
+                if (result.committed) {
+                    console.log(`專案觀看次數已更新: ${result.snapshot.val()}`);
+                }
+            }).catch((error) => {
+                console.error(`更新觀看次數時發生錯誤:`, error);
+            });
         }
         
         // 獲取專案排名圖標
@@ -896,7 +899,7 @@
             const rankIcon = getRankIcon(rank);
             
             return `
-                <a href="${project.url}" class="project-item" onclick="event.preventDefault(); trackProjectClick('${project.id}', '${project.url}')">
+                <a href="${project.url}" class="project-item" onclick="event.preventDefault(); trackProjectClick('${project.firebasePath}', '${project.url}')">
                     <div class="project-rank rank-${rank}">${rankIcon}</div>
                     <div class="project-info">
                         <div class="project-name">${project.name}</div>
@@ -923,7 +926,7 @@
                 // 獲取所有專案的觀看次數
                 const projectsWithViews = await Promise.all(
                     allProjectsData.map(async (project) => {
-                        const views = await getProjectViews(project.id);
+                        const views = await getProjectViews(project.firebasePath);
                         return { ...project, views };
                     })
                 );
@@ -934,12 +937,18 @@
                 const hotProjectsContainer = document.getElementById('hot-projects');
                 
                 if (sortedProjects.length === 0) {
-                    hotProjectsContainer.innerHTML = `<div class="empty-state"><div class="empty-icon">🚀</div><div class="empty-title">專案準備中</div><div class="empty-desc">精彩內容正在開發中，敬請期待！</div></div>`;
+                    hotProjectsContainer.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon">🚀</div>
+                            <div class="empty-title">專案準備中</div>
+                            <div class="empty-desc">精彩內容正在開發中，敬請期待！</div>
+                        </div>`;
                     return;
                 }
 
-                // 取前三名
-                const topProjects = sortedProjects.slice(0, 3);
+                // 動態取得前N名（最多3名，但可能少於3名）
+                const maxDisplay = Math.min(3, sortedProjects.length);
+                const topProjects = sortedProjects.slice(0, maxDisplay);
                 
                 // 生成HTML
                 const projectsHTML = topProjects.map((project, index) => 
@@ -948,27 +957,44 @@
 
                 hotProjectsContainer.innerHTML = projectsHTML;
 
+                // 更新專案統計標題
+                updateProjectsTitle(sortedProjects.length, maxDisplay);
+
             } catch (error) {
                 console.error('載入熱門專案失敗:', error);
                 const hotProjectsContainer = document.getElementById('hot-projects');
-                hotProjectsContainer.innerHTML = `<div class="empty-state"><div>載入失敗，請稍後再試</div></div>`;
+                hotProjectsContainer.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">⚠️</div>
+                        <div class="empty-title">載入失敗</div>
+                        <div class="empty-desc">無法載入專案數據，請稍後再試</div>
+                    </div>`;
+            }
+        }
+
+        // 更新專案標題，顯示實際數量
+        function updateProjectsTitle(totalProjects, displayedProjects) {
+            const titleElement = document.querySelector('.projects-section h2');
+            const subtitleElement = document.querySelector('.projects-subtitle');
+            
+            if (titleElement && subtitleElement) {
+                if (totalProjects === 1) {
+                    subtitleElement.textContent = `目前共有 ${totalProjects} 個專案，正在努力創作更多內容`;
+                } else if (displayedProjects < totalProjects) {
+                    subtitleElement.textContent = `顯示前 ${displayedProjects} 名，共 ${totalProjects} 個專案的排行榜`;
+                } else {
+                    subtitleElement.textContent = `最受歡迎的學習內容排行榜，跨越所有主題分類（共 ${totalProjects} 個專案）`;
+                }
             }
         }
 
         // 追蹤專案點擊並跳轉
-        window.trackProjectClick = async function(projectId, url) {
-            console.log(`用戶點擊了專案: ${projectId}`);
-            await incrementProjectViews(projectId);
+        window.trackProjectClick = function(firebasePath, url) {
+            console.log(`用戶點擊了專案，Firebase路徑: ${firebasePath}`);
+            incrementProjectViews(firebasePath);
             window.location.href = url; // 跳轉到目標頁面
         };
 
-        // 頁面載入完成時初始化
-        document.addEventListener('DOMContentLoaded', function() {
-            loadHotProjects();
-        });
-    </script>
-
-    <script>
         // 深淺色模式切換
         function toggleTheme() {
             const body = document.body;
@@ -1077,6 +1103,9 @@
         document.addEventListener('DOMContentLoaded', function() {
             loadTheme();
             initAnimations();
+            
+            // 載入熱門專案
+            loadHotProjects();
         });
     </script>
 </body>
