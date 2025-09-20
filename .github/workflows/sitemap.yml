@@ -1,0 +1,25 @@
+name: Generate sitemap
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Generate sitemap
+        uses: cicirello/generate-sitemap@v1
+        with:
+          base-url-path: "https://tingnotes.io/"  # 正確的參數名稱是 base-url-path
+
+      - name: Commit sitemap
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add sitemap.xml
+          git commit -m "Update sitemap" || echo "No changes to commit"
+          git push
