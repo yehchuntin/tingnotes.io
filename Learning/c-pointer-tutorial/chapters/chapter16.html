@@ -892,6 +892,7 @@ B(A);  <span class="comment">// 直接傳遞函式名，效果相同</span></pre
           <hr style="border: none; border-top: 2px solid var(--border-color); margin: 30px 0;">
 
           <h3>💡 語法重點</h3>
+          <br>
 
           <h4>1. 函式指標的宣告</h4>
           <div class="code-container">
@@ -1165,14 +1166,17 @@ B(A);  <span class="comment">// 直接傳遞函式名，效果相同</span></pre
             <li>因為 <code>qsort</code> 是泛型，不知道你要排列的元素型態，所以會把元素指標當成 <code>const void*</code>（泛型指標）。</li>
             <li>因為它不知道你排列的元素型態，所以只能使用「泛型指標」<code>void*</code> 來接收元素地址。</li>
             <li><code>const</code> 是保護作用，表示 <code>qsort</code> 在比較時不會修改元素內容。</li>
-            <li>💡 重點：</li>
-            <li><code>const void*</code> 只是一個「不知道是什麼面是什麼型態的地址」。</li>
-            <li>要用它，必須自己轉回正確型態。</li>
           </ul>
 
-          <ul class="bullet-list">
-            <li>在比較函式裡，我們必須自己把它轉回正確型態（這裡是 <code>int*</code>）。</li>
-          </ul>
+          <div class="success-box">
+            <div class="success-title">💡 重點：</div>
+            <ul class="bullet-list" style="color: var(--text-primary);">
+              <li><code>const void*</code> 只是一個「不知道是什麼面是什麼型態的地址」。</li>
+              <li>要用它，必須自己轉回正確型態。</li>
+              <li>在比較函式裡，我們必須自己把它轉回正確型態（這裡是 <code>int*</code> ）。</li>
+            </ul>
+          </div>
+          <hr style="border: none; border-top: 2px solid var(--border-color); margin: 30px 0;">
 
           <h3>📝 圖解紀錄</h3>
           <p class="content-text"><strong>假設第一次呼叫：</strong></p>
