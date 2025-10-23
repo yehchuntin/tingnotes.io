@@ -557,16 +557,35 @@
         };
         // =================================================================================
 
-        // 獲取觀看次數
-        async function getViewCount(projectId) {
+        // 獲取觀看次數 - 使用與 Learning 頁面一致的路徑結構
+        async function getViewCount(projectId, topic) { // 增加 topic 參數
             try {
-                const snapshot = await get(ref(database, `counters/content_${projectId}`));
+                // 使用路徑結構：Topic/projectId/totalViews
+                const snapshot = await get(ref(database, `${capitalizeFirstLetter(topic)}/${projectId}/totalViews`));
                 return snapshot.exists() ? snapshot.val() : 0;
             } catch (error) {
-                console.error('Failed to get view count:', error);
+                console.error(`Failed to get view count for ${topic}/${projectId}:`, error);
                 return 0;
             }
         }
+
+        // 增加觀看次數 - 使用與 Learning 頁面一致的路徑結構
+        async function incrementViewCount(projectId, topic) { // 增加 topic 參數
+            try {
+                // 使用路徑結構：Topic/projectId/totalViews
+                const counterRef = ref(database, `${capitalizeFirstLetter(topic)}/${projectId}/totalViews`);
+                await runTransaction(counterRef, (currentValue) => (currentValue || 0) + 1);
+                console.log(`View count incremented for ${topic}/${projectId}`);
+            } catch (error) {
+                console.error(`Failed to increment counter for ${topic}/${projectId}:`, error);
+            }
+        }
+
+        // 輔助函式：首字母大寫 (用於 Firebase 路徑)
+        function capitalizeFirstLetter(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+        // --- Firebase 路徑調整結束 ---
 
         // 格式化數字
         function formatNumber(num) {
