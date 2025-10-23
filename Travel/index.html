@@ -465,18 +465,19 @@
                 </div>
 
                 <div id="international-panel" class="tab-panel">
-                    <div class="empty-state">
-                        <div class="empty-icon">🌍</div>
-                        <div class="empty-title">國外旅遊規劃中</div>
-                        <div class="empty-desc">
-                            正在籌劃海外旅行的精彩行程，<br>
-                            將分享異國文化與風景的深度體驗！
+                    <div class="project-card" onclick="window.location.href='/Travel/seoul-bp-concert-2025/'">
+                        <div class="project-header">
+                            <div class="project-icon">🎤</div>
+                            <div class="project-info">
+                                <div class="project-title">2025 夏 • 首爾 BLACKPINK 演唱會追星之旅</div>
+                                <div class="project-subtitle">六天五夜自由行：演唱會、景點、美食全紀錄</div>
+                            </div>
                         </div>
-                        <div class="update-hint">
-                            <span>✈️</span>
-                            <span>世界探索即將啟程</span>
+                        <div class="project-meta">
+                            <span class="status-badge status-completed">已完成</span>
+                            <span>📅 2025-10</span> <span>⏱️ 6天5夜</span>
                         </div>
-                    </div>
+                        </div>
                 </div>
 
                 <div id="food-panel" class="tab-panel">
@@ -539,6 +540,18 @@
             'c-pointer-tutorial': {
                 topic: 'learning', // 專案所屬主題
                 // ... 其他專案資訊
+            },
+            'seoul-bp-concert-2025': { // 新增的韓國旅遊項目
+                topic: 'travel',          // 主題是旅遊
+                category: 'international', // 子分類是國外旅遊
+                title: '2025 夏 • 首爾 BLACKPINK 演唱會追星之旅', // 標題
+                subtitle: '六天五夜自由行：演唱會、景點、美食全紀錄', // 副標題
+                status: 'completed',      // 狀態：已完成
+                publishDate: '2025-10',    // 發布日期 (你可以修改成實際發布日期)
+                // estimatedTime: '6天5夜', // (可選) 加上旅行天數
+                // difficulty: '自由行', // (可選)
+                url: '/Travel/seoul-bp-concert-2025/', // 這個紀錄的網址
+                icon: '🎤' // 圖示 (麥克風代表演唱會)
             }
             // --- 未來新增專案於此 ---
         };
