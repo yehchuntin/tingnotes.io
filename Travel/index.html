@@ -25,7 +25,7 @@
         .loading { border-color: var(--travel-color); border-top-color: transparent; border-right-color: transparent; }
         .update-hint { color: var(--travel-color); }
     </style>
-    </head>
+</head>
 <body>
     <div class="container">
         <header class="header">
@@ -97,59 +97,35 @@
 
             <div class="category-content">
                 <div id="domestic-panel" class="tab-panel active">
-                    <div class="empty-state">
-                        <div class="empty-icon">🏞️</div>
-                        <div class="empty-title">國內旅遊準備中</div>
-                        <div class="empty-desc">
-                            正在規劃台灣各地的深度旅行體驗，<br>
-                            期待分享在地文化與美景的探索心得！
-                        </div>
-                        <div class="update-hint">
-                            <span>🌸</span>
-                            <span>台灣之美即將呈現</span>
-                        </div>
+                    <div class="projects-grid" id="domestic-projects">
+                        <div style="text-align: center; padding: 50px; color: var(--text-secondary); grid-column: 1 / -1;">
+                             <span class="loading"></span> 載入國內旅遊中...
+                         </div>
                     </div>
-                    <div class="projects-grid" id="domestic-projects"></div>
                 </div>
 
                 <div id="international-panel" class="tab-panel">
-                    <div class="projects-grid" id="international-projects">
+                     <div class="projects-grid" id="international-projects">
                          <div style="text-align: center; padding: 50px; color: var(--text-secondary); grid-column: 1 / -1;">
-                             <span class="loading"></span> 載入旅遊記錄中...
+                             <span class="loading"></span> 載入國外旅遊中...
                          </div>
                     </div>
                  </div>
 
                 <div id="food-panel" class="tab-panel">
-                    <div class="empty-state">
-                        <div class="empty-icon">🍜</div>
-                        <div class="empty-title">美食探索整理中</div>
-                        <div class="empty-desc">
-                            正在品嚐與記錄各地特色美食，<br>
-                            期待分享味覺旅程的精彩發現！
-                        </div>
-                        <div class="update-hint">
-                            <span>🍽️</span>
-                            <span>美食地圖繪製中</span>
-                        </div>
+                     <div class="projects-grid" id="food-projects">
+                         <div style="text-align: center; padding: 50px; color: var(--text-secondary); grid-column: 1 / -1;">
+                             <span class="loading"></span> 載入美食探索中...
+                         </div>
                     </div>
-                     <div class="projects-grid" id="food-projects"></div>
                 </div>
 
                  <div id="culture-panel" class="tab-panel">
-                    <div class="empty-state">
-                        <div class="empty-icon">🎭</div>
-                        <div class="empty-title">文化體驗構思中</div>
-                        <div class="empty-desc">
-                            正在深入了解各地文化傳統與習俗，<br>
-                            期待分享文化交流的深刻感悟！
-                        </div>
-                        <div class="update-hint">
-                            <span>🎨</span>
-                            <span>文化之旅即將分享</span>
-                        </div>
+                     <div class="projects-grid" id="culture-projects">
+                         <div style="text-align: center; padding: 50px; color: var(--text-secondary); grid-column: 1 / -1;">
+                             <span class="loading"></span> 載入文化體驗中...
+                         </div>
                     </div>
-                     <div class="projects-grid" id="culture-projects"></div>
                 </div>
             </div>
         </section>

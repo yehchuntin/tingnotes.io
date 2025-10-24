@@ -9,13 +9,11 @@
     <link rel="stylesheet" href="../style.css">
 
     <style>
-        :root { /* 或者 body */
-            --accent-primary: var(--others-color); /* 主要強調色改為 others 紫色 */
-            --accent-secondary: color-mix(in srgb, var(--others-color) 80%, black); /* 深一點的紫色 */
-            --shadow-medium: rgba(142, 68, 173, 0.1); /* 陰影也帶點紫色 (使用 others 紫色的 RGB 值) */
+        :root {
+            --accent-primary: var(--others-color);
+            --accent-secondary: color-mix(in srgb, var(--others-color) 80%, black);
+            --shadow-medium: rgba(142, 68, 173, 0.1);
         }
-
-        /* 覆蓋特定元素的顏色 */
         .stat-number { color: var(--others-color); }
         .breadcrumb a { color: var(--others-color); }
         .category-tab.active { color: var(--others-color); }
@@ -27,7 +25,7 @@
         .loading { border-color: var(--others-color); border-top-color: transparent; border-right-color: transparent; }
         .update-hint { color: var(--others-color); }
     </style>
-    </head>
+</head>
 <body>
     <div class="container">
         <header class="header">
@@ -53,7 +51,7 @@
 
         <section class="stats-section">
             <div class="stat-card">
-                 <span class="stat-number" id="total-posts">
+                <span class="stat-number" id="total-posts">
                      <span class="loading"></span>
                 </span>
                 <div class="stat-label">文章總數</div>
@@ -99,71 +97,35 @@
 
             <div class="category-content">
                 <div id="life-panel" class="tab-panel active">
-                    <div class="empty-state">
-                        <div class="empty-icon">🌟</div>
-                        <div class="empty-title">生活感悟準備中</div>
-                        <div class="empty-desc">
-                            正在整理日常生活中的點滴感悟與思考，<br>
-                            期待與您分享生活的智慧與美好！
-                        </div>
-                        <div class="update-hint">
-                            <span>✨</span>
-                            <span>持續更新中，敬請期待</span>
-                        </div>
-                    </div>
                     <div class="projects-grid" id="life-projects">
-                        </div>
+                        <div style="text-align: center; padding: 50px; color: var(--text-secondary); grid-column: 1 / -1;">
+                             <span class="loading"></span> 載入生活感悟中...
+                         </div>
+                    </div>
                 </div>
 
                 <div id="books-panel" class="tab-panel">
-                    <div class="empty-state">
-                        <div class="empty-icon">📚</div>
-                        <div class="empty-title">讀書筆記整理中</div>
-                        <div class="empty-desc">
-                            正在整理各類書籍的閱讀心得與重點摘要，<br>
-                            將分享深度思考與知識收穫！
-                        </div>
-                        <div class="update-hint">
-                            <span>📖</span>
-                            <span>精彩內容即將推出</span>
-                        </div>
-                    </div>
                     <div class="projects-grid" id="books-projects">
-                        </div>
+                        <div style="text-align: center; padding: 50px; color: var(--text-secondary); grid-column: 1 / -1;">
+                             <span class="loading"></span> 載入讀書筆記中...
+                         </div>
+                    </div>
                 </div>
 
                 <div id="current-panel" class="tab-panel">
-                    <div class="empty-state">
-                        <div class="empty-icon">🌐</div>
-                        <div class="empty-title">時事觀察構思中</div>
-                        <div class="empty-desc">
-                            正在觀察社會現象與趨勢變化，<br>
-                            將從多元角度分享時事思考與見解！
-                        </div>
-                        <div class="update-hint">
-                            <span>🔍</span>
-                            <span>深度分析正在準備</span>
-                        </div>
-                    </div>
                     <div class="projects-grid" id="current-projects">
-                        </div>
+                        <div style="text-align: center; padding: 50px; color: var(--text-secondary); grid-column: 1 / -1;">
+                             <span class="loading"></span> 載入時事觀察中...
+                         </div>
+                    </div>
                 </div>
 
                 <div id="reflection-panel" class="tab-panel">
-                    <div class="empty-state">
-                        <div class="empty-icon">🪞</div>
-                        <div class="empty-title">個人反思醞釀中</div>
-                        <div class="empty-desc">
-                            正在進行內心對話與自我檢視，<br>
-                            期待分享成長路上的反思與領悟！
-                        </div>
-                        <div class="update-hint">
-                            <span>💭</span>
-                            <span>真誠分享即將開始</span>
-                        </div>
-                    </div>
                     <div class="projects-grid" id="reflection-projects">
-                        </div>
+                        <div style="text-align: center; padding: 50px; color: var(--text-secondary); grid-column: 1 / -1;">
+                             <span class="loading"></span> 載入個人反思中...
+                         </div>
+                    </div>
                 </div>
             </div>
         </section>

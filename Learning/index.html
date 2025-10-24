@@ -7,6 +7,29 @@
     <meta name="description" content="TingNotes 學習專區 - 程式技術、投資理財、攝影藝術等多元學習內容">
 
     <link rel="stylesheet" href="../style.css">
+
+    <style>
+        :root { /* 或者 body */
+            --accent-primary: var(--learning-color); /* 主要強調色改為 learning 藍色 */
+            --accent-secondary: color-mix(in srgb, var(--learning-color) 80%, black); /* 深一點的藍色 */
+            --shadow-medium: rgba(52, 152, 219, 0.1); /* 陰影也帶點藍色 */
+        }
+
+        /* 覆蓋特定元素的顏色 */
+        .stat-number { color: var(--learning-color); }
+        .breadcrumb a { color: var(--learning-color); }
+        .category-tab.active { color: var(--learning-color); }
+        .category-tab.active::after { background: var(--learning-color); }
+        .bullet-list li::before { color: var(--learning-color); }
+        .section-number, .section-icon { background: var(--learning-color); }
+        .highlight-box { border-left-color: var(--learning-color); }
+        .highlight-title { color: var(--learning-color); }
+        .loading { border-color: var(--learning-color); border-top-color: transparent; border-right-color: transparent; }
+        .update-hint { color: var(--learning-color); }
+        /* .projects-scroll-wrapper::-webkit-scrollbar-thumb { background: var(--learning-color); } */
+        /* .projects-scroll-wrapper::-webkit-scrollbar-thumb:hover { background: color-mix(in srgb, var(--learning-color) 80%, black); } */
+        /* .scroll-hint { background: var(--learning-color); } */
+    </style>
     </head>
 <body>
     <div class="container">
@@ -34,7 +57,8 @@
         <section class="stats-section">
             <div class="stat-card">
                 <span class="stat-number" id="total-content">
-                    <span class="loading"></span> </span>
+                    <span class="loading"></span>
+                </span>
                 <div class="stat-label">已完成內容</div>
             </div>
             <div class="stat-card">
@@ -42,7 +66,8 @@
             </div>
             <div class="stat-card">
                 <span class="stat-number" id="total-views">
-                    <span class="loading"></span> </span>
+                    <span class="loading"></span>
+                </span>
                 <div class="stat-label">總觀看次數</div>
             </div>
             <div class="stat-card">
@@ -77,69 +102,40 @@
 
             <div class="category-content">
                 <div id="programming-panel" class="tab-panel active">
-                    <div class="projects-scroll-container">
-                        <div class="scroll-hint hidden" id="programming-scroll-hint">→</div> <div class="projects-scroll-wrapper" id="programming-scroll">
-                             <div class="projects-grid" id="programming-projects">
-                                <div style="text-align: center; padding: 50px; color: var(--text-secondary);">
-                                    <span class="loading"></span> 載入學習記錄中...
-                                </div>
-                            </div>
+                    <div class="projects-grid" id="programming-projects">
+                        <div style="text-align: center; padding: 50px; color: var(--text-secondary); grid-column: 1 / -1;">
+                            <span class="loading"></span> 載入程式技術中...
                         </div>
                     </div>
                 </div>
 
                 <div id="finance-panel" class="tab-panel">
-                    <div class="empty-state">
-                        <div class="empty-icon">📈</div>
-                        <div class="empty-title">投資理財課程準備中</div>
-                        <div class="empty-desc">
-                            正在準備股市投資、理財規劃等相關內容，<br>
-                            將包含實戰經驗與風險管理策略！
-                        </div>
-                        <div class="update-hint">
-                            <span>💰</span>
-                            <span>理財知識即將分享</span>
-                        </div>
+                    <div class="projects-grid" id="finance-projects">
+                        <div style="text-align: center; padding: 50px; color: var(--text-secondary); grid-column: 1 / -1;">
+                             <span class="loading"></span> 載入投資理財中...
+                         </div>
                     </div>
-                     <div class="projects-grid" id="finance-projects"></div>
                 </div>
 
                 <div id="photography-panel" class="tab-panel">
-                    <div class="empty-state">
-                        <div class="empty-icon">📸</div>
-                        <div class="empty-title">攝影藝術課程構思中</div>
-                        <div class="empty-desc">
-                            攝影技巧、構圖美學、後製修圖等內容正在規劃階段，<br>
-                            將分享完整攝影學習路徑！
-                        </div>
-                        <div class="update-hint">
-                            <span>📷</span>
-                            <span>攝影技巧即將開課</span>
-                        </div>
+                     <div class="projects-grid" id="photography-projects">
+                         <div style="text-align: center; padding: 50px; color: var(--text-secondary); grid-column: 1 / -1;">
+                             <span class="loading"></span> 載入攝影藝術中...
+                         </div>
                     </div>
-                     <div class="projects-grid" id="photography-projects"></div>
                 </div>
 
                 <div id="others-panel" class="tab-panel">
-                    <div class="empty-state">
-                        <div class="empty-icon">🎯</div>
-                        <div class="empty-title">更多主題陸續增加</div>
-                        <div class="empty-desc">
-                            語言學習、設計思維、音樂創作等其他主題正在準備中，<br>
-                            期待分享更多元的學習內容！
-                        </div>
-                        <div class="update-hint">
-                            <span>🌟</span>
-                            <span>多元內容持續增加</span>
-                        </div>
+                     <div class="projects-grid" id="others-projects">
+                         <div style="text-align: center; padding: 50px; color: var(--text-secondary); grid-column: 1 / -1;">
+                             <span class="loading"></span> 載入其他主題中...
+                         </div>
                     </div>
-                     <div class="projects-grid" id="others-projects"></div>
                 </div>
             </div>
         </section>
     </div>
 
-    <script src="../data.js"></script>
     <script type="module" src="../script.js"></script>
 
 </body>

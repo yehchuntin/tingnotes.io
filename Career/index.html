@@ -9,50 +9,23 @@
     <link rel="stylesheet" href="../style.css">
 
     <style>
-        /* 使用 :root 或 body 來覆蓋 CSS 變數 */
-        :root { /* 或者 body */
-            --accent-primary: var(--career-color); /* 主要強調色改為 career 綠色 */
-            --accent-secondary: color-mix(in srgb, var(--career-color) 80%, black); /* 深一點的綠色 */
-            --shadow-medium: rgba(39, 174, 96, 0.1); /* 陰影也帶點綠色 (使用 career 綠色的 RGB 值) */
+        :root {
+            --accent-primary: var(--career-color);
+            --accent-secondary: color-mix(in srgb, var(--career-color) 80%, black);
+            --shadow-medium: rgba(39, 174, 96, 0.1);
         }
-
-        /* 覆蓋特定元素的顏色 */
-        .stat-number {
-            color: var(--career-color); /* 統計數字顏色 */
-        }
-        .breadcrumb a {
-             color: var(--career-color); /* 麵包屑連結顏色 */
-         }
-        .category-tab.active {
-            color: var(--career-color); /* 當前分頁標籤文字顏色 */
-        }
-        .category-tab.active::after {
-            background: var(--career-color); /* 當前分頁標籤底線顏色 */
-        }
-        .bullet-list li::before {
-             color: var(--career-color); /* 列表項目符號顏色 (如果頁面內有列表) */
-        }
-        .section-number, .section-icon {
-             background: var(--career-color); /* 章節標題數字/圖示背景色 (如果頁面內有) */
-        }
-        .highlight-box {
-            border-left-color: var(--career-color); /* 強調框左邊線顏色 */
-        }
-        .highlight-title {
-             color: var(--career-color); /* 強調框標題顏色 */
-        }
-        .loading {
-             border-color: var(--career-color); /* Loading 圖示顏色 */
-             border-top-color: transparent;
-             border-right-color: transparent;
-        }
-        .update-hint {
-             color: var(--career-color); /* Empty State 提示文字顏色 */
-        }
-        /* 你可以根據需要繼續添加其他需要覆蓋顏色的元素 */
-
+        .stat-number { color: var(--career-color); }
+        .breadcrumb a { color: var(--career-color); }
+        .category-tab.active { color: var(--career-color); }
+        .category-tab.active::after { background: var(--career-color); }
+        .bullet-list li::before { color: var(--career-color); }
+        .section-number, .section-icon { background: var(--career-color); }
+        .highlight-box { border-left-color: var(--career-color); }
+        .highlight-title { color: var(--career-color); }
+        .loading { border-color: var(--career-color); border-top-color: transparent; border-right-color: transparent; }
+        .update-hint { color: var(--career-color); }
     </style>
-    </head>
+</head>
 <body>
     <div class="container">
         <header class="header">
@@ -84,8 +57,7 @@
                 <div class="stat-label">職場經驗</div>
             </div>
             <div class="stat-card">
-                <span class="stat-number" id="total-articles">4</span>
-                <div class="stat-label">主題分類</div>
+                <span class="stat-number" id="total-articles">4</span> <div class="stat-label">主題分類</div>
             </div>
             <div class="stat-card">
                 <span class="stat-number" id="total-views">
@@ -94,8 +66,7 @@
                 <div class="stat-label">總觀看次數</div>
             </div>
             <div class="stat-card">
-                <span class="stat-number" id="last-updated">2025</span>
-                <div class="stat-label">最後更新</div>
+                <span class="stat-number" id="last-updated">2025</span> <div class="stat-label">最後更新</div>
             </div>
         </section>
 
@@ -126,71 +97,35 @@
 
             <div class="category-content">
                 <div id="internship-panel" class="tab-panel active">
-                    <div class="empty-state">
-                        <div class="empty-icon">🎯</div>
-                        <div class="empty-title">實習經驗準備中</div>
-                        <div class="empty-desc">
-                            正在整理實習過程中的學習經驗與心得，<br>
-                            期待分享從學生到職場新人的成長歷程！
-                        </div>
-                        <div class="update-hint">
-                            <span>💼</span>
-                            <span>真實經驗即將分享</span>
-                        </div>
-                    </div>
-                     <div class="projects-grid" id="internship-projects">
+                    <div class="projects-grid" id="internship-projects">
+                        <div style="text-align: center; padding: 50px; color: var(--text-secondary); grid-column: 1 / -1;">
+                             <span class="loading"></span> 載入實習經驗中...
                          </div>
+                    </div>
                 </div>
 
                 <div id="interview-panel" class="tab-panel">
-                    <div class="empty-state">
-                        <div class="empty-icon">💼</div>
-                        <div class="empty-title">面試準備整理中</div>
-                        <div class="empty-desc">
-                            正在準備技術面試與行為面試的完整攻略，<br>
-                            將分享面試技巧與實戰經驗！
-                        </div>
-                        <div class="update-hint">
-                            <span>📝</span>
-                            <span>面試秘笈即將推出</span>
-                        </div>
-                    </div>
-                     <div class="projects-grid" id="interview-projects">
+                    <div class="projects-grid" id="interview-projects">
+                        <div style="text-align: center; padding: 50px; color: var(--text-secondary); grid-column: 1 / -1;">
+                             <span class="loading"></span> 載入面試準備中...
                          </div>
+                    </div>
                 </div>
 
                 <div id="planning-panel" class="tab-panel">
-                    <div class="empty-state">
-                        <div class="empty-icon">🚀</div>
-                        <div class="empty-title">職涯規劃構思中</div>
-                        <div class="empty-desc">
-                            正在思考職業發展路徑與長期規劃策略，<br>
-                            期待分享職涯設計的思維框架！
-                        </div>
-                        <div class="update-hint">
-                            <span>🎯</span>
-                            <span>職涯地圖繪製中</span>
-                        </div>
-                    </div>
-                     <div class="projects-grid" id="planning-projects">
+                    <div class="projects-grid" id="planning-projects">
+                        <div style="text-align: center; padding: 50px; color: var(--text-secondary); grid-column: 1 / -1;">
+                             <span class="loading"></span> 載入職涯規劃中...
                          </div>
+                    </div>
                 </div>
 
                 <div id="growth-panel" class="tab-panel">
-                    <div class="empty-state">
-                        <div class="empty-icon">📈</div>
-                        <div class="empty-title">成長心得醞釀中</div>
-                        <div class="empty-desc">
-                            正在反思職場成長過程中的收穫與感悟，<br>
-                            期待分享個人發展的心路歷程！
-                        </div>
-                        <div class="update-hint">
-                            <span>🌱</span>
-                            <span>成長故事即將開講</span>
-                        </div>
-                    </div>
-                     <div class="projects-grid" id="growth-projects">
+                    <div class="projects-grid" id="growth-projects">
+                         <div style="text-align: center; padding: 50px; color: var(--text-secondary); grid-column: 1 / -1;">
+                             <span class="loading"></span> 載入成長心得中...
                          </div>
+                    </div>
                 </div>
             </div>
         </section>

@@ -643,8 +643,10 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log("Loading Learning page projects...");
         loadProjectsByCategory('learning', 'programming', 'programming-projects');
         // 如果有其他分類，繼續添加
-        // loadProjectsByCategory('learning', 'finance', 'finance-projects');
-        // loadProjectsByCategory('learning', 'language', 'language-projects');
+        loadProjectsByCategory('learning', 'finance', 'finance-projects');
+        loadProjectsByCategory('learning', 'photography', 'photography-projects');
+        loadProjectsByCategory('learning', 'others', 'others-projects');
+
     } else if (currentTopic === 'travel') {
         // 旅遊頁面：載入各分類
         console.log("Loading Travel page projects...");
@@ -659,12 +661,16 @@ document.addEventListener('DOMContentLoaded', () => {
         loadProjectsByCategory('career', 'interview', 'interview-projects');
         loadProjectsByCategory('career', 'planning', 'planning-projects');
         loadProjectsByCategory('career', 'growth', 'growth-projects');
+        
         // loadProjectsByCategory('career', 'skill', 'skill-projects');
     } else if (currentTopic === 'others') {
         // 雜事分享頁面：載入各分類
         console.log("Loading Others page projects...");
         loadProjectsByCategory('others', 'life', 'life-projects');
         loadProjectsByCategory('others', 'books', 'books-projects');
+        loadProjectsByCategory('others', 'current', 'current-projects');
+        loadProjectsByCategory('others', 'reflection', 'reflection-projects');
+
         // loadProjectsByCategory('others', 'tech', 'tech-projects');
     }
 
