@@ -1,5 +1,7 @@
 // data.js - 所有專案資料
 
+// 若各主題要新增分類(category)，可去script.js，ctrl+F ，else if (currentTopic === 'learning') {
+
 const allProjectsData = {
     // ==================== 學習區 ====================
     'c-pointer-tutorial': {
@@ -24,23 +26,23 @@ const allProjectsData = {
     
 
     // ==================== 職涯區 ====================
-    // 'software-engineer-interview': {
-    //     id: 'software-engineer-interview',
-    //     topic: 'career',
-    //     category: 'interview',
-    //     title: '軟體工程師面試準備指南',
-    //     subtitle: '演算法、系統設計、行為問題全攻略',
-    //     desc: '完整的軟體工程師面試準備計畫，涵蓋技術面試和行為面試的各個方面。',
-    //     status: 'completed',
-    //     publishDate: '2025-09',
-    //     estimatedTime: '4週準備',
-    //     difficulty: '中高級',
-    //     url: '/Career/software-engineer-interview/',
-    //     icon: '💼',
-    //     firebasePath: 'Career/software-engineer-interview/totalViews',
-    //     useTearEffect: true,  // 啟用撕開效果
-    //     imageUrl: '/Career/software-engineer-interview/cover.jpg'
-    // }
+    'software-engineer-interview': {
+        id: 'software-engineer-interview',
+        topic: 'career',
+        category: 'growth', // intership / interview / planning / growth
+        title: '軟體工程師面試準備指南',
+        subtitle: '演算法、系統設計、行為問題全攻略',
+        desc: '完整的軟體工程師面試準備計畫，涵蓋技術面試和行為面試的各個方面。',
+        status: 'completed',
+        publishDate: '2025-09',
+        estimatedTime: '4週準備',
+        difficulty: '中高級',
+        url: '/Career/software-engineer-interview/',
+        icon: '💼',
+        firebasePath: 'Career/software-engineer-interview/totalViews',
+        useTearEffect: true,  // 啟用撕開效果
+        imageUrl: '/Career/software-engineer-interview/cover.jpg'
+    },
 
     // ==================== 旅遊區 ====================
     'seoul-bp-concert-2025': {
@@ -63,23 +65,23 @@ const allProjectsData = {
     
 
     // ==================== 雜事分享區 ====================
-    // 'book-review-atomic-habits': {
-    //     id: 'book-review-atomic-habits',
-    //     topic: 'others',
-    //     category: 'books',
-    //     title: '《原子習慣》讀書心得',
-    //     subtitle: '微小改變如何帶來巨大成就',
-    //     desc: '分享閱讀《原子習慣》的心得，以及如何應用書中的概念改善日常生活。',
-    //     status: 'completed',
-    //     publishDate: '2025-08',
-    //     estimatedTime: '15分鐘閱讀',
-    //     difficulty: '生活分享',
-    //     url: '/Others/book-review-atomic-habits/',
-    //     icon: '📚',
-    //     firebasePath: 'Others/book-review-atomic-habits/totalViews',
-    //     useTearEffect: true,  // 啟用撕開效果
-    //     imageUrl: '/Others/book-review-atomic-habits/cover.jpg'
-    // }
+    'book-review-atomic-habits': {
+        id: 'book-review-atomic-habits',
+        topic: 'others',
+        category: 'books',
+        title: '《原子習慣》讀書心得',
+        subtitle: '微小改變如何帶來巨大成就',
+        desc: '分享閱讀《原子習慣》的心得，以及如何應用書中的概念改善日常生活。',
+        status: 'completed',
+        publishDate: '2025-08',
+        estimatedTime: '15分鐘閱讀',
+        difficulty: '生活分享',
+        url: '/Others/book-review-atomic-habits/',
+        icon: '📚',
+        firebasePath: 'Others/book-review-atomic-habits/totalViews',
+        useTearEffect: true,  // 啟用撕開效果
+        imageUrl: '/Others/book-review-atomic-habits/cover.jpg'
+    }
 
     // ==================== 新增專案模板 ====================
     // 複製以下模板來新增專案：

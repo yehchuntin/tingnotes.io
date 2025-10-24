@@ -657,6 +657,8 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log("Loading Career page projects...");
         loadProjectsByCategory('career', 'internship', 'internship-projects');
         loadProjectsByCategory('career', 'interview', 'interview-projects');
+        loadProjectsByCategory('career', 'planning', 'planning-projects');
+        loadProjectsByCategory('career', 'growth', 'growth-projects');
         // loadProjectsByCategory('career', 'skill', 'skill-projects');
     } else if (currentTopic === 'others') {
         // 雜事分享頁面：載入各分類

@@ -7,14 +7,31 @@
     <meta name="description" content="TingNotes 旅遊專區 - 旅行經歷分享、景點推薦、文化觀察與旅途思考">
 
     <link rel="stylesheet" href="../style.css">
+
+    <style>
+        :root {
+            --accent-primary: var(--travel-color);
+            --accent-secondary: color-mix(in srgb, var(--travel-color) 80%, black);
+            --shadow-medium: rgba(230, 126, 34, 0.1);
+        }
+        .stat-number { color: var(--travel-color); }
+        .breadcrumb a { color: var(--travel-color); }
+        .category-tab.active { color: var(--travel-color); }
+        .category-tab.active::after { background: var(--travel-color); }
+        .bullet-list li::before { color: var(--travel-color); }
+        .section-number, .section-icon { background: var(--travel-color); }
+        .highlight-box { border-left-color: var(--travel-color); }
+        .highlight-title { color: var(--travel-color); }
+        .loading { border-color: var(--travel-color); border-top-color: transparent; border-right-color: transparent; }
+        .update-hint { color: var(--travel-color); }
+    </style>
     </head>
 <body>
     <div class="container">
         <header class="header">
             <button class="theme-toggle" onclick="toggleTheme()" title="切換深淺色模式">
                 <svg class="theme-icon" id="theme-icon" width="20" height="20" viewBox="0 0 24 24">
-                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-                </svg>
+                    </svg>
             </button>
 
             <div class="breadcrumb">
@@ -34,11 +51,13 @@
 
         <section class="stats-section">
             <div class="stat-card">
-                <span class="stat-number" id="total-trips">0</span>
+                <span class="stat-number" id="total-trips">
+                    <span class="loading"></span>
+                </span>
                 <div class="stat-label">旅行記錄</div>
             </div>
             <div class="stat-card">
-                <span class="stat-number" id="total-countries">4</span> <div class="stat-label">主題分類</div>
+                <span class="stat-number" id="total-categories">4</span> <div class="stat-label">主題分類</div>
             </div>
             <div class="stat-card">
                 <span class="stat-number" id="total-views">
@@ -114,7 +133,7 @@
                             <span>美食地圖繪製中</span>
                         </div>
                     </div>
-                    <div class="projects-grid" id="food-projects"></div>
+                     <div class="projects-grid" id="food-projects"></div>
                 </div>
 
                  <div id="culture-panel" class="tab-panel">
@@ -130,13 +149,12 @@
                             <span>文化之旅即將分享</span>
                         </div>
                     </div>
-                    <div class="projects-grid" id="culture-projects"></div>
+                     <div class="projects-grid" id="culture-projects"></div>
                 </div>
             </div>
         </section>
     </div>
 
-    <!-- <script src="../data.js"></script> -->
     <script type="module" src="../script.js"></script>
 
 </body>
