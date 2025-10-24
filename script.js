@@ -5,29 +5,28 @@ import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebas
 import { getDatabase, ref, get, runTransaction } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
 
 // --- 匯入專案資料 ---
-import { allProjectsData } from './data.js'; // <-- 確認 import 語句在這裡
+import { allProjectsData } from './data.js';
 
 // --- Firebase Configuration & Initialization ---
 const firebaseConfig = {
-    apiKey: "AIzaSyAbEhPO8lUDT4nCPmfw1fZg3t2eGO6JUaI", // 請保留你的 API Key
+    apiKey: "AIzaSyAbEhPO8lUDT4nCPmfw1fZg3t2eGO6JUaI",
     authDomain: "tingnotes-ccb46.firebaseapp.com",
     databaseURL: "https://tingnotes-ccb46-default-rtdb.asia-southeast1.firebasedatabase.app",
     projectId: "tingnotes-ccb46",
-    storageBucket: "tingnotes-ccb46.appspot.com", // 確認 storageBucket 名稱
+    storageBucket: "tingnotes-ccb46.appspot.com",
     messagingSenderId: "297732922233",
     appId: "1:297732922233:web:aab5a5d20ab2006a736da8",
     measurementId: "G-NG8BMXM21R"
 };
 
-let database; // 宣告 database 變數
+let database;
 try {
     const app = initializeApp(firebaseConfig);
     database = getDatabase(app);
 } catch (error) {
     console.error("Firebase Initialization Failed:", error);
-    database = null; // 初始化失敗時設為 null
+    database = null;
 }
-
 
 // --- Theme Switching ---
 function toggleTheme() {
@@ -61,7 +60,7 @@ function loadTheme() {
         }
     }
 }
-window.toggleTheme = toggleTheme; // 讓 HTML onclick 可以呼叫
+window.toggleTheme = toggleTheme;
 
 // --- Firebase Interaction Functions ---
 async function getViewCount(projectId, topic) {
@@ -111,30 +110,25 @@ function formatNumber(num) {
 async function updateStatistics() {
     if (typeof allProjectsData === 'undefined') {
          console.error("updateStatistics: allProjectsData is not defined.");
-         // 嘗試顯示錯誤訊息給用戶或停止執行
          const totalViewsElement = document.getElementById('total-views');
          if (totalViewsElement) totalViewsElement.textContent = '錯誤';
          return;
     }
 
-    // 1. 識別當前頁面的主題
-    const pathParts = window.location.pathname.split('/').filter(p => p && p !== 'index.html'); // 過濾空字串和 index.html
+    const pathParts = window.location.pathname.split('/').filter(p => p && p !== 'index.html');
     const currentTopic = pathParts.length === 0 ? 'home' : pathParts[0].toLowerCase();
 
-    // 如果不在特定主題頁面 (在首頁)，則不更新特定主題的統計數據
     if (currentTopic === 'home') {
         console.log("On home page, skipping topic-specific statistics update.");
-        return; // 首頁不需要計算特定主題的總觀看次數和內容數
+        return;
     }
 
-    // 2. 篩選出屬於當前主題的專案
     const topicProjects = Object.entries(allProjectsData)
         .filter(([id, project]) => project.topic === currentTopic)
         .map(([id, project]) => ({ id, ...project }));
 
     console.log(`Found ${topicProjects.length} projects for topic: ${currentTopic}`);
 
-    // 3. 更新內容總數 (根據主題決定 ID)
     let totalContentElementId;
     switch(currentTopic) {
         case 'learning': totalContentElementId = 'total-content'; break;
@@ -147,7 +141,6 @@ async function updateStatistics() {
     if (totalContentElementId) {
         const totalContentElement = document.getElementById(totalContentElementId);
         if (totalContentElement) {
-            // 計算實際內容數量 (例如已完成的，或所有項目) - 這裡計算所有項目
             totalContentElement.textContent = topicProjects.length;
             console.log(`Updated ${totalContentElementId} count to: ${topicProjects.length}`);
         } else {
@@ -155,29 +148,23 @@ async function updateStatistics() {
         }
     }
 
-
-    // 4. 計算當前主題的總觀看次數
     let topicTotalViews = 0;
     if (topicProjects.length > 0) {
          console.log("Calculating total views for topic:", currentTopic);
         try {
-            // 使用 Promise.all 等待所有 getViewCount 完成
             const viewCountsPromises = topicProjects.map(project => getViewCount(project.id, project.topic));
             const viewCounts = await Promise.all(viewCountsPromises);
-
             topicTotalViews = viewCounts.reduce((sum, count) => sum + (count || 0), 0);
             console.log(`Total views calculated for topic ${currentTopic}: ${topicTotalViews}`);
         } catch (error) {
             console.error(`Error calculating total views for topic ${currentTopic}:`, error);
-            topicTotalViews = 0; // 出錯時設為 0
+            topicTotalViews = 0;
         }
     } else {
          console.log(`No projects found for topic ${currentTopic}, total views set to 0.`);
          topicTotalViews = 0;
     }
 
-
-    // 5. 更新總觀看次數顯示
     const totalViewsElement = document.getElementById('total-views');
     if (totalViewsElement) {
         const loadingIndicator = totalViewsElement.querySelector('.loading');
@@ -190,7 +177,6 @@ async function updateStatistics() {
         console.log("Could not find element for total views display.");
     }
 
-    // 6. 更新最後更新時間
     const now = new Date();
     const lastUpdatedElement = document.getElementById('last-updated');
     if (lastUpdatedElement) {
@@ -201,18 +187,65 @@ async function updateStatistics() {
     }
 }
 
-
 // --- Content Loading Functions ---
 
-// 產生卡片 HTML (通用)
+// 產生卡片 HTML（通用函數，支援撕開效果）
 function generateProjectCardHTML(projectId, project, views) {
     if (!project) return '';
+    
     const statusClass = project.status === 'completed' ? 'status-completed' :
                        project.status === 'progress' ? 'status-progress' : 'status-planned';
     const statusText = project.status === 'completed' ? '已完成' :
                       project.status === 'progress' ? '進行中' : '規劃中';
+    
+    // 檢查是否啟用撕開效果
+    const useTearEffect = project.useTearEffect === true;
+    const tearClass = useTearEffect ? 'tear-card' : '';
+    const imageUrl = project.imageUrl || '/assets/images/placeholder.jpg';
+    const imageStyle = useTearEffect ? `style="--card-image: url('${imageUrl}')"` : '';
+    
+    // 決定點擊處理函數
+    const clickHandler = useTearEffect 
+        ? `onclick="handleTearCardClick(event, '${projectId}', '${project.topic}')"`
+        : `onclick="handleProjectClick('${projectId}', '${project.topic}')"`;
+    
+    // 如果使用撕開效果，使用不同的 HTML 結構
+    if (useTearEffect) {
+        return `
+            <div class="project-card ${tearClass}" 
+                 data-topic="${project.topic}" 
+                 data-project-id="${projectId}"
+                 ${imageStyle}
+                 ${clickHandler}>
+                <div class="card-mask">
+                    <div class="project-header">
+                        <div class="project-icon">${project.icon || '❓'}</div>
+                        <div class="project-info">
+                            <div class="project-title">${project.title || 'Untitled Project'}</div>
+                            <div class="project-subtitle">${project.subtitle || ''}</div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="project-meta">
+                            <span class="status-badge ${statusClass}">${statusText}</span>
+                            ${project.publishDate ? `<span>📅 ${project.publishDate}</span>` : ''}
+                            ${project.estimatedTime ? `<span>⏱️ ${project.estimatedTime}</span>` : ''}
+                        </div>
+                        <div class="project-stats">
+                            <div class="view-count">${formatNumber(views)} 次觀看</div>
+                            ${project.difficulty ? `<div class="difficulty-badge">${project.difficulty}</div>` : ''}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    
+    // 一般卡片（不使用撕開效果）
     return `
-        <div class="project-card" data-topic="${project.topic}" onclick="handleProjectClick('${projectId}', '${project.topic}')">
+        <div class="project-card" 
+             data-topic="${project.topic}" 
+             ${clickHandler}>
             <div class="project-header">
                 <div class="project-icon">${project.icon || '❓'}</div>
                 <div class="project-info">
@@ -239,7 +272,7 @@ function generateProjectCardHTML(projectId, project, views) {
 // 載入特定主題與分類的專案卡片
 async function loadProjectsByCategory(topic, category, containerId) {
     const container = document.getElementById(containerId);
-    if (!container) return; // 如果容器不存在，直接返回
+    if (!container) return;
 
     if (typeof allProjectsData === 'undefined') {
          console.error(`allProjectsData is not defined when loading ${topic}/${category}.`);
@@ -252,21 +285,17 @@ async function loadProjectsByCategory(topic, category, containerId) {
         .map(([id, project]) => ({ id, ...project }));
 
     if (categoryProjects.length === 0) {
-        // 如果此分類沒有專案，檢查容器內是否已有 .empty-state
-        // 如果沒有，則清空容器 (移除 loading...)
         if (!container.querySelector('.empty-state')) {
             container.innerHTML = '';
         }
-        return; // 沒有專案就不用繼續了
+        return;
     }
 
-    // 如果容器內有 .empty-state，先移除它
     const emptyState = container.querySelector('.empty-state');
     if (emptyState) {
         emptyState.remove();
     }
 
-    // 獲取觀看次數並生成 HTML
     let html = '';
     try {
         const viewsPromises = categoryProjects.map(project => getViewCount(project.id, project.topic));
@@ -276,15 +305,14 @@ async function loadProjectsByCategory(topic, category, containerId) {
             html += generateProjectCardHTML(project.id, project, viewsArray[index]);
         });
 
-        container.innerHTML = html; // 填入生成的卡片
+        container.innerHTML = html;
     } catch (error) {
          console.error(`Error loading projects for ${topic}/${category}:`, error);
-         container.innerHTML = '<p style="color: red;">載入專案時發生錯誤。</p>'; // 顯示錯誤訊息
+         container.innerHTML = '<p style="color: red;">載入專案時發生錯誤。</p>';
     }
 }
 
-
-// 載入熱門專案 (首頁用)
+// 載入熱門專案（首頁用）
 async function loadHotProjects(containerId, count = 3) {
     const container = document.getElementById(containerId);
     if (!container) {
@@ -303,14 +331,14 @@ async function loadHotProjects(containerId, count = 3) {
         const projectsWithViews = await Promise.all(
             Object.entries(allProjectsData).map(async ([id, project]) => {
                 const views = await getViewCount(id, project.topic);
-                return { id, ...project, views: views || 0 }; // 確保 views 是數字
+                return { id, ...project, views: views || 0 };
             })
         );
         console.log("Fetched views for all projects:", projectsWithViews);
 
         const sortedProjects = projectsWithViews
-            .sort((a, b) => b.views - a.views) // 按觀看次數排序
-            .slice(0, count); // 取前 count 個
+            .sort((a, b) => b.views - a.views)
+            .slice(0, count);
         console.log("Sorted top projects:", sortedProjects);
 
         if (sortedProjects.length === 0) {
@@ -324,7 +352,6 @@ async function loadHotProjects(containerId, count = 3) {
             return;
         }
 
-        // 生成熱門專案列表 HTML
         const projectsHTML = sortedProjects.map((project, index) => {
             let rankIcon;
             let rankClass = `rank-${index + 1}`;
@@ -375,10 +402,11 @@ async function loadHotProjects(containerId, count = 3) {
     }
 }
 
+// script.js (續) - Event Handlers
 
 // --- Event Handlers ---
 
-// 點擊卡片/項目
+// 一般專案卡片點擊
 window.handleProjectClick = async function(projectId, topic) {
      if (typeof allProjectsData === 'undefined') {
          console.error("Cannot handle click: allProjectsData is not defined.");
@@ -398,6 +426,46 @@ window.handleProjectClick = async function(projectId, topic) {
     } else {
         console.error(`Project data or URL not found for ID: ${projectId}`);
     }
+};
+
+// 撕開卡片點擊處理（支援所有主題）
+window.handleTearCardClick = async function(event, projectId, topic) {
+    event.preventDefault();
+    event.stopPropagation();
+    
+    if (typeof allProjectsData === 'undefined') {
+        console.error("Cannot handle click: allProjectsData is not defined.");
+        return;
+    }
+    
+    const project = allProjectsData[projectId];
+    if (!project || !project.url) {
+        console.error(`Project data or URL not found for ID: ${projectId}`);
+        return;
+    }
+    
+    const card = event.currentTarget;
+    
+    // 防止重複點擊
+    if (card.classList.contains('tearing')) {
+        return;
+    }
+    
+    // 添加撕開動畫
+    card.classList.add('tearing');
+    
+    // 增加觀看次數
+    try {
+        await incrementViewCount(projectId, topic);
+    } catch (error) {
+        console.error("Error incrementing view count:", error);
+    }
+    
+    // 等待動畫完成後跳轉
+    setTimeout(() => {
+        const finalUrl = project.url.startsWith('/') ? project.url : `/${project.url}`;
+        window.location.href = finalUrl;
+    }, 600); // 配合 CSS 動畫時長
 };
 
 // TOC 子選單開合
@@ -421,23 +489,41 @@ window.copyCode = function(button, codeBlockId) {
 
     navigator.clipboard.writeText(codeText).then(() => {
         const originalText = button.textContent;
-        button.textContent = '✅ 已複製'; button.classList.add('copied'); button.disabled = true;
-        setTimeout(() => { button.textContent = originalText; button.classList.remove('copied'); button.disabled = false; }, 2000);
+        button.textContent = '✅ 已複製'; 
+        button.classList.add('copied'); 
+        button.disabled = true;
+        setTimeout(() => { 
+            button.textContent = originalText; 
+            button.classList.remove('copied'); 
+            button.disabled = false; 
+        }, 2000);
     }).catch(err => {
-        try { // Fallback
+        try {
             const textArea = document.createElement('textarea');
             textArea.value = codeText;
-            textArea.style.position = 'fixed'; textArea.style.top = "0"; textArea.style.left = "0"; textArea.style.opacity = "0";
+            textArea.style.position = 'fixed'; 
+            textArea.style.top = "0"; 
+            textArea.style.left = "0"; 
+            textArea.style.opacity = "0";
             document.body.appendChild(textArea);
-            textArea.focus(); textArea.select();
+            textArea.focus(); 
+            textArea.select();
             document.execCommand('copy');
             document.body.removeChild(textArea);
             const originalText = button.textContent;
-            button.textContent = '✅ 已複製 (Fallback)'; button.classList.add('copied'); button.disabled = true;
-            setTimeout(() => { button.textContent = originalText; button.classList.remove('copied'); button.disabled = false; }, 2000);
+            button.textContent = '✅ 已複製 (Fallback)'; 
+            button.classList.add('copied'); 
+            button.disabled = true;
+            setTimeout(() => { 
+                button.textContent = originalText; 
+                button.classList.remove('copied'); 
+                button.disabled = false; 
+            }, 2000);
         } catch (fallbackErr) {
             button.textContent = '複製失敗';
-             setTimeout(() => { button.textContent = '📋 複製'; }, 2000);
+             setTimeout(() => { 
+                 button.textContent = '📋 複製'; 
+             }, 2000);
         }
     });
 };
@@ -454,15 +540,16 @@ window.toggleMobileMenu = function() {
 
 // 分類頁籤切換
 window.switchTab = function(category) {
-    // 確保 event.currentTarget 存在
     if (!event || !event.currentTarget) {
         console.error("SwitchTab called without event context.");
         return;
     }
     const selector = event.currentTarget.closest('.category-selector');
     if (!selector) return;
+    
     selector.querySelectorAll('.category-tab').forEach(tab => tab.classList.remove('active'));
     selector.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
+    
     event.currentTarget.classList.add('active');
     const targetPanel = selector.querySelector('#' + category + '-panel');
     if (targetPanel) {
@@ -473,7 +560,10 @@ window.switchTab = function(category) {
 // 淡入動畫初始化
 function initAnimations() {
     try {
-        const observerOptions = { threshold: 0.1, rootMargin: '0px 0px -50px 0px' };
+        const observerOptions = { 
+            threshold: 0.1, 
+            rootMargin: '0px 0px -50px 0px' 
+        };
         const observer = new IntersectionObserver((entries, observer) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -482,49 +572,99 @@ function initAnimations() {
                 }
             });
         }, observerOptions);
-        document.querySelectorAll('.fade-in').forEach(el => { observer.observe(el); });
+        document.querySelectorAll('.fade-in').forEach(el => { 
+            observer.observe(el); 
+        });
     } catch (error) {
-        // Fallback: Make elements visible immediately if Intersection Observer fails
-        document.querySelectorAll('.fade-in').forEach(el => { el.classList.add('visible'); });
+        // Fallback: Make elements visible immediately
+        document.querySelectorAll('.fade-in').forEach(el => { 
+            el.classList.add('visible'); 
+        });
     }
 }
 
+// 為撕開卡片添加觸控事件處理
+function initTouchSupport() {
+    const handleTouchStart = (e) => {
+        const card = e.target.closest('.project-card.tear-card');
+        if (card && !card.classList.contains('touch-active')) {
+            card.classList.add('touch-active');
+        }
+    };
+    
+    const handleTouchEnd = (e) => {
+        const card = e.target.closest('.project-card.tear-card');
+        if (card) {
+            setTimeout(() => {
+                card.classList.remove('touch-active');
+            }, 300);
+        }
+    };
+    
+    document.addEventListener('touchstart', handleTouchStart, { passive: true });
+    document.addEventListener('touchend', handleTouchEnd, { passive: true });
+}
 
 // --- Initialization ---
 document.addEventListener('DOMContentLoaded', () => {
-    loadTheme(); // 優先載入主題
-    initAnimations(); // 初始化淡入動畫
-
-    // 更新統計數據 (會根據目前頁面主題計算)
-    updateStatistics(); // *** 重要：確保這個函式被呼叫 ***
-
-    // 根據當前頁面主題，載入對應分類的卡片
+    console.log("=== TingNotes Initialization Started ===");
+    
+    // 1. 載入主題
+    loadTheme();
+    console.log("Theme loaded");
+    
+    // 2. 初始化動畫
+    initAnimations();
+    console.log("Animations initialized");
+    
+    // 3. 初始化觸控支援
+    initTouchSupport();
+    console.log("Touch support initialized");
+    
+    // 4. 更新統計數據
+    updateStatistics();
+    console.log("Statistics update triggered");
+    
+    // 5. 根據當前頁面載入對應內容
     const pathParts = window.location.pathname.split('/').filter(p => p && p !== 'index.html');
     const currentTopic = pathParts.length === 0 ? 'home' : pathParts[0].toLowerCase();
+    
+    console.log(`Current page topic: ${currentTopic}`);
 
     if (currentTopic === 'home') {
+        // 首頁：載入熱門專案
         const hotProjectsContainer = document.getElementById('hot-projects');
         if (hotProjectsContainer) {
             console.log("Loading hot projects for home page...");
             loadHotProjects('hot-projects', 3);
         }
     } else if (currentTopic === 'learning') {
-        // 為 Learning 頁面載入 programming 分類
+        // 學習頁面：載入各分類
+        console.log("Loading Learning page projects...");
         loadProjectsByCategory('learning', 'programming', 'programming-projects');
-        // loadProjectsByCategory('learning', 'finance', 'finance-projects'); // Example
+        // 如果有其他分類，繼續添加
+        // loadProjectsByCategory('learning', 'finance', 'finance-projects');
+        // loadProjectsByCategory('learning', 'language', 'language-projects');
     } else if (currentTopic === 'travel') {
-        // 為 Travel 頁面載入 international 分類
+        // 旅遊頁面：載入各分類
+        console.log("Loading Travel page projects...");
         loadProjectsByCategory('travel', 'international', 'international-projects');
-        // loadProjectsByCategory('travel', 'domestic', 'domestic-projects'); // Example
+        loadProjectsByCategory('travel', 'domestic', 'domestic-projects');
+        loadProjectsByCategory('travel', 'food', 'food-projects');
+        loadProjectsByCategory('travel', 'culture', 'culture-projects');
     } else if (currentTopic === 'career') {
-        // 為 Career 頁面載入 (假設有 'internship' 分類)
-        loadProjectsByCategory('career', 'internship', 'internship-projects'); // Adjust ID/category
-        // loadProjectsByCategory('career', 'interview', 'interview-projects');
+        // 職涯頁面：載入各分類
+        console.log("Loading Career page projects...");
+        loadProjectsByCategory('career', 'internship', 'internship-projects');
+        loadProjectsByCategory('career', 'interview', 'interview-projects');
+        // loadProjectsByCategory('career', 'skill', 'skill-projects');
     } else if (currentTopic === 'others') {
-        // 為 Others 頁面載入 (假設有 'life' 分類)
-        loadProjectsByCategory('others', 'life', 'life-projects'); // Adjust ID/category
-        // loadProjectsByCategory('others', 'books', 'books-projects');
+        // 雜事分享頁面：載入各分類
+        console.log("Loading Others page projects...");
+        loadProjectsByCategory('others', 'life', 'life-projects');
+        loadProjectsByCategory('others', 'books', 'books-projects');
+        // loadProjectsByCategory('others', 'tech', 'tech-projects');
     }
 
-    console.log("Initialization complete.");
+    console.log("=== TingNotes Initialization Complete ===");
 });
