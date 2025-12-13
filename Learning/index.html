@@ -3,140 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>學習 | TingNotes - 知識分享與思考記錄</title>
-    <meta name="description" content="TingNotes 學習專區 - 程式技術、投資理財、攝影藝術等多元學習內容">
-
+    <title>Learning - TingNotes</title>
     <link rel="stylesheet" href="../style.css">
-
-    <style>
-        :root { /* 或者 body */
-            --accent-primary: var(--learning-color); /* 主要強調色改為 learning 藍色 */
-            --accent-secondary: color-mix(in srgb, var(--learning-color) 80%, black); /* 深一點的藍色 */
-            --shadow-medium: rgba(52, 152, 219, 0.1); /* 陰影也帶點藍色 */
-        }
-
-        /* 覆蓋特定元素的顏色 */
-        .stat-number { color: var(--learning-color); }
-        .breadcrumb a { color: var(--learning-color); }
-        .category-tab.active { color: var(--learning-color); }
-        .category-tab.active::after { background: var(--learning-color); }
-        .bullet-list li::before { color: var(--learning-color); }
-        .section-number, .section-icon { background: var(--learning-color); }
-        .highlight-box { border-left-color: var(--learning-color); }
-        .highlight-title { color: var(--learning-color); }
-        .loading { border-color: var(--learning-color); border-top-color: transparent; border-right-color: transparent; }
-        .update-hint { color: var(--learning-color); }
-        /* .projects-scroll-wrapper::-webkit-scrollbar-thumb { background: var(--learning-color); } */
-        /* .projects-scroll-wrapper::-webkit-scrollbar-thumb:hover { background: color-mix(in srgb, var(--learning-color) 80%, black); } */
-        /* .scroll-hint { background: var(--learning-color); } */
-    </style>
-    </head>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Fira+Code&display=swap" rel="stylesheet">
+</head>
 <body>
-    <div class="container">
-        <header class="header">
-            <button class="theme-toggle" onclick="toggleTheme()" title="切換深淺色模式">
-                <svg class="theme-icon" id="theme-icon" width="20" height="20" viewBox="0 0 24 24">
-                    </svg>
-            </button>
-
-            <div class="breadcrumb">
-                <a href="../index.html">首頁</a> /
-                <span style="color: var(--text-primary); font-weight: 500;">學習</span> /
-                <a href="../Career/index.html">職涯</a> /
-                <a href="../Travel/index.html">旅遊</a> /
-                <a href="../Others/index.html">雜事分享</a>
-            </div>
-
-            <h1 class="page-title">學習</h1>
-            <p class="page-subtitle">
-                分享我認為值得學習的觀念與資源<br>
-                涵蓋程式技術、投資理財、攝影藝術等多元主題
-            </p>
-        </header>
-
-        <section class="stats-section">
-            <div class="stat-card">
-                <span class="stat-number" id="total-content">
-                    <span class="loading"></span>
-                </span>
-                <div class="stat-label">已完成內容</div>
-            </div>
-            <div class="stat-card">
-                <span class="stat-number" id="total-topics">4</span> <div class="stat-label">主題分類</div>
-            </div>
-            <div class="stat-card">
-                <span class="stat-number" id="total-views">
-                    <span class="loading"></span>
-                </span>
-                <div class="stat-label">總觀看次數</div>
-            </div>
-            <div class="stat-card">
-                <span class="stat-number" id="last-updated">2025</span> <div class="stat-label">最後更新</div>
-            </div>
-        </section>
-
-        <section class="category-selector">
-            <div class="selector-header">
-                <h2 class="selector-title">選擇學習主題</h2>
-                <p class="selector-subtitle">點擊標籤切換不同領域的學習內容</p>
-            </div>
-
-            <div class="category-tabs">
-                <button class="category-tab active" onclick="switchTab('programming')">
-                    <span class="tab-icon">💻</span>
-                    程式技術
-                </button>
-                <button class="category-tab" onclick="switchTab('finance')">
-                    <span class="tab-icon">📈</span>
-                    投資理財
-                </button>
-                <button class="category-tab" onclick="switchTab('photography')">
-                    <span class="tab-icon">📸</span>
-                    攝影藝術
-                </button>
-                <button class="category-tab" onclick="switchTab('others')">
-                    <span class="tab-icon">🎯</span>
-                    其他主題
-                </button>
-            </div>
-
-            <div class="category-content">
-                <div id="programming-panel" class="tab-panel active">
-                    <div class="projects-grid" id="programming-projects">
-                        <div style="text-align: center; padding: 50px; color: var(--text-secondary); grid-column: 1 / -1;">
-                            <span class="loading"></span> 載入程式技術中...
-                        </div>
-                    </div>
+    
+    <header class="zen-header">
+        <div class="container">
+            <nav>
+                <a href="/" class="logo">TingNotes</a>
+                <div class="nav-controls">
+                    <button class="theme-toggle" onclick="toggleTheme()" title="切換模式">
+                        <svg class="theme-icon" id="theme-icon" width="20" height="20" viewBox="0 0 24 24"></svg>
+                    </button>
+                    <button class="menu-trigger" onclick="toggleMobileMenu()">
+                        <span class="menu-label">MENU</span>
+                        <div class="hamburger-icon"><span></span><span></span></div>
+                    </button>
                 </div>
-
-                <div id="finance-panel" class="tab-panel">
-                    <div class="projects-grid" id="finance-projects">
-                        <div style="text-align: center; padding: 50px; color: var(--text-secondary); grid-column: 1 / -1;">
-                             <span class="loading"></span> 載入投資理財中...
-                         </div>
-                    </div>
+                <div class="hidden-nav-overlay">
+                    <ul class="nav-links-vertical">
+                        <li><a href="/Learning/index.html" class="nav-item"><span class="nav-num">01.</span> 學習 Learning</a></li>
+                        <li><a href="/Career/index.html" class="nav-item"><span class="nav-num">02.</span> 職涯 Career</a></li>
+                        <li><a href="/Travel/index.html" class="nav-item"><span class="nav-num">03.</span> 旅遊 Travel</a></li>
+                        <li><a href="/Others/index.html" class="nav-item"><span class="nav-num">04.</span> 雜事 Others</a></li>
+                    </ul>
                 </div>
+            </nav>
+        </div>
+    </header>
 
-                <div id="photography-panel" class="tab-panel">
-                     <div class="projects-grid" id="photography-projects">
-                         <div style="text-align: center; padding: 50px; color: var(--text-secondary); grid-column: 1 / -1;">
-                             <span class="loading"></span> 載入攝影藝術中...
-                         </div>
-                    </div>
-                </div>
-
-                <div id="others-panel" class="tab-panel">
-                     <div class="projects-grid" id="others-projects">
-                         <div style="text-align: center; padding: 50px; color: var(--text-secondary); grid-column: 1 / -1;">
-                             <span class="loading"></span> 載入其他主題中...
-                         </div>
-                    </div>
-                </div>
+    <main>
+        <div class="container">
+            <div class="zen-page-header fade-in">
+                <div class="breadcrumb"><a href="/">Home</a> / Learning</div>
+                <h1 class="page-title">Learning_</h1>
+                <p class="page-subtitle">紀錄技術成長與開發心得 // Tech & Growth Log</p>
             </div>
-        </section>
-    </div>
+
+            <div class="sort-controls fade-in" style="justify-content: flex-start; margin-bottom: 20px;">
+                <span class="sort-label">SORT BY:</span>
+                <button id="topic-sort-latest" class="sort-btn active" onclick="switchTopicSort('latest')">LATEST</button>
+                <span class="sort-divider">/</span>
+                <button id="topic-sort-popular" class="sort-btn" onclick="switchTopicSort('popular')">POPULAR</button>
+            </div>
+
+            <div id="topic-list-container" class="ghost-list fade-in">
+                <div class="loading-text">// Loading data...</div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="zen-footer">
+        <div class="container">
+            <div class="footer-links">
+                <a href="/about.html">About</a>
+                <a href="mailto:contact@tingnotes.io">Contact</a>
+            </div>
+            <p class="copyright">© 2025 TingNotes.io</p>
+        </div>
+    </footer>
 
     <script type="module" src="../script.js"></script>
-
 </body>
 </html>

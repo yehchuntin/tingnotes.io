@@ -3,151 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TingNotes - 學習記錄與思考分享</title>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2436395949894310"
-     crossorigin="anonymous"></script>
-
+    <title>TingNotes - 探索筆記</title>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2436395949894310" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Fira+Code&display=swap" rel="stylesheet">
 </head>
 <body>
-    <header>
+    
+    <header class="zen-header">
         <div class="container">
             <nav>
                 <a href="/" class="logo">TingNotes</a>
-                <ul class="nav-links">
-                    <li><a href="Learning/index.html">學習</a></li>
-                    <li><a href="Career/index.html">職涯</a></li>
-                    <li><a href="Travel/index.html">旅遊</a></li>
-                    <li><a href="Others/index.html">雜事分享</a></li>
-                    <li>
-                        <button class="theme-toggle" onclick="toggleTheme()" title="切換深淺色模式">
-                            <svg class="theme-icon" id="theme-icon" width="20" height="20" viewBox="0 0 24 24">
-                                </svg>
-                        </button>
-                    </li>
-                </ul>
-                <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </button>
+                
+                <div class="nav-controls">
+                    <button class="theme-toggle" onclick="toggleTheme()" title="切換模式">
+                        <svg class="theme-icon" id="theme-icon" width="20" height="20" viewBox="0 0 24 24"></svg>
+                    </button>
+                    <button class="menu-trigger" onclick="toggleMobileMenu()">
+                        <span class="menu-label">MENU</span>
+                        <div class="hamburger-icon">
+                            <span></span><span></span>
+                        </div>
+                    </button>
+                </div>
+
+                <div class="hidden-nav-overlay">
+                    <ul class="nav-links-vertical">
+                        <li><a href="Learning/index.html" class="nav-item"><span class="nav-num">01.</span> 學習 Learning</a></li>
+                        <li><a href="Career/index.html" class="nav-item"><span class="nav-num">02.</span> 職涯 Career</a></li>
+                        <li><a href="Travel/index.html" class="nav-item"><span class="nav-num">03.</span> 旅遊 Travel</a></li>
+                        <li><a href="Others/index.html" class="nav-item"><span class="nav-num">04.</span> 雜事 Others</a></li>
+                    </ul>
+                </div>
             </nav>
         </div>
     </header>
 
-    <main>
+    <main class="zen-main">
         <div class="container">
-            <section class="hero fade-in">
-                <h1>記錄學習，分享思考</h1>
-                <p class="hero-subtitle">
-                    這裡是我的個人空間，記錄技術學習、職涯規劃與生活思考。<br>
-                    不依賴社交媒體，專注於深度內容的沉澱與分享。
-                </p>
-            </section>
+            
+            <section class="zen-search-section fade-in">
+                <div class="search-wrapper">
+                    <input type="text" id="zen-search-input" placeholder="Type to explore..." autocomplete="off">
+                    <div class="search-underline"></div>
+                </div>
+                
+                <div class="zen-tags fade-in">
+                    <button onclick="filterByTag('programming')">#code</button>
+                    <button onclick="filterByTag('career')">#career</button>
+                    <button onclick="filterByTag('travel')">#travel</button>
+                </div>
 
-            <section class="about-section fade-in">
-                <h2>為什麼建立這個網站？</h2>
-                <div class="about-content">
-                    <p>
-                        我不喜歡將學習心得或生活感悟上傳到 Instagram 或其他社交媒體平台。
-                        這些平台雖然便利，但往往讓內容變得碎片化，難以進行深度思考和長期積累。
-                    </p>
-                    <p>
-                        因此，我決定建立這個個人網站，作為自己的數位筆記本。在這裡，我可以：
-                    </p>
-                    <p>
-                        • 不受演算法影響，專注記錄真正重要的內容<br>
-                        • 建立系統化的知識架構，便於日後回顧<br>
-                        • 與真正關心這些內容的人進行深度交流<br>
-                        • 保持對學習和思考的純粹動機
-                    </p>
+                <div class="sort-controls fade-in">
+                    <span class="sort-label">SORT BY:</span>
+                    <button id="sort-latest" class="sort-btn active" onclick="switchSort('latest')">LATEST</button>
+                    <span class="sort-divider">/</span>
+                    <button id="sort-popular" class="sort-btn" onclick="switchSort('popular')">POPULAR</button>
                 </div>
             </section>
 
-            <section class="categories">
-                <a href="Learning/index.html" class="category-card fade-in">
-                    <div class="category-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
-                            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
-                        </svg>
+            <section class="zen-list-section fade-in">
+                <div class="list-header">RECENT UPDATES_</div>
+                <div id="ghost-list-container" class="ghost-list">
                     </div>
-                    <h3>學習</h3>
-                    <p>程式語言、技術框架、演算法等學習筆記與心得分享。包含專案開發過程、問題解決經驗、以及技術文章翻譯與導讀。</p>
-                    <div class="category-meta">持續更新中 • 技術深度探討</div>
-                </a>
-                <a href="Career/index.html" class="category-card fade-in">
-                    <div class="category-icon">
-                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                             <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-                             <line x1="8" y1="21" x2="16" y2="21"></line>
-                             <line x1="12" y1="17" x2="12" y2="21"></line>
-                         </svg>
-                    </div>
-                    <h3>職涯</h3>
-                    <p>實習申請經驗、面試準備、職業規劃思考。記錄從學生到職場的轉換過程，以及對未來發展的規劃與反思。</p>
-                    <div class="category-meta">規劃階段 • 經驗分享</div>
-                </a>
-                <a href="Travel/index.html" class="category-card fade-in">
-                    <div class="category-icon">
-                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                             <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
-                             <polyline points="3.27,6.96 12,12.01 20.73,6.96"></polyline>
-                             <line x1="12" y1="22.08" x2="12" y2="12"></line>
-                         </svg>
-                    </div>
-                    <h3>旅遊</h3>
-                    <p>旅行經歷分享、景點推薦、文化觀察與旅途中的思考感悟。記錄探索世界的足跡與心境變化。</p>
-                    <div class="category-meta">探索世界 • 文化體驗</div>
-                </a>
-                <a href="Others/index.html" class="category-card fade-in">
-                    <div class="category-icon">
-                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                             <path d="M9 11H5a2 2 0 0 0-2 2v3c0 1.1.9 2 2 2h4m0-6v6m0-6V9a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m0 0v6a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2v-6m6 0H15"></path>
-                         </svg>
-                    </div>
-                    <h3>雜事分享</h3>
-                    <p>日常生活感悟、讀書筆記、時事觀察與個人思考。不局限於特定領域，記錄生活中值得思考的各種片段。</p>
-                    <div class="category-meta">不定期更新 • 多元思考</div>
-                </a>
             </section>
 
-            <section class="projects-section fade-in">
-                <h2>熱門專案</h2>
-                <p class="projects-subtitle">最受歡迎的學習內容排行榜，跨越所有主題分類</p>
-                <div class="project-list" id="hot-projects">
-                    <div class="project-item" style="opacity: 0.5;"> <div class="project-rank rank-1">🏆</div>
-                        <div class="project-info">
-                            <div class="project-name">載入中...</div>
-                            <div class="project-desc">正在獲取熱門專案數據，請稍候...</div>
-                            <div class="project-meta">
-                                <span class="category-badge learning">載入中</span>
-                                <span>📅 載入中</span>
-                                <span>🏷️ 載入中</span>
-                            </div>
-                        </div>
-                        <div class="project-stats">
-                            <div class="project-views"><span class="loading"></span></div>
-                            <div class="project-status">載入中</div>
-                        </div>
-                    </div>
-                </div>
-            </section>
         </div>
     </main>
 
-    <footer>
+    <footer class="zen-footer">
         <div class="container">
-            <div class="footer-content">
-                <p>© 2024 TingNotes - 專注於深度思考與知識累積</p>
-                <div class="contact-info">
-                    <p>聯繫方式：<a href="mailto:contact@tingnotes.io">contact@tingnotes.io</a></p>
-                </div>
+            <div class="footer-links">
+                <a href="/about.html">About</a>
+                <span class="separator">/</span>
+                <a href="mailto:contact@tingnotes.io">Contact</a>
+                <span class="separator">/</span>
+                <a href="/privacy.html">Privacy</a>
             </div>
+            <p class="copyright">© 2025 TingNotes.io</p>
         </div>
     </footer>
 
     <script type="module" src="script.js"></script>
-
 </body>
 </html>

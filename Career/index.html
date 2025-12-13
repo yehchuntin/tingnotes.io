@@ -3,135 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>職涯 | TingNotes - 職業發展與成長軌跡</title>
-    <meta name="description" content="TingNotes 職涯專區 - 實習經驗、面試心得、職業規劃與成長反思">
-
+    <title>Career - TingNotes</title>
     <link rel="stylesheet" href="../style.css">
-
-    <style>
-        :root {
-            --accent-primary: var(--career-color);
-            --accent-secondary: color-mix(in srgb, var(--career-color) 80%, black);
-            --shadow-medium: rgba(39, 174, 96, 0.1);
-        }
-        .stat-number { color: var(--career-color); }
-        .breadcrumb a { color: var(--career-color); }
-        .category-tab.active { color: var(--career-color); }
-        .category-tab.active::after { background: var(--career-color); }
-        .bullet-list li::before { color: var(--career-color); }
-        .section-number, .section-icon { background: var(--career-color); }
-        .highlight-box { border-left-color: var(--career-color); }
-        .highlight-title { color: var(--career-color); }
-        .loading { border-color: var(--career-color); border-top-color: transparent; border-right-color: transparent; }
-        .update-hint { color: var(--career-color); }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Fira+Code&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
-        <header class="header">
-            <button class="theme-toggle" onclick="toggleTheme()" title="切換深淺色模式">
-                <svg class="theme-icon" id="theme-icon" width="20" height="20" viewBox="0 0 24 24">
-                    </svg>
-            </button>
-
-            <div class="breadcrumb">
-                <a href="../index.html">首頁</a> /
-                <a href="../Learning/index.html">學習</a> /
-                <span style="color: var(--text-primary); font-weight: 500;">職涯</span> /
-                <a href="../Travel/index.html">旅遊</a> /
-                <a href="../Others/index.html">雜事分享</a>
-            </div>
-
-            <h1 class="page-title">職涯</h1>
-            <p class="page-subtitle">
-                記錄職業發展的每一步足跡<br>
-                分享實習經驗、面試心得與成長反思
-            </p>
-        </header>
-
-        <section class="stats-section">
-            <div class="stat-card">
-                <span class="stat-number" id="total-experience">
-                     <span class="loading"></span>
-                </span>
-                <div class="stat-label">職場經驗</div>
-            </div>
-            <div class="stat-card">
-                <span class="stat-number" id="total-articles">4</span> <div class="stat-label">主題分類</div>
-            </div>
-            <div class="stat-card">
-                <span class="stat-number" id="total-views">
-                    <span class="loading"></span>
-                </span>
-                <div class="stat-label">總觀看次數</div>
-            </div>
-            <div class="stat-card">
-                <span class="stat-number" id="last-updated">2025</span> <div class="stat-label">最後更新</div>
-            </div>
-        </section>
-
-        <section class="category-selector">
-            <div class="selector-header">
-                <h2 class="selector-title">選擇職涯主題</h2>
-                <p class="selector-subtitle">點擊標籤切換不同領域的職業發展內容</p>
-            </div>
-
-            <div class="category-tabs">
-                <button class="category-tab active" onclick="switchTab('internship')">
-                    <span class="tab-icon">🎯</span>
-                    實習經驗
-                </button>
-                <button class="category-tab" onclick="switchTab('interview')">
-                    <span class="tab-icon">💼</span>
-                    面試準備
-                </button>
-                <button class="category-tab" onclick="switchTab('planning')">
-                    <span class="tab-icon">🚀</span>
-                    職涯規劃
-                </button>
-                <button class="category-tab" onclick="switchTab('growth')">
-                    <span class="tab-icon">📈</span>
-                    成長心得
-                </button>
-            </div>
-
-            <div class="category-content">
-                <div id="internship-panel" class="tab-panel active">
-                    <div class="projects-grid" id="internship-projects">
-                        <div style="text-align: center; padding: 50px; color: var(--text-secondary); grid-column: 1 / -1;">
-                             <span class="loading"></span> 載入實習經驗中...
-                         </div>
-                    </div>
+    
+    <header class="zen-header">
+        <div class="container">
+            <nav>
+                <a href="/" class="logo">TingNotes</a>
+                
+                <div class="nav-controls">
+                    <button class="theme-toggle" onclick="toggleTheme()" title="切換模式">
+                        <svg class="theme-icon" id="theme-icon" width="20" height="20" viewBox="0 0 24 24"></svg>
+                    </button>
+                    <button class="menu-trigger" onclick="toggleMobileMenu()">
+                        <span class="menu-label">MENU</span>
+                        <div class="hamburger-icon">
+                            <span></span><span></span>
+                        </div>
+                    </button>
                 </div>
 
-                <div id="interview-panel" class="tab-panel">
-                    <div class="projects-grid" id="interview-projects">
-                        <div style="text-align: center; padding: 50px; color: var(--text-secondary); grid-column: 1 / -1;">
-                             <span class="loading"></span> 載入面試準備中...
-                         </div>
-                    </div>
+                <div class="hidden-nav-overlay">
+                    <ul class="nav-links-vertical">
+                        <li><a href="/Learning/index.html" class="nav-item"><span class="nav-num">01.</span> 學習 Learning</a></li>
+                        <li><a href="/Career/index.html" class="nav-item"><span class="nav-num">02.</span> 職涯 Career</a></li>
+                        <li><a href="/Travel/index.html" class="nav-item"><span class="nav-num">03.</span> 旅遊 Travel</a></li>
+                        <li><a href="/Others/index.html" class="nav-item"><span class="nav-num">04.</span> 雜事 Others</a></li>
+                    </ul>
                 </div>
+            </nav>
+        </div>
+    </header>
 
-                <div id="planning-panel" class="tab-panel">
-                    <div class="projects-grid" id="planning-projects">
-                        <div style="text-align: center; padding: 50px; color: var(--text-secondary); grid-column: 1 / -1;">
-                             <span class="loading"></span> 載入職涯規劃中...
-                         </div>
-                    </div>
-                </div>
-
-                <div id="growth-panel" class="tab-panel">
-                    <div class="projects-grid" id="growth-projects">
-                         <div style="text-align: center; padding: 50px; color: var(--text-secondary); grid-column: 1 / -1;">
-                             <span class="loading"></span> 載入成長心得中...
-                         </div>
-                    </div>
-                </div>
+    <main>
+        <div class="container">
+            <div class="zen-page-header fade-in">
+                <div class="breadcrumb"><a href="/">Home</a> / Career</div>
+                <h1 class="page-title">Career_</h1>
+                <p class="page-subtitle">紀錄職涯軌跡與成長 // Career Path & Growth</p>
             </div>
-        </section>
-    </div>
+
+            <div class="sort-controls fade-in" style="justify-content: flex-start; margin-bottom: 20px;">
+                <span class="sort-label">SORT BY:</span>
+                <button id="topic-sort-latest" class="sort-btn active" onclick="switchTopicSort('latest')">LATEST</button>
+                <span class="sort-divider">/</span>
+                <button id="topic-sort-popular" class="sort-btn" onclick="switchTopicSort('popular')">POPULAR</button>
+            </div>
+
+            <div id="topic-list-container" class="ghost-list fade-in">
+                <div class="loading-text" style="font-family:'Fira Code'; color:var(--text-muted);">// Loading career logs...</div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="zen-footer">
+        <div class="container">
+            <div class="footer-links">
+                <a href="/about.html">About</a>
+                <a href="mailto:contact@tingnotes.io">Contact</a>
+            </div>
+            <p class="copyright">© 2025 TingNotes.io</p>
+        </div>
+    </footer>
 
     <script type="module" src="../script.js"></script>
-
 </body>
 </html>
