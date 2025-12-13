@@ -115,9 +115,9 @@
         }
 
         .copy-btn.copied {
-            background-color: var(--accent-primary);
-            color: #000;
-            border-color: var(--accent-primary);
+            background-color: rgba(255, 255, 255, 0.15);
+            color: #ddd;
+            border-color: #ffffff;
         }
 
         /* 圖片/示意圖預留區塊 */
@@ -136,13 +136,6 @@
             margin: 50px 0;
             position: relative;
             overflow: hidden;
-        }
-
-        .diagram-placeholder img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            display: none;
         }
 
         /* 記憶體表格樣式 */
@@ -183,7 +176,6 @@
             gap: 15px;
         }
 
-        /* [修正] 導航按鈕樣式 */
         .nav-btn {
             display: inline-flex;
             align-items: center;
@@ -194,29 +186,20 @@
             font-family: 'Fira Code', monospace;
             font-size: 0.9rem;
             transition: all 0.2s ease;
-            
-            /* 使用 CSS 變數，確保黑白模式都正確顯示背景和邊框 */
             background: var(--bg-secondary);
             color: var(--text-primary);
             border: 1px solid var(--border-color); 
-            
             min-width: 120px;
         }
 
-        /* 懸浮時的高亮效果 */
         .nav-btn:hover {
-            background-color: var(--text-primary) !important; /* 在白模式變黑，黑模式變白 */
-            color: var(--bg-primary) !important;              /* 文字反色 */
+            background-color: var(--text-primary) !important;
+            color: var(--bg-primary) !important;
             border-color: var(--text-primary) !important;
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             font-weight: 700;
         }
-
-        /* [已刪除] .nav-btn.menu-btn 的特殊樣式 
-           現在 MENU 按鈕會直接繼承上面的 .nav-btn 樣式，
-           所以它會跟 PREV/NEXT 長得一模一樣。
-        */
         
         .nav-btn.disabled {
             opacity: 0.3;
@@ -234,7 +217,6 @@
         @media (max-width: 768px) {
             .chapter-nav { flex-direction: column; }
             .nav-btn { width: 100%; justify-content: center; }
-            .menu-btn { order: 3; } /* MENU 在手機版排在最後面 */
         }
     </style>
 </head>
@@ -245,10 +227,10 @@
             <nav>
                 <a href="/" class="logo">TingNotes</a>
                 <div class="nav-controls">
-                    <button class="theme-toggle" onclick="toggleTheme()" title="切換模式">
+                    <button class="theme-toggle" id="theme-toggle-btn" title="切換模式">
                         <svg class="theme-icon" id="theme-icon" width="20" height="20" viewBox="0 0 24 24"></svg>
                     </button>
-                    <button class="menu-trigger" onclick="toggleMobileMenu()">
+                    <button class="menu-trigger" id="mobile-menu-btn">
                         <span class="menu-label">MENU</span>
                         <div class="hamburger-icon"><span></span><span></span></div>
                     </button>
@@ -295,7 +277,7 @@
                 <h2><span>💻</span> 範例程式碼</h2>
                 
                 <div class="code-container">
-                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    <button class="copy-btn">Copy</button>
                     <pre><code>#include &lt;stdio.h&gt;
 
 int main() {
@@ -321,7 +303,7 @@ int main() {
                 
                 <div class="diagram-placeholder">
                     <span>[ 示意圖：記憶體位址分佈 ]</span>
-                    </div>
+                </div>
 
                 <div class="memory-diagram">
                     <table class="memory-table">
@@ -374,76 +356,92 @@ int main() {
         </div>
     </footer>
 
+    <!-- 先載入外部 script.js -->
     <script type="module" src="/script.js"></script>
 
+    <!-- 然後定義本頁專屬的功能 -->
     <script>
-        // --- 1. 備用複製方案 (相容性高) ---
-        function fallbackCopyTextToClipboard(text, btn) {
-            var textArea = document.createElement("textarea");
-            textArea.value = text;
-            textArea.style.top = "0";
-            textArea.style.left = "0";
-            textArea.style.position = "fixed";
-            document.body.appendChild(textArea);
-            textArea.focus();
-            textArea.select();
+        // ===== 複製功能 =====
+        document.addEventListener('DOMContentLoaded', function() {
+            // 為所有複製按鈕綁定事件
+            document.querySelectorAll('.copy-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const container = this.closest('.code-container');
+                    const codeBlock = container.querySelector('code');
+                    
+                    if (!codeBlock) {
+                        console.error('找不到程式碼區塊');
+                        return;
+                    }
 
-            try {
-                var successful = document.execCommand('copy');
-                if (successful) {
-                    showSuccess(btn);
-                } else {
-                    btn.innerText = 'Error';
-                }
-            } catch (err) {
-                console.error('Fallback: Oops, unable to copy', err);
-                btn.innerText = 'Error';
-            }
-            document.body.removeChild(textArea);
-        }
-
-        // --- 2. 顯示成功動畫 ---
-        function showSuccess(btn) {
-            const originalText = "Copy"; 
-            btn.innerText = 'Copied!';
-            btn.classList.add('copied');
-            setTimeout(() => {
-                btn.innerText = originalText;
-                btn.classList.remove('copied');
-            }, 2000);
-        }
-
-        // --- 3. 主複製函式 ---
-        window.copyCode = function(btn) {
-            const container = btn.closest('.code-container');
-            const codeBlock = container.querySelector('code');
-            if (!codeBlock) return;
-            const codeText = codeBlock.textContent;
-
-            if (!navigator.clipboard) {
-                fallbackCopyTextToClipboard(codeText, btn);
-                return;
-            }
-
-            navigator.clipboard.writeText(codeText).then(function() {
-                showSuccess(btn);
-            }, function(err) {
-                // 如果現代 API 失敗 (例如權限問題)，使用備用方案
-                fallbackCopyTextToClipboard(codeText, btn);
+                    const codeText = codeBlock.textContent;
+                    
+                    // 使用現代 API 或降級方案
+                    if (navigator.clipboard && window.isSecureContext) {
+                        // 現代瀏覽器
+                        navigator.clipboard.writeText(codeText)
+                            .then(() => {
+                                showCopySuccess(this);
+                            })
+                            .catch(err => {
+                                console.error('複製失敗:', err);
+                                fallbackCopy(codeText, this);
+                            });
+                    } else {
+                        // 降級方案
+                        fallbackCopy(codeText, this);
+                    }
+                });
             });
-        }
-
-        // --- 4. 自動導航邏輯 ---
-        document.addEventListener('DOMContentLoaded', () => {
+            
+            // 降級複製方法
+            function fallbackCopy(text, button) {
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                textArea.style.position = 'fixed';
+                textArea.style.top = '0';
+                textArea.style.left = '-9999px';
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                
+                try {
+                    const successful = document.execCommand('copy');
+                    if (successful) {
+                        showCopySuccess(button);
+                    } else {
+                        button.textContent = 'Failed';
+                    }
+                } catch (err) {
+                    console.error('降級複製失敗:', err);
+                    button.textContent = 'Failed';
+                }
+                
+                document.body.removeChild(textArea);
+            }
+            
+            // 顯示成功提示
+            function showCopySuccess(button) {
+                const originalText = button.textContent;
+                button.textContent = '✓ Copied!';
+                button.classList.add('copied');
+                
+                setTimeout(() => {
+                    button.textContent = 'Copy';
+                    button.classList.remove('copied');
+                }, 2000);
+            }
+            
+            // ===== 章節導航 =====
             const path = window.location.pathname;
             const match = path.match(/chapter(\d+)\.html/);
             
             if (match) {
                 const currentNum = parseInt(match[1]);
-                const totalChapters = 18; 
+                const totalChapters = 18;
 
                 const chapDisplay = document.getElementById('chap-num-display');
-                if(chapDisplay) chapDisplay.textContent = currentNum;
+                if (chapDisplay) chapDisplay.textContent = currentNum;
 
                 const prevBtn = document.getElementById('prev-btn');
                 if (currentNum > 1) {
