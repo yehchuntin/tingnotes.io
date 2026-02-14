@@ -1,715 +1,359 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>14. Pointers as Function Returns | C語言指標教學</title>
-  <meta name="description" content="深入探討函式回傳指標的行為，理解malloc與free後的指標狀態，學習安全的記憶體管理實務。" />
-  <style>
-    :root {
-      --bg-primary: #fff;
-      --bg-secondary: #f8f9fa;
-      --bg-card: #fff;
-      --text-primary: #2c3e50;
-      --text-secondary: #6c757d;
-      --accent-primary: #3498db;
-      --accent-secondary: #2980b9;
-      --border-color: #e9ecef;
-      --shadow-light: rgba(0, 0, 0, .1);
-      --shadow-medium: rgba(0, 0, 0, .15);
-      --gradient-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      --code-bg: #1e1e1e;
-      --code-text: #f1fa8c;
-      --theme-btn-bg: #f5f5f5;
-      --theme-btn-border: #d1d5db;
-      --theme-btn-icon: #6b7280;
-    }
-    [data-theme="dark"] {
-      --bg-primary: #1a1a1a;
-      --bg-secondary: #2d3748;
-      --bg-card: #2d3748;
-      --text-primary: #f7fafc;
-      --text-secondary: #a0aec0;
-      --accent-primary: #4299e1;
-      --accent-secondary: #3182ce;
-      --border-color: #4a5568;
-      --shadow-light: rgba(0, 0, 0, .3);
-      --shadow-medium: rgba(0, 0, 0, .4);
-      --gradient-bg: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
-      --code-bg: #1a202c;
-      --code-text: #f1fa8c;
-      --theme-btn-bg: rgba(255, 255, 255, 0.1);
-      --theme-btn-border: rgba(255, 255, 255, 0.3);
-      --theme-btn-icon: rgba(255, 255, 255, 0.8);
-    }
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-      line-height: 1.6;
-      color: var(--text-primary);
-      background: var(--gradient-bg);
-      min-height: 100vh;
-      transition: all .3s ease;
-    }
-    .container {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 20px;
-      display: grid;
-      grid-template-columns: 280px 1fr;
-      gap: 30px;
-    }
-    .sidebar {
-      position: sticky;
-      top: 20px;
-      height: fit-content;
-    }
-    .toc-widget {
-      background: var(--bg-card);
-      border-radius: 15px;
-      box-shadow: 0 8px 32px var(--shadow-light);
-      border: 1px solid var(--border-color);
-      overflow: hidden;
-    }
-    .toc-header {
-      padding: 20px;
-      border-bottom: 1px solid var(--border-color);
-      text-align: center;
-    }
-    .toc-title {
-      font-size: 1.1em;
-      font-weight: 600;
-      color: var(--text-primary);
-    }
-    .toc-body {
-      padding: 15px;
-      max-height: 70vh;
-      overflow-y: auto;
-    }
-    .toc-list {
-      list-style: none;
-    }
-    .toc-item {
-      margin-bottom: 3px;
-    }
-    .toc-link {
-      display: block;
-      color: var(--text-secondary);
-      text-decoration: none;
-      padding: 8px 12px;
-      border-radius: 8px;
-      transition: all .3s ease;
-      font-size: .85em;
-      line-height: 1.4;
-    }
-    .toc-link:hover {
-      background: var(--bg-secondary);
-      color: var(--accent-primary);
-      transform: translateX(3px);
-    }
-    .toc-link.active {
-      background: var(--accent-primary);
-      color: #fff;
-    }
-    .toc-link.has-submenu {
-      cursor: pointer;
-      position: relative;
-    }
-    .arrow {
-      display: inline-block;
-      transition: transform .3s ease;
-      margin-right: 8px;
-      font-size: .7em;
-      color: var(--accent-primary);
-    }
-    .arrow.expanded {
-      transform: rotate(90deg);
-    }
-    .sub-menu {
-      list-style: none;
-      margin-left: 15px;
-      margin-top: 5px;
-      padding-left: 15px;
-      border-left: 2px solid var(--border-color);
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height .4s ease;
-    }
-    .sub-menu.show {
-      max-height: 400px;
-      margin-bottom: 10px;
-    }
-    .sub-menu .toc-link {
-      padding: 6px 10px;
-      font-size: .8em;
-    }
-    .main-area {
-      min-width: 0;
-    }
-    .header {
-      background: var(--bg-card);
-      border-radius: 15px;
-      padding: 25px 30px;
-      margin-bottom: 25px;
-      box-shadow: 0 8px 32px var(--shadow-light);
-      border: 1px solid var(--border-color);
-      position: relative;
-    }
-    .theme-toggle {
-        position: absolute;
-        top: 20px;
-        right: 20px;
-        background: var(--theme-btn-bg);
-        border: 2px solid var(--theme-btn-border);
-        color: var(--theme-btn-icon);
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        cursor: pointer;
-        font-size: 18px;
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>14. Pointers as Function Returns | C Pointer Tutorial</title>
+    <meta name="description" content="深入探討函式回傳指標的行為，理解malloc與free後的指標狀態，學習安全的記憶體管理實務。">
+    
+    <link rel="stylesheet" href="/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Fira+Code&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ========== Fade-in 動畫 ========== */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
-    .theme-toggle:hover {
-        border-color: var(--accent-primary);
-        background: var(--accent-primary);
-        color: white;
-        transform: scale(1.1);
-    }
+        .fade-in {
+            animation: fadeIn 0.6s ease-out forwards;
+        }
 
-    .theme-icon {
-        stroke: currentColor;
-        fill: none;
-        stroke-width: 2;
-        transition: all 0.3s ease;
-    }
-    .breadcrumb {
-      color: var(--text-secondary);
-      font-size: .85em;
-      margin-bottom: 12px;
-    }
-    .breadcrumb a {
-      color: var(--accent-primary);
-      text-decoration: none;
-    }
-    .breadcrumb a:hover {
-      text-decoration: underline;
-    }
-    .chapter-title {
-      font-size: 1.8em;
-      font-weight: 700;
-      color: var(--text-primary);
-      margin-bottom: 8px;
-    }
-    .chapter-subtitle {
-      color: var(--text-secondary);
-      font-size: 1em;
-    }
-    .main-content {
-      background: var(--bg-card);
-      border-radius: 15px;
-      box-shadow: 0 8px 32px var(--shadow-light);
-      border: 1px solid var(--border-color);
-      overflow: hidden;
-      margin-bottom: 25px;
-    }
-    .content-section {
-      padding: 30px;
-      border-bottom: 1px solid var(--border-color);
-    }
-    .content-section:last-child {
-      border-bottom: none;
-    }
-    .section-header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 20px;
-    }
-    .section-number {
-      background: var(--accent-primary);
-      color: #fff;
-      width: 35px;
-      height: 35px;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 16px;
-      font-weight: bold;
-    }
-    .section-title {
-      font-size: 1.3em;
-      font-weight: 600;
-      color: var(--text-primary);
-    }
-    .content-text {
-      color: var(--text-secondary);
-      font-size: 1em;
-      line-height: 1.6;
-      margin-bottom: 15px;
-    }
-    .highlight-box {
-        background: linear-gradient(135deg, var(--accent-primary)10, var(--accent-secondary)10);
-        border-left: 4px solid var(--accent-primary);
-        border-radius: 8px;
-        padding: 18px;
-        margin: 18px 0;
-    }
-    .highlight-title {
-        color: var(--accent-primary);
-        font-weight: 600;
-        margin-bottom: 8px;
-    }
-    .bullet-list {
-      list-style: none;
-      margin: 12px 0;
-    }
-    .bullet-list li {
-      position: relative;
-      padding-left: 20px;
-      margin-bottom: 6px;
-      color: var(--text-secondary);
-    }
-    .bullet-list li:before {
-      content: '•';
-      color: var(--accent-primary);
-      font-weight: bold;
-      position: absolute;
-      left: 0;
-    }
-    .memory-diagram {
-        background: var(--bg-secondary);
-        border: 1px solid var(--border-color);
-        border-radius: 10px;
-        padding: 20px;
-        margin: 20px 0;
-        text-align: center;
-        overflow: hidden;
-    }
-    
-    .memory-diagram img {
-        max-width: 100%;
-        height: auto;
-        border-radius: 8px;
-        box-shadow: 0 4px 12px var(--shadow-light);
-        background: white;
-        padding: 10px;
-    }
-    
-    .comparison-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 20px 0;
-      font-size: 0.9em;
-      box-shadow: 0 4px 15px var(--shadow-light);
-      border-radius: 8px;
-      overflow: hidden;
-    }
-    .comparison-table th, .comparison-table td {
-      border-bottom: 1px solid var(--border-color);
-      padding: 12px 15px;
-      text-align: left;
-    }
-    .comparison-table th {
-      background-color: var(--bg-secondary);
-      font-weight: 600;
-    }
-    .comparison-table tr:last-child td {
-        border-bottom: none;
-    }
-    .comparison-table code { font-size: 1em; }
-    .warning-box {
-        background: linear-gradient(135deg, #f39c1210, #e67e2210);
-        border-left: 4px solid #f39c12;
-        border-radius: 8px;
-        padding: 18px;
-        margin: 18px 0;
-    }
-    .warning-title {
-        color: #f39c12;
-        font-weight: 600;
-        margin-bottom: 8px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-    .success-box {
-        background: linear-gradient(135deg, #27ae6010, #2ecc7110);
-        border-left: 4px solid #27ae60;
-        border-radius: 8px;
-        padding: 18px;
-        margin: 18px 0;
-    }
-    .success-title {
-        color: #27ae60;
-        font-weight: 600;
-        margin-bottom: 8px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-    .danger-box {
-        background: linear-gradient(135deg, #e7454410, #c0392b10);
-        border-left: 4px solid #e74c3c;
-        border-radius: 8px;
-        padding: 18px;
-        margin: 18px 0;
-    }
-    .danger-title {
-        color: #e74c3c;
-        font-weight: 600;
-        margin-bottom: 8px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-    .navigation {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: var(--bg-card);
-      border-radius: 15px;
-      padding: 20px 25px;
-      box-shadow: 0 8px 32px var(--shadow-light);
-      border: 1px solid var(--border-color);
-      gap: 20px;
-      margin-top: 30px;
-    }
-    .nav-btn {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background: var(--accent-primary);
-      color: #fff;
-      padding: 12px 20px;
-      border-radius: 10px;
-      text-decoration: none;
-      transition: all .3s ease;
-      font-weight: 500;
-      flex: 1;
-      max-width: 250px;
-    }
-    .nav-btn:hover {
-      background: var(--accent-secondary);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px var(--shadow-medium);
-      color: #fff;
-      text-decoration: none;
-    }
-    .nav-btn.prev {
-      background: var(--text-secondary);
-    }
-    .nav-btn.prev:hover {
-      background: #5a6c7d;
-    }
-    .nav-direction {
-      font-size: .75em;
-      opacity: .8;
-    }
-    .nav-title {
-      font-size: .9em;
-      font-weight: 600;
-    }
-    .nav-center {
-      text-align: center;
-      color: var(--text-secondary);
-    }
-    .code-container {
-      position: relative;
-      margin: 20px 0;
-    }
-    .code-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: var(--code-bg);
-      color: var(--code-text);
-      padding: 10px 18px;
-      border-radius: 10px 10px 0 0;
-      border-bottom: 1px solid #333;
-    }
-    .code-label {
-      font-size: .85em;
-      color: #888;
-    }
-    .copy-btn {
-      background: transparent;
-      border: 1px solid #555;
-      color: #888;
-      padding: 5px 10px;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: .75em;
-      transition: all .3s ease;
-    }
-    .copy-btn:hover {
-      background: #333;
-      color: #fff;
-      border-color: #666;
-    }
-    .copy-btn.copied {
-      background: #27ae60;
-      color: #fff;
-      border-color: #27ae60;
-    }
-    .code-block {
-      background: var(--code-bg);
-      color: var(--code-text);
-      padding: 18px;
-      border-radius: 0 0 10px 10px;
-      overflow-x: auto;
-      font-family: 'Fira Code', 'Courier New', monospace;
-      font-size: .85em;
-      line-height: 1.4;
-    }
-    .code-block pre {
-      margin: 0;
-      white-space: pre-wrap;
-    }
-    .keyword { color: #ff79c6; }
-    .string { color: #f1fa8c; }
-    .comment { color: #6272a4; }
-    .number { color: #bd93f9; }
-    .function { color: #50fa7b; }
-    .type { color: #8be9fd; }
-    
-    /* VSCode 風格的 inline code 樣式 */
-    code {
-        background: #f4f4f4;
-        color: var(--text-primary);
-        padding: 2px 6px;
-        border-radius: 3px;
-        font-family: 'SFMono-Regular', 'Consolas', 'Liberation Mono', 'Menlo', monospace;
-        font-size: 0.85em;
-        font-weight: 500;
-        border: 1px solid var(--border-color);
-    }
+        /* ========== CSS 變數定義（如果 /style.css 載入失敗的備用） ========== */
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --bg-card: #ffffff;
+            --text-primary: #2c3e50;
+            --text-secondary: #6c757d;
+            --text-muted: #adb5bd;
+            --accent-primary: #3498db;
+            --accent-secondary: #2980b9;
+            --border-color: #e9ecef;
+            --shadow-light: rgba(0, 0, 0, 0.1);
+            --shadow-medium: rgba(0, 0, 0, 0.15);
+        }
 
-    [data-theme="dark"] code {
-        background: #2d3748;
-        color: var(--text-primary);
-        border: 1px solid var(--border-color);
-    }
-    
-    @media (max-width: 1024px) {
-      .container {
-        grid-template-columns: 1fr;
-        gap: 20px;
-      }
-      .sidebar {
-        position: static;
-        order: 2;
-      }
-      .main-area {
-        order: 1;
-      }
-      .memory-diagram img {
-        max-width: 90%;
-      }
-    }
-    @media (max-width: 768px) {
-      .container {
-        padding: 15px;
-      }
-      .header {
-        padding: 20px 15px;
-      }
-      .content-section {
-        padding: 20px 15px;
-      }
-      .chapter-title {
-        font-size: 1.5em;
-      }
-      .memory-diagram img {
-        max-width: 100%;
-        padding: 5px;
-      }
-    }
-    html {
-      scroll-behavior: smooth;
-    }
-    .content-section {
-      scroll-margin-top: 80px;
-    }
-    :target .section-title {
-      outline: 0;
-      box-shadow: 0 0 0 4px rgba(52, 152, 219, .2) inset;
-      border-radius: 8px;
-    }
-  </style>
+        [data-theme="dark"] {
+            --bg-primary: #1a1a1a;
+            --bg-secondary: #2d3748;
+            --bg-card: #2d3748;
+            --text-primary: #f7fafc;
+            --text-secondary: #a0aec0;
+            --text-muted: #718096;
+            --accent-primary: #4299e1;
+            --accent-secondary: #3182ce;
+            --border-color: #4a5568;
+            --shadow-light: rgba(0, 0, 0, 0.3);
+            --shadow-medium: rgba(0, 0, 0, 0.4);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: var(--bg-primary);
+            min-height: 100vh;
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        /* --- 章節內頁樣式 (Zen Mode 標準) --- */
+        .zen-page-header, .chapter-content, .chapter-nav {
+            max-width: 820px;         
+            margin-left: 5%;          
+            margin-right: auto;       
+        }
+
+        .chapter-content h2 {
+            margin-top: 60px;
+            margin-bottom: 30px;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+        
+        .chapter-content h2 .section-num { 
+            font-size: 1rem; 
+            background: var(--accent-primary);
+            color: #fff;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-weight: normal;
+        }
+
+        .chapter-content h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-top: 40px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chapter-content p {
+            margin-bottom: 25px;
+            font-size: 1.05rem;
+            color: var(--text-secondary);
+            line-height: 1.9;
+            letter-spacing: 0.02em;
+        }
+
+        .chapter-content ul, .chapter-content ol {
+            margin-bottom: 30px;
+            padding-left: 20px;
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        .chapter-content li { margin-bottom: 12px; }
+
+        /* 重點提示框 (藍色) */
+        .highlight-box {
+            background: var(--bg-secondary);
+            border-left: 4px solid var(--accent-primary);
+            padding: 25px 30px;
+            margin: 40px 0;
+            border-radius: 0 8px 8px 0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        .highlight-title {
+            font-weight: bold;
+            color: var(--accent-primary);
+            margin-bottom: 15px;
+            display: block;
+            font-family: 'Fira Code', monospace;
+            font-size: 1.1rem;
+        }
+
+        /* 警告框 (黃色/橘色) */
+        .warning-box {
+            background: rgba(243, 156, 18, 0.05);
+            border-left: 4px solid #f39c12;
+            padding: 25px 30px;
+            margin: 40px 0;
+            border-radius: 0 8px 8px 0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        .warning-title {
+            font-weight: bold;
+            color: #e67e22;
+            margin-bottom: 15px;
+            display: block;
+            font-family: 'Fira Code', monospace;
+            font-size: 1.1rem;
+        }
+
+        /* 程式碼區塊 & 複製按鈕 */
+        .code-container { position: relative; margin: 40px 0; }
+        
+        pre {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 25px;
+            padding-top: 45px;
+            border-radius: 12px;
+            overflow-x: auto;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.95rem;
+            border: 1px solid #333;
+            line-height: 1.6;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 10px; right: 10px;
+            background-color: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            color: #ddd;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            z-index: 10;
+        }
+
+        .copy-btn:hover {
+            background-color: #ffffff;
+            color: #000000;
+            border-color: #ffffff;
+            font-weight: bold;
+        }
+        
+        .copy-btn.copied {
+            background-color: rgba(255, 255, 255, 0.15);
+            color: #ddd;
+            border-color: #ffffff;
+        }
+
+        /* 表格樣式 */
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 30px 0;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-card);
+        }
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+            min-width: 600px;
+        }
+        .comparison-table th {
+            background: var(--accent-primary);
+            color: #fff;
+            padding: 12px 15px;
+            text-align: left;
+            white-space: nowrap;
+        }
+        .comparison-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--border-color);
+            text-align: left;
+            color: var(--text-primary);
+            vertical-align: top;
+        }
+        .comparison-table tr:last-child td { border-bottom: none; }
+        .comparison-table code {
+            background: rgba(0,0,0,0.05);
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-family: 'Fira Code', monospace;
+        }
+
+        /* 底部導航 */
+        .chapter-nav {
+            margin-top: 80px;
+            padding-top: 30px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .nav-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid rgba(255, 255, 255, 0.4); 
+            min-width: 120px;
+        }
+
+        .nav-btn:hover {
+            background-color: #ffffff !important;
+            color: #000000 !important;
+            border-color: #ffffff !important;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255,255,255,0.1);
+            font-weight: 700;
+        }
+        .nav-btn.menu-btn { border: 1px solid rgba(255, 255, 255, 0.4); }
+
+        @media (max-width: 1200px) {
+            .zen-page-header, .chapter-content, .chapter-nav { margin-left: 20px; margin-right: 20px; }
+        }
+        @media (max-width: 768px) {
+            .chapter-nav { flex-direction: column; }
+            .nav-btn { width: 100%; }
+        }
+        
+        /* 語法高亮樣式 */
+        .keyword{color:#ff79c6} .string{color:#f1fa8c} .comment{color:#6272a4} .number{color:#bd93f9} .function{color:#50fa7b} .type{color:#8be9fd}
+    </style>
 </head>
 <body>
-  <div class="container">
-    <aside class="sidebar">
-      <div class="toc-widget">
-        <div class="toc-header">
-          <h3 class="toc-title">📚 課程目錄</h3>
+    
+    <header class="zen-header">
+        <div class="container">
+            <nav>
+                <a href="/" class="logo">TingNotes</a>
+                <div class="nav-controls">
+                    <button class="theme-toggle" onclick="toggleTheme()" title="切換模式">
+                        <svg class="theme-icon" id="theme-icon" width="20" height="20" viewBox="0 0 24 24"></svg>
+                    </button>
+                    <button class="menu-trigger" onclick="toggleMobileMenu()">
+                        <span class="menu-label">MENU</span>
+                        <div class="hamburger-icon"><span></span><span></span></div>
+                    </button>
+                </div>
+                <div class="hidden-nav-overlay">
+                    <ul class="nav-links-vertical">
+                        <li><a href="/Learning/index.html" class="nav-item"><span class="nav-num">01.</span> 學習 Learning</a></li>
+                        <li><a href="/Career/index.html" class="nav-item"><span class="nav-num">02.</span> 職涯 Career</a></li>
+                        <li><a href="/Travel/index.html" class="nav-item"><span class="nav-num">03.</span> 旅遊 Travel</a></li>
+                        <li><a href="/Others/index.html" class="nav-item"><span class="nav-num">04.</span> 雜事 Others</a></li>
+                    </ul>
+                </div>
+            </nav>
         </div>
-        <div class="toc-body">
-          <ul class="toc-list">
-            <li class="toc-item">
-              <a href="chapter1.html" class="toc-link">1. Introduction to pointers in C/C++</a>
-            </li>
-            <li class="toc-item">
-              <a href="chapter2.html" class="toc-link">2. Work with Pointers</a>
-            </li>
-            <li class="toc-item">
-              <a href="chapter3.html" class="toc-link">3. Pointer types, pointer arithmetic, void pointers</a>
-            </li>
-            <li class="toc-item">
-              <a href="chapter4.html" class="toc-link">4. Pointers to Pointers</a>
-            </li>
-            <li class="toc-item">
-              <a href="chapter5.html" class="toc-link has-submenu" onclick="toggleSubMenu(this)">
-                <span class="arrow">▶</span> 5. Call by Reference
-              </a>
-              <ul class="sub-menu">
-                <li><a href="chapter5.html#memory-blocks" class="toc-link">記憶體區塊</a></li>
-                <li><a href="chapter5.html#call-by-address" class="toc-link">傳址呼叫</a></li>
-                <li><a href="chapter5.html#call-by-value" class="toc-link">傳值呼叫</a></li>
-              </ul>
-            </li>
-            <li class="toc-item">
-              <a href="chapter6.html" class="toc-link">6. Pointers and Arrays</a>
-            </li>
-            <li class="toc-item">
-              <a href="chapter7.html" class="toc-link">7. Array as function argument</a>
-            </li>
-            <li class="toc-item">
-                <a href="chapter8.html" class="toc-link has-submenu" onclick="toggleSubMenu(this)">
-                    <span class="arrow">▶</span> 8. Character arrays and pointers - part 1
-                </a>
-                <ul class="sub-menu">
-                    <li><a href="chapter8.html#string-basics" class="toc-link">字串基本概念</a></li>
-                    <li><a href="chapter8.html#string-pointers" class="toc-link">字串與指標</a></li>
-                    <li><a href="chapter8.html#string-functions" class="toc-link">字串傳入函式</a></li>
-                </ul>
-            </li>
-            <li class="toc-item">
-              <a href="chapter9.html" class="toc-link has-submenu" onclick="toggleSubMenu(this)">
-                <span class="arrow">▶</span> 9. Character arrays and pointers - part 2
-              </a>
-              <ul class="sub-menu">
-                <li><a href="chapter9.html#memory-stack" class="toc-link">記憶體與Stack解析</a></li>
-                <li><a href="chapter9.html#readonly-memory" class="toc-link">唯讀記憶體</a></li>
-              </ul>
-            </li>
-            <li class="toc-item">
-              <a href="chapter10.html" class="toc-link has-submenu" onclick="toggleSubMenu(this)">
-                <span class="arrow">▶</span> 10. Pointers and 2-D arrays
-              </a>
-              <ul class="sub-menu">
-                <li><a href="chapter10.html#2d-usage" class="toc-link">2D 指標陣列的使用</a></li>
-                <li><a href="chapter10.html#2d-access" class="toc-link">2維陣列的存取等價式</a></li>
-              </ul>
-            </li>
-            <li class="toc-item">
-              <a href="chapter11.html" class="toc-link has-submenu" onclick="toggleSubMenu(this)">
-                <span class="arrow">▶</span> 11. Pointers and multidimensional arrays
-              </a>
-              <ul class="sub-menu">
-                <li><a href="chapter11.html#array-types" class="toc-link">陣列傳入函式的型態規則</a></li>
-                <li><a href="chapter11.html#3d-access" class="toc-link">三維陣列的存取等價式</a></li>
-              </ul>
-            </li>
-            <li class="toc-item">
-              <a href="chapter12.html" class="toc-link has-submenu" onclick="toggleSubMenu(this)">
-                <span class="arrow">▶</span> 12. Pointers and dynamic memory - stack vs heap
-              </a>
-              <ul class="sub-menu">
-                <li><a href="chapter12.html#memory-allocation" class="toc-link">C 函式執行與記憶體配置</a></li>
-                <li><a href="chapter12.html#stack-overflow" class="toc-link">Stack Overflow 是什麼？</a></li>
-                <li><a href="chapter12.html#heap-usage" class="toc-link">Heap 是什麼？</a></li>
-                <li><a href="chapter12.html#malloc-diagram" class="toc-link">malloc 的記憶體配置動態與圖解</a></li>
-              </ul>
-            </li>
-            <li class="toc-item">
-              <a href="chapter13.html" class="toc-link has-submenu" onclick="toggleSubMenu(this)">
-                <span class="arrow">▶</span> 13. Dynamic memory allocation
-              </a>
-              <ul class="sub-menu">
-                <li><a href="chapter13.html#malloc" class="toc-link">malloc</a></li>
-                <li><a href="chapter13.html#calloc" class="toc-link">calloc</a></li>
-                <li><a href="chapter13.html#realloc" class="toc-link">realloc</a></li>
-              </ul>
-            </li>
-            <li class="toc-item">
-              <a href="chapter14.html" class="toc-link has-submenu active" onclick="toggleSubMenu(this)">
-                <span class="arrow expanded">▶</span> 14. Pointers as Function Returns
-              </a>
-              <ul class="sub-menu show">
-                <li><a href="#malloc-free" class="toc-link">malloc 與 free 後的指標行為</a></li>
-                <li><a href="#safe-practices" class="toc-link">安全做法</a></li>
-              </ul>
-            </li>
-            <li class="toc-item">
-              <a href="chapter15.html" class="toc-link has-submenu" onclick="toggleSubMenu(this)">
-                <span class="arrow">▶</span> 15. Function Pointers
-              </a>
-              <ul class="sub-menu">
-                <li><a href="chapter15.html#theory" class="toc-link">function pointer原理解釋</a></li>
-                <li><a href="chapter15.html#practice" class="toc-link">function pointer實例操作</a></li>
-              </ul>
-            </li>
-            <li class="toc-item">
-              <a href="chapter16.html" class="toc-link has-submenu" onclick="toggleSubMenu(this)">
-                <span class="arrow">▶</span> 16. Function Pointers and Callbacks
-              </a>
-              <ul class="sub-menu">
-                <li><a href="chapter16.html#basic-example" class="toc-link">function pointer 基本範例</a></li>
-                <li><a href="chapter16.html#bubble-sort" class="toc-link">BubbleSort by Callback</a></li>
-                <li><a href="chapter16.html#advanced-sort" class="toc-link">延伸應用：多種排序邏輯</a></li>
-                <li><a href="chapter16.html#quick-sort" class="toc-link">QuickSort by Callback</a></li>
-              </ul>
-            </li>
-            <li class="toc-item"><a href="chapter17.html" class="toc-link">17. Memory Leak in C/C++</a></li>
-            <li class="toc-item"><a href="chapter18.html" class="toc-link">18. 最終總結 — C 語言 Pointer 思維地圖</a></li>
-          </ul>
-        </div>
-      </div>
-    </aside>
+    </header>
 
-    <div class="main-area">
-      <header class="header">
-        <button class="theme-toggle" onclick="toggleTheme()" title="切換深淺色模式">
-            <svg class="theme-icon" id="theme-icon" width="20" height="20" viewBox="0 0 24 24">
-                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-            </svg>
-        </button>
-        <div class="breadcrumb"><a href="../index.html">首頁</a> / <span>Chapter 14</span></div>
-        <h1 class="chapter-title">14. Pointers as Function Returns</h1>
-        <p class="chapter-subtitle">函式回傳指標的行為與安全實務</p>
-      </header>
+    <main>
+        <div class="container">
+            <div class="zen-page-header fade-in">
+                <div class="breadcrumb">
+                    <a href="/Learning/c-pointer-tutorial/index.html">..</a> / Chapter <span id="chap-num-display">14</span>
+                </div>
+                <h1 class="page-title">Pointers as Function Returns</h1>
+                <p class="page-subtitle">函式回傳指標的行為與安全實務</p>
+            </div>
 
-      <main class="main-content">
-        <section class="content-section" id="malloc-free">
-          <div class="section-header"><div class="section-number">🔍</div><h2 class="section-title">使用 malloc 與 free 後的指標行為說明</h2></div>
-          <p class="content-text">在動態記憶體管理中，理解 <code>free</code> 函式執行後指標的行為是非常重要的。讓我們透過實際範例來深入探討這個議題。</p>
-          
-          <div class="memory-diagram">
-            <!-- 檔名：malloc_free_behavior.png - malloc與free後指標行為圖解 -->
-            <img src="../images/malloc_free_behavior.png" alt="malloc與free後指標行為圖解" />
-          </div>
+            <article class="chapter-content fade-in">
+                
+                <h2><span class="section-num">🔍</span> 使用 malloc 與 free 後的指標行為說明</h2>
+                <p>在動態記憶體管理中，理解 <code>free</code> 函式執行後指標的行為是非常重要的。讓我們透過實際範例來深入探討這個議題。</p>
 
-          <h3>🧪 實際測試範例</h3>
-          <div class="code-container">
-            <div class="code-header"><span class="code-label">free 後的指標行為測試</span><button class="copy-btn" onclick="copyCode(this,'code1')">📋 複製</button></div>
-            <div class="code-block" id="code1"><pre><span class="keyword">#include</span>&lt;stdio.h&gt;
+                <div class="img-container">
+                    <img src="images/malloc_void.png" alt="malloc與free後指標行為圖解">
+                </div>
+                <h3>🧪 實際測試範例</h3>
+                <div class="code-container">
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    <pre><code><span class="keyword">#include</span>&lt;stdio.h&gt;
 <span class="keyword">#include</span>&lt;stdlib.h&gt;
 
 <span class="type">int</span> <span class="function">main</span>(){
     <span class="type">int</span> n;
-    <span class="function">printf</span>(<span class="string">"Enter the amount of array:"</span>);
-    <span class="function">scanf</span>(<span class="string">"%d"</span>,&amp;n);
-    <span class="type">int</span> *A=(<span class="type">int</span>*)<span class="function">malloc</span>(n*<span class="function">sizeof</span>(<span class="type">int</span>)); <span class="comment">// 在 heap 配置記憶體</span>
+    printf(<span class="string">"Enter the amount of array:"</span>);
+    scanf(<span class="string">"%d"</span>,&n);
+    <span class="type">int</span> *A=(<span class="type">int</span>*)<span class="function">malloc</span>(n*<span class="keyword">sizeof</span>(<span class="type">int</span>)); <span class="comment">// 在 heap 配置記憶體</span>
     <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;n;i++){
         A[i]=i+<span class="number">1</span>;
     }
@@ -718,136 +362,121 @@
     A[<span class="number">2</span>]=<span class="number">6</span>;   <span class="comment">// ❗仍然修改 A[2]</span>
     <span class="comment">// A=NULL; </span>
     <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;n;i++){  <span class="comment">// ❗讀取已釋放記憶體</span>
-        <span class="function">printf</span>(<span class="string">"%d "</span>,A[i]);
-        
+        printf(<span class="string">"%d "</span>,A[i]);
     }
     <span class="keyword">return</span> <span class="number">0</span>;
-}</pre></div>
-          </div>
+}</code></pre>
+                </div>
 
-          <h3>🔍 為什麼 A[2] = 6 這能動作？</h3>
-          <table class="comparison-table">
-            <thead>
-              <tr>
-                <th>名稱</th>
-                <th>說明</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>free(A)</code></td>
-                <td>釋放的是 Heap 中 A 所指向的記憶體，不會改變 A 自身的值</td>
-              </tr>
-              <tr>
-                <td><code>A</code></td>
-                <td>A 本身是在 Stack 裡的變數，仍然記得原本的位址</td>
-              </tr>
-              <tr>
-                <td>結果</td>
-                <td>如果記憶體尚未被重用，還能「看到」原本的資料，但這是未定義行為（UB）</td>
-              </tr>
-            </tbody>
-          </table>
+                <h3>🔍 為什麼 A[2] = 6 這能動作？</h3>
+                <div class="table-wrapper">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>名稱</th>
+                                <th>說明</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>free(A)</code></td>
+                                <td>釋放的是 Heap 中 A 所指向的記憶體，不會改變 A 自身的值</td>
+                            </tr>
+                            <tr>
+                                <td><code>A</code></td>
+                                <td>A 本身是在 Stack 裡的變數，仍然記得原本的位址</td>
+                            </tr>
+                            <tr>
+                                <td>結果</td>
+                                <td>如果記憶體尚未被重用，還能「看到」原本的資料，但這是未定義行為（UB）</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
-          <div class="warning-box">
-            <div class="warning-title">⚠️ 為什麼這樣危險？</div>
-            <ul class="bullet-list" style="color: var(--text-primary);">
-              <li>使用 <code>free()</code> 後的記憶體稱為 dangling pointer（懸空指標）</li>
-              <li>雖然你仍能訪問那塊記憶體，但：
-                <ul style="margin-left: 20px; margin-top: 8px;">
-                  <li style="margin-bottom: 4px;">作業系統有權重新配置那段空間</li>
-                  <li style="margin-bottom: 4px;">寫入資料會導致資料毀損、崩潰或難以 debug 的 bug</li>
-                  <li style="margin-bottom: 4px;">不同平台、編譯器結果會不一樣（不是 deterministic 行為）</li>
+                <div class="warning-box">
+                    <span class="warning-title">⚠️ 為什麼這樣危險？</span>
+                    <p>使用 <code>free()</code> 後的記憶體稱為 <strong>dangling pointer（懸空指標）</strong></p>
+                    <ul>
+                        <li>雖然你仍能訪問那塊記憶體，但：作業系統有權重新配置那段空間</li>
+                        <li>寫入資料會導致資料毀損、崩潰或難以 debug 的 bug</li>
+                        <li>不同平台、編譯器結果會不一樣（不是 deterministic 行為）</li>
+                    </ul>
+                </div>
+
+                <h2><span class="section-num">✅</span> 安全做法</h2>
+                <p>為了避免 dangling pointer 的問題，我們應該遵循以下安全實務。</p>
+
+                <div class="highlight-box">
+                    <span class="highlight-title">💡 正確的記憶體釋放方式</span>
+                    <div class="code-container" style="margin-top: 10px; margin-bottom: 0;">
+                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        <pre><code><span class="function">free</span>(A);
+A = <span class="number">NULL</span>;  <span class="comment">// ✅ 清除指標，防止誤用</span></code></pre>
+                    </div>
+                </div>
+
+                <p><strong>✅ 這樣做的好處：</strong></p>
+                <ul>
+                    <li>再次使用 A 時會馬上觸發錯誤（NULL dereference），方便排除問題</li>
+                    <li>避免指向未知區域導致資料毀損</li>
                 </ul>
-              </li>
-            </ul>
-          </div>
-        </section>
 
-        <section class="content-section" id="safe-practices">
-          <div class="section-header"><div class="section-number">✅</div><h2 class="section-title">安全做法</h2></div>
-          <p class="content-text">為了避免 dangling pointer 的問題，我們應該遵循以下安全實務。</p>
-          
-          <div class="memory-diagram">
-            <!-- 檔名：safe_memory_practices.png - 安全記憶體管理做法圖解 -->
-            <img src="../images/safe_memory_practices.png" alt="安全記憶體管理做法圖解" />
-          </div>
+                <h3>📊 小結</h3>
+                <div class="table-wrapper">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>動作</th>
+                                <th>說明</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>malloc()</code></td>
+                                <td>配置記憶體於 Heap，指標儲存在 Stack</td>
+                            </tr>
+                            <tr>
+                                <td><code>free(ptr)</code></td>
+                                <td>回收 Heap 空間，但不改變指標 <code>ptr</code> 的值</td>
+                            </tr>
+                            <tr>
+                                <td><code>ptr = NULL</code></td>
+                                <td>⭐ 安全習慣！阻止後續對無效記憶體的訪問</td>
+                            </tr>
+                            <tr>
+                                <td>存取已釋放記憶體</td>
+                                <td>❌ 未定義行為，可能 crash、可能成功、可能毀損資料</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
-          <h3>💡 正確的記憶體釋放方式</h3>
-          <div class="code-container">
-            <div class="code-header"><span class="code-label">安全的記憶體管理</span><button class="copy-btn" onclick="copyCode(this,'code2')">📋 複製</button></div>
-            <div class="code-block" id="code2"><pre><span class="function">free</span>(A);
-A = <span class="keyword">NULL</span>;  <span class="comment">// ✅ 清除指標，防止誤用</span></pre></div>
-          </div>
+                <h2><span class="section-num">🔄</span> 使用 realloc 調整記憶體大小的行為說明</h2>
+                <p><code>realloc</code> 是一個功能強大但需要小心使用的函式，它可以調整已配置記憶體的大小，但行為較為複雜。</p>
 
-          <div class="success-box">
-            <div class="success-title">✅ 這樣做的好處：</div>
-            <ul class="bullet-list" style="color: var(--text-primary);">
-              <li>再次使用 A 時會馬上觸發錯誤（NULL dereference），方便排除問題</li>
-              <li>避免指向未知區域導致資料毀損</li>
-            </ul>
-          </div>
-
-          <h3>📊 小結</h3>
-          <table class="comparison-table">
-            <thead>
-              <tr>
-                <th>動作</th>
-                <th>說明</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>malloc()</code></td>
-                <td>配置記憶體於 Heap，指標儲存在 Stack</td>
-              </tr>
-              <tr>
-                <td><code>free(ptr)</code></td>
-                <td>回收 Heap 空間，但不改變指標 <code>ptr</code> 的值</td>
-              </tr>
-              <tr>
-                <td><code>ptr = NULL</code></td>
-                <td>⭐ 安全習慣！阻止後續對無效記憶體的訪問</td>
-              </tr>
-              <tr>
-                <td>存取已釋放記憶體</td>
-                <td>❌ 未定義行為，可能 crash、可能成功、可能毀損資料</td>
-              </tr>
-            </tbody>
-          </table>
-        </section>
-
-        <section class="content-section" id="realloc-behavior">
-          <div class="section-header"><div class="section-number">🔄</div><h2 class="section-title">使用 realloc 調整記憶體大小的行為說明</h2></div>
-          <p class="content-text"><code>realloc</code> 是一個功能強大但需要小心使用的函式，它可以調整已配置記憶體的大小，但行為較為複雜。</p>
-          
-          <div class="memory-diagram">
-            <!-- 檔名：realloc_behavior.png - realloc 行為詳解圖 -->
-            <img src="../images/realloc_behavior.png" alt="realloc 行為詳解圖" />
-          </div>
-
-          <h3>🧪 實際測試範例</h3>
-          <div class="code-container">
-            <div class="code-header"><span class="code-label">realloc 行為測試</span><button class="copy-btn" onclick="copyCode(this,'code3')">📋 複製</button></div>
-            <div class="code-block" id="code3"><pre><span class="keyword">#include</span>&lt;stdio.h&gt;
+                <h3>🧪 實際測試範例</h3>
+                <div class="code-container">
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    <pre><code><span class="keyword">#include</span>&lt;stdio.h&gt;
 <span class="keyword">#include</span>&lt;stdlib.h&gt;
 
 <span class="type">int</span> <span class="function">main</span>(){
     <span class="type">int</span> n;
-    <span class="function">printf</span>(<span class="string">"Enter the amount of array:"</span>);
-    <span class="function">scanf</span>(<span class="string">"%d"</span>,&amp;n);
+    printf(<span class="string">"Enter the amount of array:"</span>);
+    scanf(<span class="string">"%d"</span>,&n);
     
     <span class="comment">// 1️⃣ malloc：先在 Heap 配置 n 個 int</span>
-    <span class="type">int</span> *A = (<span class="type">int</span>*)<span class="function">malloc</span>(n * <span class="function">sizeof</span>(<span class="type">int</span>));
+    <span class="type">int</span> *A = (<span class="type">int</span>*)<span class="function">malloc</span>(n * <span class="keyword">sizeof</span>(<span class="type">int</span>));
     <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; n; i++){
         A[i] = i + <span class="number">1</span>; <span class="comment">// 初始化資料</span>
     }
     
     <span class="comment">// 2️⃣ realloc：嘗試縮小成 n/2 個 int</span>
-    <span class="type">int</span> *B = (<span class="type">int</span>*)<span class="function">realloc</span>(A, (n/<span class="number">2</span>) * <span class="function">sizeof</span>(<span class="type">int</span>)); 
+    <span class="type">int</span> *B = (<span class="type">int</span>*)<span class="function">realloc</span>(A, (n/<span class="number">2</span>) * <span class="keyword">sizeof</span>(<span class="type">int</span>)); 
     
-    <span class="function">printf</span>(<span class="string">"%p\n"</span>, A); <span class="comment">// 原來的位置</span>
-    <span class="function">printf</span>(<span class="string">"%p\n"</span>, B); <span class="comment">// realloc 之後的位置</span>
+    printf(<span class="string">"%p\n"</span>, A); <span class="comment">// 原來的位置</span>
+    printf(<span class="string">"%p\n"</span>, B); <span class="comment">// realloc 之後的位置</span>
     
     <span class="comment">// 3️⃣ 特殊情況：</span>
     <span class="comment">// B = realloc(A, 0);             // 等同 free(A)</span>
@@ -855,117 +484,104 @@ A = <span class="keyword">NULL</span>;  <span class="comment">// ✅ 清除指�
     
     <span class="comment">// 4️⃣ 讀取目前的資料（⚠ 注意，縮小後超過的資料不可再用）</span>
     <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; n; i++){ 
-        <span class="function">printf</span>(<span class="string">"%d "</span>, B[i]);
+        printf(<span class="string">"%d "</span>, B[i]);
     }
     <span class="keyword">return</span> <span class="number">0</span>;
-}</pre></div>
-          </div>
+}</code></pre>
+                </div>
 
-          <h3>🔄 常見操作</h3>
-          <ul class="bullet-list">
-            <li><strong>放大：</strong><code>int* B = realloc(A, 2 * n * sizeof *A);</code></li>
-            <li><strong>縮小：</strong><code>int* B = realloc(A, (n / 2) * sizeof *A);</code></li>
-          </ul>
+                <h3>🔄 常見操作</h3>
+                <ul>
+                    <li>放大：<code>int* B = realloc(A, 2 * n * sizeof *A);</code></li>
+                    <li>縮小：<code>int* B = realloc(A, (n / 2) * sizeof *A);</code></li>
+                </ul>
 
-          <h3>💡 原理說明</h3>
-          <ul class="bullet-list">
-            <li>若原位置後方空間足夠 → 嘗試原地調整（<code>B</code> 可能等於 <code>A</code>）。</li>
-            <li>若不夠 → 於 Heap 配置新區塊、複製舊資料、釋放舊區塊（<code>B</code> 與 <code>A</code> 可能不同）。</li>
-            <li>成功後：只能用新指標（<code>B</code>），舊指標（<code>A</code>）視為失效。</li>
-            <li>縮小後：只保留前 <code>new_size bytes</code> 的內容；擴大後新增區域內容未初始化。</li>
-          </ul>
+                <div class="highlight-box">
+                    <span class="highlight-title">💡 原理說明</span>
+                    <ul>
+                        <li>若原位置後方空間足夠 → 嘗試原地調整（B 可能等於 A）。</li>
+                        <li>若不夠 → 於 Heap 配置新區塊、複製舊資料、釋放舊區塊（B 與 A 可能不同）。</li>
+                        <li>成功後：只能用新指標（B），舊指標（A）視為失效。</li>
+                        <li>縮小後：只保留前 <code>new_size bytes</code> 的內容；擴大後新增區域內容未初始化。</li>
+                    </ul>
+                </div>
 
-          <h3>🔧 特殊情況</h3>
-          <div class="highlight-box">
-            <div class="highlight-title">🔧 特殊情況</div>
-            <ul class="bullet-list" style="color: var(--text-primary);">
-              <li><code>realloc(ptr, 0)</code> → 等同 <code>free(ptr)</code></li>
-              <li><code>realloc(NULL, size)</code> → 等同 <code>malloc(size)</code></li>
-            </ul>
-          </div>
+                <h3>🔧 特殊情況</h3>
+                <ul>
+                    <li><code>realloc(ptr, 0)</code> → 等同 <code>free(ptr)</code></li>
+                    <li><code>realloc(NULL, size)</code> → 等同 <code>malloc(size)</code></li>
+                </ul>
 
-          <div class="code-container">
-            <div class="code-header"><span class="code-label">特殊情況示例</span><button class="copy-btn" onclick="copyCode(this,'code4')">📋 複製</button></div>
-            <div class="code-block" id="code4"><pre>B = <span class="function">realloc</span>(A, <span class="number">0</span>);             <span class="comment">// 等同 free(A)</span>
-<span class="type">int</span> *B = <span class="function">realloc</span>(<span class="keyword">NULL</span>, n * <span class="function">sizeof</span>(<span class="type">int</span>)); <span class="comment">// 等同 malloc</span></pre></div>
-          </div>
-
-          <div class="warning-box">
-            <div class="warning-title">⚠️ 安全性（務必遵守）</div>
-            <ul class="bullet-list" style="color: var(--text-primary);">
-              <li>不要直接寫 <code>A = realloc(A, new_size);</code> 失敗會回傳 <code>NULL</code>，導致原位址遺失（記憶體洩漏）。</li>
-              <li><strong>推薦寫法：</strong>
-                <div class="code-container" style="margin-top: 10px;">
-                  <div class="code-header"><span class="code-label">安全的 realloc 使用</span><button class="copy-btn" onclick="copyCode(this,'code5')">📋 複製</button></div>
-                  <div class="code-block" id="code5"><pre><span class="type">int</span>* tmp = <span class="function">realloc</span>(A, new_size);
-<span class="keyword">if</span> (tmp != <span class="keyword">NULL</span>) {
+                <div class="warning-box">
+                    <span class="warning-title">⚠️ 安全性（務必遵守）</span>
+                    <p>不要直接寫 <code>A = realloc(A, new_size);</code> 失敗會回傳 <code>NULL</code>，導致原位址遺失（記憶體洩漏）。</p>
+                    <p><strong>推薦寫法：</strong></p>
+                    <div class="code-container" style="margin-top: 10px; margin-bottom: 0;">
+                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        <pre><code><span class="type">int</span>* tmp = <span class="function">realloc</span>(A, new_size);
+<span class="keyword">if</span> (tmp != <span class="number">NULL</span>) {
     A = tmp;    <span class="comment">// 只在成功時更新</span>
 } <span class="keyword">else</span> {
     <span class="comment">// A 仍然有效；在這裡決定是否 free(A) 或其他處理</span>
-}</pre></div>
+}</code></pre>
+                    </div>
+                    <ul style="margin-top: 10px;">
+                        <li>縮小後不要讀取超過新範圍；擴大後請先初始化新增區域。</li>
+                        <li>需要比對位址時，用 <code>%p</code> 印指標本身（A/B），不是 <code>&A</code>/<code>&B</code>。</li>
+                    </ul>
                 </div>
-              </li>
-              <li>縮小後不要讀取超過新範圍；擴大後請先初始化新增區域。</li>
-              <li>需要比對位址時，用 <code>%p</code> 印指標本身（<code>A/B</code>），不是 <code>&A/&B</code>。</li>
-            </ul>
-          </div>
 
-          <h3>📊 realloc 成功/失敗與指標有效性對照表</h3>
-          <table class="comparison-table">
-            <thead>
-              <tr>
-                <th>狀況</th>
-                <th>B（回傳值）</th>
-                <th>A（舊指標）</th>
-                <th>資料狀態</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>成功（原地縮編）</td>
-                <td>非 <code>NULL</code>，且與 <code>A</code> 相同</td>
-                <td>同 <code>B</code></td>
-                <td>資料保留</td>
-              </tr>
-              <tr>
-                <td>成功（搬家）</td>
-                <td>非 <code>NULL</code>，與 <code>A</code> 不同</td>
-                <td>❌ 不可再用（已被釋放）</td>
-                <td>資料已複製到 <code>B</code></td>
-              </tr>
-              <tr>
-                <td>失敗</td>
-                <td><code>NULL</code></td>
-                <td>✅ 仍有效（原資料還在）</td>
-                <td>無變化</td>
-              </tr>
-            </tbody>
-          </table>
-        </section>
+                <h3>📊 realloc 成功/失敗與指標有效性對照表</h3>
+                <div class="table-wrapper">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>狀況</th>
+                                <th>B（回傳值）</th>
+                                <th>A（舊指標）</th>
+                                <th>資料狀態</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>成功（原地縮編）</td>
+                                <td>非 NULL，且與 A 相同</td>
+                                <td>同 B</td>
+                                <td>資料保留</td>
+                            </tr>
+                            <tr>
+                                <td>成功（搬家）</td>
+                                <td>非 NULL，與 A 不同</td>
+                                <td>❌ 不可再用（已被釋放）</td>
+                                <td>資料已複製到 B</td>
+                            </tr>
+                            <tr>
+                                <td>失敗</td>
+                                <td>NULL</td>
+                                <td>✅ 仍有效（原資料還在）</td>
+                                <td>無變化</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
-        <section class="content-section" id="heap-stack-diff">
-          <div class="section-header"><div class="section-number">🏗️</div><h2 class="section-title">Heap 與 Stack 回傳指標差異</h2></div>
-          <p class="content-text">函式回傳指標時，根據指標指向的記憶體區域不同，會有截然不同的行為和安全性考量。這是 C 語言記憶體管理中最重要的概念之一。</p>
-          
-          <div class="memory-diagram">
-            <!-- 檔名：heap_stack_return_diff.png - Heap 與 Stack 回傳指標差異圖 -->
-            <img src="../images/heap_stack_return_diff.png" alt="Heap 與 Stack 回傳指標差異圖" />
-          </div>
+                <h2><span class="section-num">🏗️</span> Heap 與 Stack 回傳指標差異</h2>
+                <p>函式回傳指標時，根據指標指向的記憶體區域不同，會有截然不同的行為和安全性考量。這是 C 語言記憶體管理中最重要的概念之一。</p>
 
-          <h3>🧪 完整實際測試範例</h3>
-          <div class="code-container">
-            <div class="code-header"><span class="code-label">Heap 與 Stack 指標回傳比較</span><button class="copy-btn" onclick="copyCode(this,'code6')">📋 複製</button></div>
-            <div class="code-block" id="code6"><pre><span class="keyword">#include</span>&lt;stdio.h&gt;
+                <h3>🧪 完整實際測試範例</h3>
+                <div class="code-container">
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    <pre><code><span class="keyword">#include</span>&lt;stdio.h&gt;
 <span class="keyword">#include</span>&lt;stdlib.h&gt;
 
 <span class="comment">// 這個函式會透過指標 a、b 來計算總和，並回傳一個堆積區(Heap)的指標</span>
-<span class="type">int</span> *<span class="function">addByPointer</span>(<span class="type">int</span> *a,<span class="type">int</span> *b){
-    <span class="function">printf</span>(<span class="string">"Use the pointer: \n"</span>);
-    <span class="function">printf</span>(<span class="string">"Address of a in func is %p\n"</span>,&amp;a); <span class="comment">// 參數 a (指標變數) 本身在函式的 Stack frame 位置</span>
-    <span class="function">printf</span>(<span class="string">"Value's address of a in func is %p\n"</span>,a); <span class="comment">// a 變數裡的值 → 指向 main() 裡變數 a 的位址</span>
+<span class="type">int</span> *<span class="function">addByPointer</span>(<span class="type">int</span> *a, <span class="type">int</span> *b){
+    printf(<span class="string">"Use the pointer: \n"</span>);
+    printf(<span class="string">"Address of a in func is %p\n"</span>, &a); <span class="comment">// 參數 a (指標變數) 本身在函式的 Stack frame 位置</span>
+    printf(<span class="string">"Value's address of a in func is %p\n"</span>, a); <span class="comment">// a 變數裡的值 → 指向 main() 裡變數 a 的位址</span>
     
     <span class="comment">// 在 Heap 配置一個 int 空間，生命週期不受這個函式結束影響</span>
-    <span class="type">int</span> *c = (<span class="type">int</span>*)<span class="function">malloc</span>(<span class="function">sizeof</span>(<span class="type">int</span>));
+    <span class="type">int</span> *c = (<span class="type">int</span>*)<span class="function">malloc</span>(<span class="keyword">sizeof</span>(<span class="type">int</span>));
     <span class="comment">// 將 a 與 b 指向的整數相加，結果寫進 Heap 配置的空間</span>
     *c = (*a) + (*b);
     <span class="keyword">return</span> c; <span class="comment">// 回傳 Heap 記憶體的地址，這樣離開函式後仍然可用</span>
@@ -982,208 +598,165 @@ int *addInStack(int a,int b){
 
 <span class="type">int</span> <span class="function">main</span>(){
     <span class="type">int</span> a = <span class="number">2</span>, b = <span class="number">4</span>;
-    <span class="function">printf</span>(<span class="string">"Address of a in main is %p\n"</span>,&amp;a); <span class="comment">// main 裡的變數 a 在 main 的 Stack frame</span>
+    printf(<span class="string">"Address of a in main is %p\n"</span>, &a); <span class="comment">// main 裡的變數 a 在 main 的 Stack frame</span>
     
     <span class="comment">// 這裡原本 malloc 的空間馬上被下一行覆蓋掉指標位址 → 第一塊空間會洩漏</span>
-    <span class="type">int</span> *ptr = (<span class="type">int</span>*)<span class="function">malloc</span>(<span class="function">sizeof</span>(<span class="type">int</span>));
+    <span class="type">int</span> *ptr = (<span class="type">int</span>*)<span class="function">malloc</span>(<span class="keyword">sizeof</span>(<span class="type">int</span>));
     <span class="comment">// 呼叫 addByPointer()，得到的是 Heap 空間的位址</span>
-    ptr = <span class="function">addByPointer</span>(&amp;a, &amp;b);
+    ptr = addByPointer(&a, &b);
     
     <span class="comment">// 安全存取：ptr 指向的空間在 Heap，因此函式結束後仍有效</span>
-    <span class="function">printf</span>(<span class="string">"Sum is %d"</span>, *ptr);
+    printf(<span class="string">"Sum is %d"</span>, *ptr);
     <span class="comment">// ⚠ 用完記得 free，否則會造成記憶體洩漏</span>
     <span class="function">free</span>(ptr);
     <span class="keyword">return</span> <span class="number">0</span>;
-}</pre></div>
-          </div>
+}</code></pre>
+                </div>
 
-          <h3>1️⃣ main 的區域變數與呼叫通訊</h3>
-          <div class="code-container">
-            <div class="code-header"><span class="code-label">main 函式中的變數</span><button class="copy-btn" onclick="copyCode(this,'code7')">📋 複製</button></div>
-            <div class="code-block" id="code7"><pre><span class="type">int</span> a = <span class="number">2</span>, b = <span class="number">4</span>;
-ptr = <span class="function">addByPointer</span>(&amp;a, &amp;b);</pre></div>
-          </div>
-          <ul class="bullet-list">
-            <li><code>a</code>、<code>b</code> 都在 main 的 Stack frame 裡。</li>
-            <li>我們把兩個變數的位址傳進 <code>addByPointer</code>。</li>
-          </ul>
+                <h3>1️⃣ main 的區域變數與呼叫通訊</h3>
+                <div class="code-container">
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    <pre><code><span class="type">int</span> a = <span class="number">2</span>, b = <span class="number">4</span>;
+ptr = addByPointer(&a, &b);</code></pre>
+                </div>
+                <ul>
+                    <li><code>a</code>、<code>b</code> 都在 main 的 Stack frame 裡。</li>
+                    <li>我們把兩個變數的位址傳進 <code>addByPointer</code>。</li>
+                </ul>
 
-          <h3>2️⃣ 在函式中使用 malloc</h3>
-          <div class="code-container">
-            <div class="code-header"><span class="code-label">函式中的 Heap 配置</span><button class="copy-btn" onclick="copyCode(this,'code8')">📋 複製</button></div>
-            <div class="code-block" id="code8"><pre><span class="type">int</span> *c = (<span class="type">int</span>*)<span class="function">malloc</span>(<span class="function">sizeof</span>(<span class="type">int</span>));
+                <h3>2️⃣ 在函式中使用 malloc</h3>
+                <div class="code-container">
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    <pre><code><span class="type">int</span> *c = (<span class="type">int</span>*)<span class="function">malloc</span>(<span class="keyword">sizeof</span>(<span class="type">int</span>));
 *c = (*a) + (*b);
-<span class="keyword">return</span> c;</pre></div>
-          </div>
-          <ul class="bullet-list">
-            <li><code>c</code> 指向 Heap 裡新配置的一格整數空間。</li>
-            <li>資料寫進 Heap 中，即使函式結束，記憶體仍然有效。</li>
-            <li>回傳的是 Heap 地址，不是區域變數地址。</li>
-          </ul>
+<span class="keyword">return</span> c;</code></pre>
+                </div>
+                <ul>
+                    <li><code>c</code> 指向 Heap 裡新配置的一格整數空間。</li>
+                    <li>資料寫進 Heap 中，即使函式結束，記憶體仍然有效。</li>
+                    <li>回傳的是 Heap 地址，不是區域變數地址。</li>
+                </ul>
 
-          <h3>3️⃣ 如果改成 Stack 區域變數會發生什麼？</h3>
-          <div class="code-container">
-            <div class="code-header"><span class="code-label">危險的 Stack 變數回傳</span><button class="copy-btn" onclick="copyCode(this,'code9')">📋 複製</button></div>
-            <div class="code-block" id="code9"><pre><span class="type">int</span> c = (*a) + (*b);
-<span class="keyword">return</span> &amp;c;   <span class="comment">// ❌ 危險：c 在函式內的 Stack</span></pre></div>
-          </div>
-          <ul class="bullet-list">
-            <li>函式結束時，<code>c</code> 所在的 Stack frame 會被標記為可用。</li>
-            <li>後續任何呼叫（例如又呼叫另一個函式）都可能覆蓋它。</li>
-            <li>沒被覆蓋時「看似可用」，但不穩定。</li>
-          </ul>
+                <h3>3️⃣ 如果改成 Stack 區域變數會發生什麼？</h3>
+                <div class="code-container">
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    <pre><code><span class="type">int</span> c = (*a) + (*b);
+<span class="keyword">return</span> &c;   <span class="comment">// ❌ 危險：c 在函式內的 Stack</span></code></pre>
+                </div>
+                <ul>
+                    <li>函式結束時，<code>c</code> 所在的 Stack frame 會被標記為可用。</li>
+                    <li>後續任何呼叫（例如又呼叫另一個函式）都可能覆蓋它。</li>
+                    <li>沒被覆蓋時「看似可用」，但不穩定。</li>
+                </ul>
 
-          <h3>4️⃣ 假設情境 — Stack 被覆蓋</h3>
-          <div class="warning-box">
-            <div class="warning-title">⚠️ Stack 覆蓋情境說明</div>
-            <ul class="bullet-list" style="color: var(--text-primary);">
-              <li><strong>情境 A（運氣好）</strong> 呼叫 <code>addInStack()</code> 後立刻回傳指標去取值 → Stack 那塊還沒被覆蓋 → 你看到對的值。</li>
-              <li><strong>情境 B（危險）</strong> 呼叫 <code>addInStack()</code> 後再呼叫其他函式（例如 <code>printHelloWorld()</code> ）→ 新的 Stack frame 覆蓋原位置 → 值亂掉或程式崩潰。</li>
-            </ul>
-          </div>
+                <h3>4️⃣ 假設情境 — Stack 被覆蓋</h3>
+                <div class="warning-box">
+                    <span class="warning-title">⚠️ Stack 覆蓋情境說明</span>
+                    <ul>
+                        <li><strong>情境 A（運氣好）</strong>：呼叫 <code>addInStack()</code> 後立刻回傳指標去取值 → Stack 那塊還沒被覆蓋 → 你看到對的值。</li>
+                        <li><strong>情境 B（危險）</strong>：呼叫 <code>addInStack()</code> 後再呼叫其他函式（例如 <code>printHelloWorld()</code>）→ 新的 Stack frame 覆蓋原位置 → 值亂掉或程式崩潰。</li>
+                    </ul>
+                </div>
 
-          <h3>5️⃣ 為什麼 Heap 安全</h3>
-          <ul class="bullet-list">
-            <li>Heap 空間不會因為函式結束自動釋放。</li>
-            <li>除非手動 <code>free()</code>，否則內容不會被新函式覆蓋。</li>
-            <li>適合用在需要函式外繼續使用資料的情況。</li>
-          </ul>
+                <h3>5️⃣ 為什麼 Heap 安全</h3>
+                <ul>
+                    <li>Heap 空間不會因為函式結束自動釋放。</li>
+                    <li>除非手動 <code>free()</code>，否則內容不會被新函式覆蓋。</li>
+                    <li>適合用在需要函式外繼續使用資料的情況。</li>
+                </ul>
 
-          <div class="highlight-box">
-            <div class="highlight-title">💡 記憶體管理黃金法則</div>
-            <ul class="bullet-list" style="color: var(--text-primary);">
-              <li>每個 <code>malloc</code> 都要對應一個 <code>free</code></li>
-              <li><code>free</code> 後立即將指標設為 <code>NULL</code></li>
-              <li>檢查 <code>malloc</code> 回傳值是否為 <code>NULL</code>（配置失敗）</li>
-              <li>避免重複釋放同一塊記憶體</li>
-              <li>使用 <code>realloc</code> 時先用臨時變數接收結果</li>
-              <li><strong>絕對不要回傳區域變數的指標</strong></li>
-            </ul>
-          </div>
+                <div class="highlight-box">
+                    <span class="highlight-title">💡 記憶體管理黃金法則</span>
+                    <ul>
+                        <li>每個 <code>malloc</code> 都要對應一個 <code>free</code></li>
+                        <li><code>free</code> 後立即將指標設為 <code>NULL</code></li>
+                        <li>檢查 <code>malloc</code> 回傳值是否為 <code>NULL</code>（配置失敗）</li>
+                        <li>避免重複釋放同一塊記憶體</li>
+                        <li>使用 <code>realloc</code> 時先用臨時變數接收結果</li>
+                        <li><strong>絕對不要回傳區域變數的指標</strong></li>
+                    </ul>
+                </div>
 
-          <h3>📊 總結比較</h3>
-          <table class="comparison-table">
-            <thead>
-              <tr>
-                <th>回傳類型</th>
-                <th>記憶體位置</th>
-                <th>生命週期</th>
-                <th>安全性</th>
-                <th>使用場景</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Heap 指標</td>
-                <td>動態配置</td>
-                <td>手動管理</td>
-                <td>✅ 安全（需要 free）</td>
-                <td>函式間傳遞資料</td>
-              </tr>
-              <tr>
-                <td>Stack 指標</td>
-                <td>區域變數</td>
-                <td>函式結束自動釋放</td>
-                <td>❌ 危險（可能被覆蓋）</td>
-                <td>❌ 不應使用</td>
-              </tr>
-              <tr>
-                <td>全域變數指標</td>
-                <td>靜態區域</td>
-                <td>程式結束才釋放</td>
-                <td>✅ 安全</td>
-                <td>全域共享資料</td>
-              </tr>
-            </tbody>
-          </table>
-        </section>
+                <h3>📊 總結比較</h3>
+                <div class="table-wrapper">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>回傳類型</th>
+                                <th>記憶體位置</th>
+                                <th>生命週期</th>
+                                <th>安全性</th>
+                                <th>使用場景</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Heap 指標</td>
+                                <td>動態配置</td>
+                                <td>手動管理</td>
+                                <td>✅ 安全（需要 free）</td>
+                                <td>函式間傳遞資料</td>
+                            </tr>
+                            <tr>
+                                <td>Stack 指標</td>
+                                <td>區域變數</td>
+                                <td>函式結束自動釋放</td>
+                                <td>❌ 危險（可能被覆蓋）</td>
+                                <td>❌ 不應使用</td>
+                            </tr>
+                            <tr>
+                                <td>全域變數指標</td>
+                                <td>靜態區域</td>
+                                <td>程式結束才釋放</td>
+                                <td>✅ 安全</td>
+                                <td>全域共享資料</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
-      </main>
+            </article>
 
-      </main>
-
-      <nav class="navigation">
-        <a href="chapter13.html" class="nav-btn prev">
-          <div>
-            <div class="nav-direction">← 上一頁</div>
-            <div class="nav-title">Dynamic memory allocation</div>
-          </div>
-        </a>
-        <div class="nav-center">
-          <div style="font-weight:600;">Chapter 14 / 18</div>
-          <div style="font-size:.9em;">Pointers as Function Returns</div>
+            <div class="chapter-nav fade-in">
+                <a href="chapter13.html" id="prev-btn" class="nav-btn">&lt; PREV</a>
+                <a href="/Learning/c-pointer-tutorial/index.html" class="nav-btn menu-btn">MENU</a>
+                <a href="/Learning/c-pointer-tutorial/index.html" id="next-btn" class="nav-btn">Index &gt;</a>
+            </div>
         </div>
-        <a href="chapter15.html" class="nav-btn">
-          <div>
-            <div class="nav-direction">下一頁 →</div>
-            <div class="nav-title">Function Pointers</div>
-          </div>
-        </a>
-      </nav>
-    </div>
-  </div>
+    </main>
 
-  <script>
-    function toggleTheme() {
-        const body = document.body;
-        const icon = document.getElementById('theme-icon');
-        const current = body.getAttribute('data-theme');
-        if (current === 'dark') {
-            body.setAttribute('data-theme', 'light');
-            icon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
-            localStorage.setItem('theme', 'light');
-        } else {
-            body.setAttribute('data-theme', 'dark');
-            icon.innerHTML = '<circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>';
-            localStorage.setItem('theme', 'dark');
+    <footer class="zen-footer">
+        <div class="container">
+            <div class="footer-links">
+                <a href="/about.html">About</a>
+                <a href="mailto:contact@tingnotes.io">Contact</a>
+            </div>
+            <p class="copyright">© 2025 TingNotes.io</p>
+        </div>
+    </footer>
+
+    <script>
+        function copyCode(btn) {
+            const pre = btn.parentElement.querySelector('pre');
+            if (!pre) return;
+            const code = pre.textContent;
+            
+            navigator.clipboard.writeText(code).then(() => {
+                const originalText = btn.textContent;
+                btn.textContent = 'Copied!';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy:', err);
+            });
         }
-    }
-    function loadTheme() {
-        const saved = localStorage.getItem('theme') || 'light';
-        const icon = document.getElementById('theme-icon');
-        document.body.setAttribute('data-theme', saved);
-        if (saved === 'dark') {
-            icon.innerHTML = '<circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>';
-        } else {
-            icon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
-        }
-    }
-    function toggleSubMenu(el) {
-        event.preventDefault();
-        const arrow = el.querySelector('.arrow');
-        const sub = el.parentElement.querySelector('.sub-menu');
-        if (sub) {
-            arrow.classList.toggle('expanded');
-            sub.classList.toggle('show');
-        }
-    }
-    function copyCode(btn, id) {
-        const code = document.getElementById(id).querySelector('pre').textContent;
-        navigator.clipboard.writeText(code).then(() => {
-            const text = btn.textContent;
-            btn.textContent = '✅ 已複製';
-            btn.classList.add('copied');
-            setTimeout(() => {
-                btn.textContent = text;
-                btn.classList.remove('copied');
-            }, 2000);
-        }).catch(() => {
-            const ta = document.createElement('textarea');
-            ta.value = code;
-            document.body.appendChild(ta);
-            ta.select();
-            document.execCommand('copy');
-            document.body.removeChild(ta);
-            const text = btn.textContent;
-            btn.textContent = '✅ 已複製';
-            btn.classList.add('copied');
-            setTimeout(() => {
-                btn.textContent = text;
-                btn.classList.remove('copied');
-            }, 2000);
-        });
-    }
-    document.addEventListener('DOMContentLoaded', () => loadTheme());
-  </script>
+    </script>
+
+    <script type="module" src="/script.js"></script>
+    <script src="../js/chapter.js"></script>
+
 </body>
 </html>

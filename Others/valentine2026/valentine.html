@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>For You ♡</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Noto+Serif+TC:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FAF8F5;--text:#2C2825;--text-light:#7A7168;
+  --accent:#C4A882;--accent-soft:#D4C4AD;--accent-deep:#A68B6B;
+  --rose:#D4A0A0;--rose-soft:#E8CECE;--rose-deep:#B87878;
+  --line:#E5DDD5;--white:#FFF;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{font-size:16px}
+body{font-family:'Noto Serif TC','Cormorant Garamond',Georgia,serif;background:var(--bg);color:var(--text);line-height:1.8;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+
+/* ═══ Screens ═══ */
+.screen{position:fixed;inset:0;z-index:900;display:flex;align-items:center;justify-content:center;background:var(--bg);transition:opacity .8s,visibility .8s}
+.screen.out{opacity:0;visibility:hidden;pointer-events:none}
+
+/* Verify */
+#s-verify{z-index:1000}
+.vc{text-align:center;padding:3rem 2rem;max-width:420px;width:100%}
+.vc-icon{width:48px;height:48px;margin:0 auto 2.5rem;opacity:.6}
+.vc-icon svg{width:100%;height:100%;stroke:var(--accent-deep);fill:none;stroke-width:1.2}
+.vc h1{font-family:'Playfair Display','Noto Serif TC',serif;font-size:1.5rem;font-weight:400;letter-spacing:.08em;margin-bottom:.75rem}
+.vc-sub{font-size:.875rem;color:var(--text-light);font-weight:300;margin-bottom:3rem}
+.dig{display:flex;gap:12px;justify-content:center;margin-bottom:2rem}
+.dig input{font-family:'Cormorant Garamond',serif;font-size:1.25rem;text-align:center;border:none;border-bottom:1.5px solid var(--line);background:transparent;color:var(--text);padding:.5rem 0;outline:none;transition:border-color .3s}
+.dig input:focus{border-color:var(--accent)}
+.dig input::placeholder{color:var(--accent-soft);font-weight:300}
+.yi{width:80px}.mi,.di{width:56px}
+.ds{font-family:'Cormorant Garamond',serif;font-size:1.25rem;color:var(--accent-soft);display:flex;align-items:flex-end;padding-bottom:.5rem}
+.vbtn{font-family:'Noto Serif TC',serif;font-size:.8125rem;letter-spacing:.2em;color:var(--text);background:transparent;border:1px solid var(--line);padding:.875rem 3rem;cursor:pointer;transition:all .4s;position:relative;overflow:hidden}
+.vbtn::before{content:'';position:absolute;inset:0;background:var(--accent);transform:scaleX(0);transform-origin:left;transition:transform .4s;z-index:-1}
+.vbtn:hover{border-color:var(--accent);color:var(--white)}.vbtn:hover::before{transform:scaleX(1)}
+.verr{font-size:.8125rem;color:var(--rose-deep);margin-top:1.25rem;opacity:0;transition:opacity .3s;font-weight:300}
+.verr.show{opacity:1}
+.vhint{font-size:.75rem;color:var(--accent-soft);margin-top:3rem;font-weight:300}
+
+/* ═══ Love Question ═══ */
+#s-love{z-index:950}
+.love-box{text-align:center;padding:2rem;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative}
+.love-q{font-family:'Playfair Display','Noto Serif TC',serif;font-size:clamp(1.6rem,5vw,2.2rem);font-weight:400;letter-spacing:.06em;margin-bottom:3.5rem;line-height:1.5}
+
+.love-btns{display:flex;gap:3rem;justify-content:center;align-items:center}
+
+.btn-yes,.btn-no{font-family:'Noto Serif TC',serif;font-size:.9375rem;letter-spacing:.15em;padding:1rem 3rem;border-radius:2px;cursor:pointer;transition:all .35s;border:none}
+.btn-yes{background:var(--rose);color:var(--white);box-shadow:0 4px 20px rgba(212,160,160,.3)}
+.btn-yes:hover{background:var(--rose-deep);transform:scale(1.05);box-shadow:0 6px 28px rgba(212,160,160,.45)}
+.btn-no{background:var(--bg);color:var(--text-light);border:1px solid var(--line)}
+.btn-no:hover{transform:scale(.95)}
+
+/* When No starts running */
+.btn-no.runaway{
+  position:fixed;
+  transition:left .25s cubic-bezier(.4,0,.2,1),top .25s cubic-bezier(.4,0,.2,1);
+  z-index:999;
+}
+
+.float-heart{position:fixed;pointer-events:none;z-index:1000;color:var(--rose);animation:floatH 1.5s ease forwards}
+@keyframes floatH{0%{transform:translateY(0) scale(1);opacity:1}100%{transform:translateY(-80px) scale(.4);opacity:0}}
+
+/* ═══ Envelope ═══ */
+#s-envelope{z-index:940}
+.envelope-wrap{text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center}
+
+.envelope{
+  position:relative;
+  width:280px;height:180px;
+  cursor:pointer;
+  margin-bottom:2rem;
+  perspective:800px;
+}
+
+.env-back{
+  position:absolute;inset:0;
+  background:linear-gradient(145deg,#E8DDD0,#DDD0C0);
+  border-radius:4px;
+  box-shadow:0 4px 24px rgba(0,0,0,.08);
+}
+
+.env-front{
+  position:absolute;
+  bottom:0;left:0;right:0;height:55%;
+  background:linear-gradient(175deg,#F0E6D8,#E5D9CA);
+  border-radius:0 0 4px 4px;
+  z-index:3;
+  box-shadow:0 -1px 3px rgba(0,0,0,.03);
+}
+
+/* Flap — the triangle lid */
+.env-flap{
+  position:absolute;top:0;left:0;right:0;
+  height:0;
+  border-left:140px solid transparent;
+  border-right:140px solid transparent;
+  border-top:100px solid #DDD0C0;
+  z-index:4;
+  transform-origin:top center;
+  transition:transform 1s cubic-bezier(.4,0,.2,1),border-top-color .5s;
+}
+.env-flap.open{
+  transform:rotateX(180deg);
+  border-top-color:#E8DDD0;
+}
+
+/* Letter inside */
+.env-letter{
+  position:absolute;
+  left:15%;right:15%;
+  bottom:20%;
+  height:70%;
+  background:var(--white);
+  border-radius:3px;
+  z-index:2;
+  box-shadow:0 1px 8px rgba(0,0,0,.06);
+  display:flex;align-items:center;justify-content:center;
+  transition:transform 1.2s cubic-bezier(.34,1.56,.64,1),opacity .6s;
+  transform:translateY(0);
+}
+.env-letter.rise{
+  transform:translateY(-200px);
+  z-index:5;
+}
+
+.env-letter-text{
+  text-align:center;padding:1.2rem;
+  opacity:0;transition:opacity .6s ease .3s;
+}
+.env-letter.rise .env-letter-text{opacity:1}
+
+.env-letter-text p:first-child{
+  font-family:'Playfair Display','Noto Serif TC',serif;
+  font-size:1rem;font-weight:400;
+  color:var(--accent-deep);
+  margin-bottom:.5rem;
+}
+.env-letter-small{
+  font-size:.75rem;color:var(--rose);font-weight:300;
+}
+
+.env-hint{
+  font-size:.75rem;color:var(--accent-soft);
+  letter-spacing:.12em;font-weight:300;
+  animation:fadeUpSlow 1.5s ease infinite alternate;
+}
+@keyframes fadeUpSlow{0%{opacity:.4;transform:translateY(0)}100%{opacity:.8;transform:translateY(-4px)}}
+
+/* Seal / heart wax */
+.env-front::after{
+  content:'♡';
+  position:absolute;
+  top:-14px;left:50%;transform:translateX(-50%);
+  width:28px;height:28px;
+  background:var(--rose);
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.7rem;color:var(--white);
+  line-height:28px;text-align:center;
+  box-shadow:0 2px 8px rgba(212,160,160,.3);
+  transition:opacity .5s;
+}
+.envelope.opened .env-front::after{opacity:0}
+
+/* ═══ Main ═══ */
+#main{opacity:0;visibility:hidden;transition:opacity 1s ease .3s}
+#main.visible{opacity:1;visibility:visible}
+
+/* Hero */
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem;position:relative}
+.hero::before{content:'';position:absolute;top:18%;left:50%;transform:translateX(-50%);width:1px;height:120px;background:linear-gradient(to bottom,transparent,var(--accent-soft),transparent);opacity:0;animation:fadeSlideDown 1.2s ease .8s forwards}
+.hl{font-size:.6875rem;letter-spacing:.35em;color:var(--text-light);margin-bottom:2rem;opacity:0;animation:fadeUp 1s ease 1.2s forwards}
+.dc{font-family:'Cormorant Garamond',serif;font-size:clamp(4.5rem,12vw,9rem);font-weight:300;line-height:1;margin-bottom:.5rem;opacity:0;animation:fadeUp 1s ease 1.4s forwards}
+.du{font-size:1rem;font-weight:300;letter-spacing:.15em;color:var(--text-light);margin-bottom:3rem;opacity:0;animation:fadeUp 1s ease 1.6s forwards}
+.hd{font-family:'Cormorant Garamond',serif;font-size:.9375rem;color:var(--accent);letter-spacing:.1em;opacity:0;animation:fadeUp 1s ease 1.8s forwards}
+.si{position:absolute;bottom:3rem;left:50%;transform:translateX(-50%);opacity:0;animation:fadeUp 1s ease 2.2s forwards}
+.si span{display:block;width:1px;height:40px;background:linear-gradient(to bottom,var(--accent-soft),transparent);animation:scrollPulse 2s ease-in-out infinite}
+.sd{text-align:center;padding:3rem 0}.sd span{display:inline-block;width:40px;height:1px;background:var(--accent-soft)}
+
+/* Letter */
+.ls{padding:6rem 2rem 8rem;max-width:720px;margin:0 auto}
+.lw{max-width:580px;margin:0 auto;position:relative}
+.lw::before{content:'\201C';font-family:'Playfair Display',serif;font-size:6rem;color:var(--accent-soft);opacity:.3;position:absolute;top:-2rem;left:-1.5rem;line-height:1}
+.lt{font-family:'Playfair Display',serif;font-size:1.125rem;font-style:italic;color:var(--accent-deep);margin-bottom:2.5rem;opacity:0;transform:translateY(20px);transition:all .8s}
+.lb p{font-size:1rem;font-weight:300;line-height:2.2;margin-bottom:1.75rem;opacity:0;transform:translateY(20px);transition:all .8s}
+.lsg{margin-top:3rem;text-align:right;font-family:'Playfair Display',serif;font-style:italic;font-size:1.125rem;color:var(--accent-deep);opacity:0;transform:translateY(20px);transition:all .8s}
+.sr.a{opacity:1!important;transform:translateY(0)!important}
+
+/* ═══ Story ═══ */
+.story-outer{position:relative}
+.story-canvas{position:sticky;top:0;left:0;width:100%;height:100vh;background:linear-gradient(170deg,#FAF8F5,#F3EDE6);z-index:2;overflow:hidden}
+.story-canvas svg{width:100%;height:100%}
+
+.narr-card{position:absolute;bottom:0;left:0;right:0;padding:2rem 2rem 2.5rem;background:linear-gradient(to top,rgba(250,248,245,.97) 65%,transparent);z-index:10;text-align:center;pointer-events:none;min-height:130px;display:flex;flex-direction:column;justify-content:flex-end;align-items:center}
+.narr-date{font-family:'Cormorant Garamond',serif;font-size:.75rem;letter-spacing:.15em;color:var(--accent);margin-bottom:.35rem;font-weight:500;opacity:0;transition:opacity .5s}.narr-date.show{opacity:1}
+.narr-title{font-family:'Playfair Display','Noto Serif TC',serif;font-size:1.125rem;font-weight:400;letter-spacing:.04em;margin-bottom:.4rem;opacity:0;transition:opacity .5s}.narr-title.show{opacity:1}
+.narr-desc{font-size:.8125rem;font-weight:300;color:var(--text-light);line-height:1.6;max-width:420px;opacity:0;transition:opacity .5s}.narr-desc.show{opacity:1}
+
+.story-progress{position:absolute;top:0;left:0;right:0;height:2px;background:var(--line);z-index:12}
+.story-progress-fill{height:100%;width:0;background:linear-gradient(90deg,var(--rose),var(--accent));transition:width .4s}
+.scene-counter{position:absolute;top:1.2rem;right:1.5rem;z-index:12;font-family:'Cormorant Garamond',serif;font-size:.75rem;color:var(--accent-soft)}
+
+.story-controls{position:absolute;top:1rem;left:1.5rem;z-index:12;display:flex;gap:.6rem;pointer-events:all}
+.ctrl-btn{width:36px;height:36px;border-radius:50%;background:rgba(250,248,245,.85);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s;backdrop-filter:blur(8px)}
+.ctrl-btn:hover{background:var(--white);border-color:var(--accent);transform:scale(1.08)}
+.ctrl-btn svg{width:14px;height:14px;stroke:var(--text-light);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.ctrl-btn.active svg{stroke:var(--rose)}
+
+.scroll-guide{position:absolute;bottom:150px;left:50%;transform:translateX(-50%);z-index:12;text-align:center;opacity:0;transition:opacity .8s;pointer-events:none}
+.scroll-guide.show{opacity:1}
+.scroll-guide-text{font-size:.75rem;color:var(--accent);letter-spacing:.1em;margin-bottom:.5rem}
+.scroll-guide-arrow{width:20px;height:20px;margin:0 auto;border-right:1.5px solid var(--accent-soft);border-bottom:1.5px solid var(--accent-soft);transform:rotate(45deg);animation:bounceDown 1.5s ease-in-out infinite}
+
+.scroll-spacer{height:100vh;position:relative;z-index:1}
+.scroll-spacer-half{height:50vh;position:relative;z-index:1}
+
+/* ═══ Photo Wall ═══ */
+.photo-section{padding:6rem 2rem 8rem;max-width:900px;margin:0 auto}
+.photo-header{text-align:center;margin-bottom:3.5rem}
+.photo-header h2{font-family:'Playfair Display','Noto Serif TC',serif;font-size:1.375rem;font-weight:400;letter-spacing:.08em;margin-bottom:.75rem}
+.photo-header p{font-size:.8125rem;color:var(--text-light);font-weight:300}
+
+.photo-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:2rem;
+  justify-items:center;
+}
+
+.polaroid{
+  background:var(--white);
+  padding:12px 12px 40px;
+  box-shadow:0 2px 12px rgba(0,0,0,.07),0 1px 3px rgba(0,0,0,.04);
+  cursor:pointer;
+  transition:transform .4s cubic-bezier(.4,0,.2,1),box-shadow .4s;
+  position:relative;
+  width:100%;max-width:240px;
+  opacity:0;transform:translateY(24px);
+  transition:transform .4s cubic-bezier(.4,0,.2,1),box-shadow .4s,opacity .8s;
+}
+.polaroid.visible{opacity:1;transform:rotate(var(--rot,0deg))}
+.polaroid:hover{transform:rotate(0deg) scale(1.04)!important;box-shadow:0 8px 30px rgba(0,0,0,.1);z-index:3}
+
+.polaroid-img{
+  width:100%;aspect-ratio:1/1;
+  background:var(--bg);
+  display:flex;align-items:center;justify-content:center;flex-direction:column;
+  overflow:hidden;position:relative;
+  border:1px solid rgba(0,0,0,.03);
+}
+.polaroid-img img{width:100%;height:100%;object-fit:cover;display:block}
+
+.polaroid-placeholder{
+  color:var(--accent-soft);text-align:center;
+  padding:1rem;
+}
+.polaroid-placeholder-icon{font-size:2rem;margin-bottom:.5rem;opacity:.5}
+.polaroid-placeholder-text{font-size:.7rem;letter-spacing:.08em;font-weight:300}
+
+.polaroid-caption{
+  position:absolute;bottom:0;left:0;right:0;
+  padding:8px 12px;
+  font-size:.75rem;
+  color:var(--text-light);
+  text-align:center;
+  font-weight:300;
+  letter-spacing:.02em;
+  min-height:40px;
+  display:flex;align-items:center;justify-content:center;
+}
+
+.polaroid-tape{
+  position:absolute;top:-8px;left:50%;transform:translateX(-50%) rotate(var(--tape-rot,0deg));
+  width:60px;height:16px;
+  background:rgba(196,168,130,.15);
+  border:1px solid rgba(196,168,130,.1);
+  z-index:2;
+}
+
+/* Lightbox */
+.lightbox{
+  position:fixed;inset:0;z-index:2000;
+  background:rgba(0,0,0,.85);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;visibility:hidden;
+  transition:opacity .4s,visibility .4s;
+  cursor:pointer;
+  backdrop-filter:blur(4px);
+}
+.lightbox.open{opacity:1;visibility:visible}
+.lightbox img{
+  max-width:90vw;max-height:85vh;
+  object-fit:contain;
+  box-shadow:0 0 60px rgba(0,0,0,.3);
+  border-radius:2px;
+}
+.lightbox-caption{
+  position:absolute;bottom:3rem;left:50%;transform:translateX(-50%);
+  color:rgba(255,255,255,.8);
+  font-size:.875rem;font-weight:300;letter-spacing:.05em;
+  text-align:center;
+}
+
+@media(max-width:640px){
+  .photo-grid{grid-template-columns:repeat(2,1fr);gap:1rem}
+  .polaroid{padding:8px 8px 32px}
+  .polaroid-caption{font-size:.65rem;padding:6px 8px}
+}
+
+.footer{text-align:center;padding:6rem 2rem 4rem;position:relative;z-index:1}
+.footer-h{font-size:1.5rem;color:var(--rose);margin-bottom:1.5rem;animation:heartbeat 2s ease-in-out infinite}
+.footer-t{font-family:'Playfair Display',serif;font-size:1rem;font-style:italic;color:var(--text-light);letter-spacing:.05em;margin-bottom:.5rem}
+.footer-s{font-size:.75rem;color:var(--accent-soft);font-weight:300}
+
+/* ═══ SVG transition classes ═══ */
+.fig-dot{transition:cx .6s ease,cy .6s ease,opacity .5s}
+.bg-dot{transition:cx 1s cubic-bezier(.4,0,.2,1),cy 1s cubic-bezier(.4,0,.2,1),r .5s,opacity .8s,fill .8s}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeSlideDown{from{opacity:0;transform:translateX(-50%) translateY(-20px)}to{opacity:.4;transform:translateX(-50%) translateY(0)}}
+@keyframes scrollPulse{0%,100%{opacity:.3;transform:scaleY(1)}50%{opacity:.7;transform:scaleY(1.3)}}
+@keyframes heartbeat{0%,100%{transform:scale(1)}10%{transform:scale(1.15)}20%{transform:scale(1)}30%{transform:scale(1.1)}40%{transform:scale(1)}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+@keyframes pulse{0%{r:0;opacity:.5}100%{r:35;opacity:0}}
+@keyframes bounceDown{0%,100%{transform:rotate(45deg) translateY(0);opacity:.4}50%{transform:rotate(45deg) translateY(6px);opacity:.8}}
+
+@media(max-width:640px){
+  .dig{gap:8px}.dig input{font-size:1.1rem}.yi{width:70px}.mi,.di{width:48px}
+  .love-q{font-size:1.4rem}.love-btns{gap:2rem}
+  .btn-yes,.btn-no{padding:.8rem 2rem;font-size:.85rem}
+  .narr-card{padding:1.5rem 1.5rem 2rem}
+  .story-controls{left:1rem;top:.8rem}
+}
+</style>
+</head>
+<body>
+
+<div class="screen" id="s-verify">
+<div class="vc">
+  <div class="vc-icon"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+  <h1>這是屬於我們的秘密</h1>
+  <p class="vc-sub">請輸入我們的交往紀念日</p>
+  <div class="dig">
+    <input type="text" class="yi" id="vy" placeholder="YYYY" maxlength="4" inputmode="numeric">
+    <span class="ds">/</span>
+    <input type="text" class="mi" id="vm" placeholder="MM" maxlength="2" inputmode="numeric">
+    <span class="ds">/</span>
+    <input type="text" class="di" id="vd" placeholder="DD" maxlength="2" inputmode="numeric">
+  </div>
+  <button class="vbtn" id="vbtn">確認</button>
+  <p class="verr" id="verr">日期不對喔，再想想？ ♡</p>
+  <p class="vhint">只有你知道答案</p>
+</div>
+</div>
+
+<div class="screen out" id="s-love">
+<div class="love-box" id="love-box">
+  <p class="love-q">你愛我嗎？</p>
+  <div class="love-btns" id="love-btns">
+    <button class="btn-yes" id="btn-yes">Yes ♡</button>
+    <button class="btn-no" id="btn-no">No</button>
+  </div>
+</div>
+</div>
+
+<!-- ═══ Screen 3: Envelope ═══ -->
+<div class="screen out" id="s-envelope">
+  <div class="envelope-wrap">
+    <div class="envelope" id="envelope">
+      <div class="env-back"></div>
+      <div class="env-letter" id="env-letter">
+        <div class="env-letter-text">
+          <p>致 最口愛的喻ㄑㄧㄥˊ~</p>
+          <p class="env-letter-small">這封信裡裝了我所有的愛 ♡</p>
+        </div>
+      </div>
+      <div class="env-front"></div>
+      <div class="env-flap" id="env-flap"></div>
+    </div>
+    <p class="env-hint" id="env-hint">點擊信封</p>
+  </div>
+</div>
+
+<div id="main">
+
+<section class="hero">
+  <p class="hl">我們在一起的</p>
+  <div class="dc" id="dc">&mdash;</div>
+  <p class="du">天</p>
+  <p class="hd">since 2023.07.11</p>
+  <div class="si"><span></span></div>
+</section>
+<div class="sd"><span></span></div>
+<section class="ls">
+  <div class="lw">
+    <p class="lt sr">致 最口愛的喻ㄑㄧㄥˊ~</p>
+    <div class="lb">
+      <p class="sr">在遇見你之前，我從來沒有想過，一個人可以這樣輕易地改變我看世界的方式。你讓平凡的日子都有了光。</p>
+      <p class="sr">從那天在路易莎的早餐開始，到一起看演唱會、一起逛國華街、一起在漁光島看夕陽，和你在一起的每一刻，都是我想小心收藏的時光。</p>
+      <p class="sr">謝謝你陪我燙頭髮、幫我煮麵、偷偷住進我的房間，也住進了我的心裡。謝謝你每一次坐車來找我，讓異地也變得不那麼遠。</p>
+      <p class="sr">謝謝你在我交換的這段期間裡的等待與陪伴。那些日子讓我更確定，不管距離多遠，我的心始終都和你連在一起。</p>
+      <p class="sr">未來的每一天，我都想和你一起度過。也許是一起去新的地方，也許只是平凡地吃飯、散步，但只要是和你，再普通的日子都會變得特別。</p>
+      <p class="sr">如果未來有低潮、有距離、有不安，希望我們都不要忘記，我們是怎麼一路走到現在的。你早已成為我生命裡不可或缺的人。</p>
+      <p class="sr">情人節快樂。希望未來的每一年、每一個情人節，我都還能牽著你的手。</p>
+    </div>
+    <p class="lsg sr">愛你的俊ㄊㄧ~</p>
+  </div>
+</section>
+<div class="sd"><span></span></div>
+
+<div class="story-outer" id="story-outer">
+  <div class="story-canvas" id="canvas">
+    <div class="story-progress"><div class="story-progress-fill" id="prog-fill"></div></div>
+    <div class="scene-counter" id="scene-counter"></div>
+    <svg id="svg" viewBox="0 0 560 400" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <radialGradient id="gl-r"><stop offset="0%" stop-color="var(--rose)" stop-opacity=".12"/><stop offset="100%" stop-color="var(--rose)" stop-opacity="0"/></radialGradient>
+        <radialGradient id="gl-a"><stop offset="0%" stop-color="var(--accent)" stop-opacity=".12"/><stop offset="100%" stop-color="var(--accent)" stop-opacity="0"/></radialGradient>
+      </defs>
+      <g id="bg-g"></g><g id="prop-g"></g>
+      <circle id="glow-h" cx="0" cy="0" r="40" fill="url(#gl-r)" opacity="0"/>
+      <g id="fig-h"></g>
+      <circle id="glow-m" cx="0" cy="0" r="40" fill="url(#gl-a)" opacity="0"/>
+      <g id="fig-m"></g>
+      <g id="ov-g"></g>
+    </svg>
+    <div class="narr-card">
+      <div class="narr-date" id="n-date"></div>
+      <div class="narr-title" id="n-title"></div>
+      <div class="narr-desc" id="n-desc"></div>
+    </div>
+    <div class="scroll-guide show" id="scroll-guide">
+      <div class="scroll-guide-text">往下滑 開始我們的故事</div>
+      <div class="scroll-guide-arrow"></div>
+    </div>
+    <div class="story-controls">
+      <div class="ctrl-btn" id="btn-auto" title="自動播放">
+        <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21" fill="currentColor" stroke="none"/></svg>
+      </div>
+      <div class="ctrl-btn" id="btn-music" title="音樂">
+        <svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="scroll-spacer" data-scene="0"></div>
+  <div class="scroll-spacer" data-scene="1"></div>
+  <div class="scroll-spacer" data-scene="2"></div>
+  <div class="scroll-spacer" data-scene="3"></div>
+  <div class="scroll-spacer" data-scene="4"></div>
+  <div class="scroll-spacer" data-scene="5"></div>
+  <div class="scroll-spacer" data-scene="6"></div>
+  <div class="scroll-spacer" data-scene="7"></div>
+  <div class="scroll-spacer" data-scene="8"></div>
+  <div class="scroll-spacer" data-scene="9"></div>
+  <div class="scroll-spacer" data-scene="10"></div>
+  <div class="scroll-spacer" data-scene="11"></div>
+  <div class="scroll-spacer" data-scene="12"></div>
+  <div class="scroll-spacer" data-scene="13"></div>
+  <div class="scroll-spacer" data-scene="14"></div>
+  <div class="scroll-spacer" data-scene="15"></div>
+  <div class="scroll-spacer" data-scene="16"></div>
+  <div class="scroll-spacer" data-scene="17"></div>
+  <div class="scroll-spacer-half" data-scene="18"></div>
+</div>
+
+<div class="sd"><span></span></div>
+
+<!-- ═══ Photo Wall ═══ -->
+<section class="photo-section" id="photo-section">
+  <div class="photo-header">
+    <h2>我們的照片</h2>
+    <p>點擊拍立得，放入屬於我們的回憶</p>
+  </div>
+  <div class="photo-grid" id="photo-grid">
+    <div class="polaroid" style="--rot:-2.5deg;--tape-rot:3deg" data-idx="0">
+      <div class="polaroid-tape"></div>
+      <div class="polaroid-img"><div class="polaroid-placeholder"><div class="polaroid-placeholder-icon">+</div><div class="polaroid-placeholder-text">點擊上傳</div></div></div>
+      <div class="polaroid-caption">BLACKPINK 演唱會</div>
+    </div>
+    <div class="polaroid" style="--rot:1.8deg;--tape-rot:-2deg" data-idx="1">
+      <div class="polaroid-tape"></div>
+      <div class="polaroid-img"><div class="polaroid-placeholder"><div class="polaroid-placeholder-icon">+</div><div class="polaroid-placeholder-text">點擊上傳</div></div></div>
+      <div class="polaroid-caption">路易莎的那天 ♡</div>
+    </div>
+    <div class="polaroid" style="--rot:-1.2deg;--tape-rot:1deg" data-idx="2">
+      <div class="polaroid-tape"></div>
+      <div class="polaroid-img"><div class="polaroid-placeholder"><div class="polaroid-placeholder-icon">+</div><div class="polaroid-placeholder-text">點擊上傳</div></div></div>
+      <div class="polaroid-caption">夏天的冒險</div>
+    </div>
+    <div class="polaroid" style="--rot:2.8deg;--tape-rot:-1deg" data-idx="3">
+      <div class="polaroid-tape"></div>
+      <div class="polaroid-img"><div class="polaroid-placeholder"><div class="polaroid-placeholder-icon">+</div><div class="polaroid-placeholder-text">點擊上傳</div></div></div>
+      <div class="polaroid-caption">聖誕節快樂</div>
+    </div>
+    <div class="polaroid" style="--rot:-1.8deg;--tape-rot:2deg" data-idx="4">
+      <div class="polaroid-tape"></div>
+      <div class="polaroid-img"><div class="polaroid-placeholder"><div class="polaroid-placeholder-icon">+</div><div class="polaroid-placeholder-text">點擊上傳</div></div></div>
+      <div class="polaroid-caption">國華街吃冰</div>
+    </div>
+    <div class="polaroid" style="--rot:1.5deg;--tape-rot:-3deg" data-idx="5">
+      <div class="polaroid-tape"></div>
+      <div class="polaroid-img"><div class="polaroid-placeholder"><div class="polaroid-placeholder-icon">+</div><div class="polaroid-placeholder-text">點擊上傳</div></div></div>
+      <div class="polaroid-caption">漁光島夕陽</div>
+    </div>
+    <div class="polaroid" style="--rot:-2deg;--tape-rot:1deg" data-idx="6">
+      <div class="polaroid-tape"></div>
+      <div class="polaroid-img"><div class="polaroid-placeholder"><div class="polaroid-placeholder-icon">+</div><div class="polaroid-placeholder-text">點擊上傳</div></div></div>
+      <div class="polaroid-caption">一起去韓國 ✈️</div>
+    </div>
+    <div class="polaroid" style="--rot:2.2deg;--tape-rot:-2deg" data-idx="7">
+      <div class="polaroid-tape"></div>
+      <div class="polaroid-img"><div class="polaroid-placeholder"><div class="polaroid-placeholder-icon">+</div><div class="polaroid-placeholder-text">點擊上傳</div></div></div>
+      <div class="polaroid-caption">我最愛的你</div>
+    </div>
+  </div>
+</section>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox">
+  <img id="lb-img" src="">
+  <div class="lightbox-caption" id="lb-cap"></div>
+</div>
+
+<div class="footer">
+  <div class="footer-h">♡</div>
+  <p class="footer-t">Forever &amp; Always</p>
+  <p class="footer-s">— 我們的故事，未完待續 —</p>
+</div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const NS='http://www.w3.org/2000/svg';
+
+/* ═══ Verification ═══ */
+$('vy').addEventListener('input',function(){if(this.value.length===4)$('vm').focus()});
+$('vm').addEventListener('input',function(){if(this.value.length===2)$('vd').focus()});
+$('vd').addEventListener('input',function(){if(this.value.length===2)$('vbtn').focus()});
+document.querySelectorAll('.dig input').forEach(i=>i.addEventListener('keydown',e=>{if(e.key==='Enter')verify()}));
+$('vbtn').addEventListener('click',verify);
+
+function verify(){
+  const y=$('vy').value.trim(),m=$('vm').value.trim(),d=$('vd').value.trim();
+  if(y==='2023'&&parseInt(m)===7&&parseInt(d)===11){
+    $('s-verify').classList.add('out');
+    setTimeout(()=>{$('s-love').classList.remove('out');initLoveQ()},600);
+  } else {
+    const e=$('verr');e.classList.add('show');setTimeout(()=>e.classList.remove('show'),3000);
+    const c=document.querySelector('.vc');c.style.animation='none';c.offsetHeight;c.style.animation='shake .4s ease';
+  }
+}
+
+/* ═══ Love Question ═══ */
+function initLoveQ(){
+  const no=$('btn-no'), yes=$('btn-yes');
+  let firstHover=true;
+
+  function runAway(){
+    if(firstHover){
+      // Switch to fixed positioning
+      const r=no.getBoundingClientRect();
+      no.classList.add('runaway');
+      no.style.left=r.left+'px';
+      no.style.top=r.top+'px';
+      firstHover=false;
+      // Small delay then jump
+      requestAnimationFrame(()=>requestAnimationFrame(doJump));
+      return;
+    }
+    doJump();
+  }
+
+  function doJump(){
+    const pad=20,w=no.offsetWidth,h=no.offsetHeight;
+    const maxX=window.innerWidth-w-pad,maxY=window.innerHeight-h-pad;
+    // Avoid center where Yes is
+    let nx,ny,attempts=0;
+    const yesR=yes.getBoundingClientRect();
+    do{
+      nx=pad+Math.random()*maxX;
+      ny=pad+Math.random()*maxY;
+      attempts++;
+    }while(attempts<20&&Math.abs(nx-yesR.left)<150&&Math.abs(ny-yesR.top)<80);
+    no.style.left=nx+'px';
+    no.style.top=ny+'px';
+  }
+
+  no.addEventListener('mouseenter',runAway);
+  no.addEventListener('touchstart',e=>{e.preventDefault();runAway()},{passive:false});
+
+  yes.addEventListener('click',()=>{
+    for(let i=0;i<15;i++){
+      const h=document.createElement('div');h.className='float-heart';
+      h.textContent='♡';
+      h.style.left=(30+Math.random()*40)+'%';
+      h.style.top=(30+Math.random()*40)+'%';
+      h.style.fontSize=(16+Math.random()*20)+'px';
+      document.body.appendChild(h);
+      setTimeout(()=>h.remove(),2000);
+    }
+    setTimeout(()=>{
+      $('s-love').classList.add('out');
+      setTimeout(()=>{
+        $('s-envelope').classList.remove('out');
+        initEnvelope();
+      },500);
+    },800);
+  });
+}
+
+/* ═══ Envelope Animation ═══ */
+function initEnvelope(){
+  const env=$('envelope'),flap=$('env-flap'),letter=$('env-letter'),hint=$('env-hint');
+  let step=0;
+
+  env.addEventListener('click',()=>{
+    if(step===0){
+      // Step 1: Open flap
+      flap.classList.add('open');
+      env.classList.add('opened');
+      hint.style.opacity='0';
+      step=1;
+      setTimeout(()=>{
+        // Step 2: Letter rises out
+        letter.classList.add('rise');
+        step=2;
+        setTimeout(()=>{
+          // Step 3: Fade out and enter main
+          $('s-envelope').classList.add('out');
+          setTimeout(()=>{
+            $('main').classList.add('visible');
+            countDays();initSR();initStory();
+          },600);
+        },2500);
+      },800);
+    }
+  });
+}
+
+function countDays(){
+  const diff=Math.floor((new Date()-new Date(2023,6,11))/864e5),el=$('dc');
+  let c=0;const s=Math.max(1,Math.floor(diff/60));
+  const t=setInterval(()=>{c+=s;if(c>=diff){c=diff;clearInterval(t)}el.textContent=c},25);
+}
+
+function initSR(){
+  const o=new IntersectionObserver(es=>{es.forEach((e,i)=>{if(e.isIntersecting){setTimeout(()=>e.target.classList.add('a'),i*100);o.unobserve(e.target)}})},{threshold:.12,rootMargin:'0px 0px -40px 0px'});
+  document.querySelectorAll('.sr').forEach(e=>o.observe(e));
+}
+
+/* ═══ Music — MP3 ═══ */
+/*
+  兩種方式使用音樂：
+  1. 把 mp3 檔案命名為 music.mp3 放在同一個資料夾 → 自動載入
+  2. 點擊音樂按鈕 🎵 → 手動選擇 mp3 檔案
+*/
+let bgMusic=null, musicLoaded=false;
+
+// Try auto-load music.mp3 from same folder
+const autoMusic=new Audio('music.mp3');
+autoMusic.loop=true;autoMusic.volume=0.4;
+autoMusic.addEventListener('canplaythrough',()=>{
+  bgMusic=autoMusic;musicLoaded=true;
+  // Don't auto-play, wait for user click (browser policy)
+},{once:true});
+autoMusic.addEventListener('error',()=>{/* No music.mp3 found, user will pick manually */},{once:true});
+
+// Hidden file input for manual pick
+const musicInput=document.createElement('input');
+musicInput.type='file';musicInput.accept='audio/*';musicInput.style.display='none';
+document.body.appendChild(musicInput);
+
+musicInput.addEventListener('change',e=>{
+  const file=e.target.files[0];
+  if(!file)return;
+  const url=URL.createObjectURL(file);
+  if(bgMusic&&bgMusic!==autoMusic){URL.revokeObjectURL(bgMusic.src)}
+  bgMusic=new Audio(url);
+  bgMusic.loop=true;
+  bgMusic.volume=0.4;
+  bgMusic.play();
+  musicLoaded=true;
+  $('btn-music').classList.add('active');
+});
+
+$('btn-music').addEventListener('click',()=>{
+  if(!musicLoaded){
+    // No music loaded yet → open file picker
+    musicInput.click();
+  } else if(bgMusic.paused){
+    bgMusic.play();
+    $('btn-music').classList.add('active');
+  } else {
+    bgMusic.pause();
+    $('btn-music').classList.remove('active');
+  }
+});
+
+/* ═══ Dot Figure System ═══ */
+const DR=[7,2.5,3.5,3.5,3, 2.5,2,1.8, 2.5,2,1.8, 3,2.5,2, 3,2.5,2];
+const HR=[2,2,1.5,1.5,1.5];
+const HO=[[-6,-28],[6,-28],[-8,-24],[8,-24],[0,-30]];
+
+const P={
+  stand:[[0,-24],[0,-16],[0,-9],[0,-1],[0,6],[-9,-7],[-13,1],[-14,8],[9,-7],[13,1],[14,8],[-5,13],[-6,23],[-7,31],[5,13],[6,23],[7,31]],
+  walk1:[[0,-24],[0,-16],[0,-9],[0,-1],[0,6],[-10,-5],[-15,2],[-12,10],[8,-10],[4,-2],[8,6],[-8,13],[-12,24],[-14,31],[8,13],[4,24],[2,31]],
+  walk2:[[0,-24],[0,-16],[0,-9],[0,-1],[0,6],[-8,-10],[-4,-2],[-8,6],[10,-5],[15,2],[12,10],[8,13],[4,24],[2,31],[-8,13],[-12,24],[-14,31]],
+  jump1:[[0,-30],[0,-22],[0,-15],[0,-7],[0,0],[-14,-16],[-18,-24],[-16,-30],[14,-16],[18,-24],[16,-30],[-8,8],[-14,16],[-18,22],[8,8],[14,16],[18,22]],
+  jump2:[[0,-26],[0,-18],[0,-11],[0,-3],[0,4],[-12,-10],[-16,-16],[-14,-22],[12,-10],[16,-16],[14,-22],[-6,12],[-10,20],[-14,28],[6,12],[10,20],[14,28]],
+  sit:[[0,-24],[0,-16],[0,-9],[0,-1],[0,6],[-9,-7],[-13,1],[-14,8],[9,-7],[13,1],[14,8],[-8,10],[-14,14],[-20,16],[8,10],[14,14],[20,16]],
+  wave1:[[0,-24],[0,-16],[0,-9],[0,-1],[0,6],[-9,-7],[-13,1],[-14,8],[10,-12],[14,-20],[12,-28],[-5,13],[-6,23],[-7,31],[5,13],[6,23],[7,31]],
+  wave2:[[0,-24],[0,-16],[0,-9],[0,-1],[0,6],[-9,-7],[-13,1],[-14,8],[10,-14],[16,-22],[18,-26],[-5,13],[-6,23],[-7,31],[5,13],[6,23],[7,31]],
+  hold:[[0,-24],[0,-16],[0,-9],[0,-1],[0,6],[-9,-7],[-13,1],[-14,8],[10,-4],[16,0],[22,2],[-5,13],[-6,23],[-7,31],[5,13],[6,23],[7,31]],
+  holdL:[[0,-24],[0,-16],[0,-9],[0,-1],[0,6],[-10,-4],[-16,0],[-22,2],[9,-7],[13,1],[14,8],[-5,13],[-6,23],[-7,31],[5,13],[6,23],[7,31]],
+  cook1:[[0,-24],[0,-16],[0,-9],[0,-1],[0,6],[-9,-7],[-13,1],[-14,8],[12,-10],[18,-6],[24,-8],[-5,13],[-6,23],[-7,31],[5,13],[6,23],[7,31]],
+  cook2:[[0,-24],[0,-16],[0,-9],[0,-1],[0,6],[-9,-7],[-13,1],[-14,8],[12,-8],[18,-10],[24,-14],[-5,13],[-6,23],[-7,31],[5,13],[6,23],[7,31]],
+  run1:[[1,-26],[1,-18],[1,-11],[1,-3],[1,4],[-12,-8],[-8,0],[-4,6],[12,-12],[8,-4],[4,-8],[-10,11],[-16,20],[-20,26],[10,11],[4,22],[0,30]],
+  run2:[[1,-26],[1,-18],[1,-11],[1,-3],[1,4],[-8,-12],[-12,-8],[-14,-2],[8,-8],[4,-4],[8,4],[10,11],[4,22],[0,30],[-10,11],[-16,20],[-20,26]],
+  lookUp:[[0,-26],[0,-17],[0,-10],[0,-2],[0,5],[-9,-8],[-12,0],[-14,6],[9,-8],[12,0],[14,6],[-5,12],[-6,22],[-7,30],[5,12],[6,22],[7,30]],
+  hug:[[0,-24],[0,-16],[0,-9],[0,-1],[0,6],[-10,-4],[-14,2],[-12,8],[10,-4],[14,2],[12,8],[-5,13],[-6,23],[-7,31],[5,13],[6,23],[7,31]],
+};
+
+function mkFig(g,col,hair){
+  const d=[];
+  DR.forEach(r=>{const c=document.createElementNS(NS,'circle');c.setAttribute('r',r);c.setAttribute('fill',col);c.classList.add('fig-dot');c.style.opacity='0';g.appendChild(c);d.push(c)});
+  if(hair)HR.forEach(r=>{const c=document.createElementNS(NS,'circle');c.setAttribute('r',r);c.setAttribute('fill',col);c.classList.add('fig-dot');c.style.opacity='0';g.appendChild(c);d.push(c)});
+  return d;
+}
+
+const herD=mkFig($('fig-h'),'var(--rose)',true);
+const meD=mkFig($('fig-m'),'var(--accent-deep)',false);
+const bgD=[];
+for(let i=0;i<40;i++){const c=document.createElementNS(NS,'circle');c.setAttribute('r',3);c.setAttribute('fill','var(--accent-soft)');c.classList.add('bg-dot');c.style.opacity='0';$('bg-g').appendChild(c);bgD.push(c)}
+
+/* ── Pose interpolation ── */
+function lerpPose(pA,pB,t){return pA.map((v,i)=>[v[0]+(pB[i][0]-v[0])*t,v[1]+(pB[i][1]-v[1])*t])}
+
+function applyRaw(dots,pose,x,y,show,flip){
+  const f=flip?-1:1;
+  dots.forEach((d,i)=>{
+    if(i<17){d.setAttribute('cx',x+pose[i][0]*f);d.setAttribute('cy',y+pose[i][1])}
+    else{const hi=i-17;d.setAttribute('cx',x+HO[hi][0]*f);d.setAttribute('cy',y+HO[hi][1]+(pose[0][1]-P.stand[0][1]))}
+    d.style.opacity=show?'1':'0';
+  });
+}
+
+function setGlow(id,x,y,s){const e=$(id);e.setAttribute('cx',x);e.setAttribute('cy',y);e.style.opacity=s?'1':'0'}
+function setBg(ps,o){const op=o?.opacity??.4,r=o?.r||3,f=o?.fill||'var(--accent-soft)';bgD.forEach((d,i)=>{if(i<ps.length){d.setAttribute('cx',ps[i][0]);d.setAttribute('cy',ps[i][1]);d.setAttribute('r',r);d.setAttribute('fill',f);d.style.opacity=op}else d.style.opacity='0'})}
+function clearBg(){bgD.forEach(d=>d.style.opacity='0')}
+function clearP(){$('prop-g').innerHTML='';$('ov-g').innerHTML=''}
+function addEmoji(x,y,txt,sz){const fo=document.createElementNS(NS,'foreignObject');fo.setAttribute('x',x-22);fo.setAttribute('y',y-22);fo.setAttribute('width',44);fo.setAttribute('height',44);const d=document.createElement('div');d.style.cssText=`width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-size:${sz||20}px`;d.textContent=txt;fo.appendChild(d);$('ov-g').appendChild(fo)}
+function addSvgT(x,y,txt,fill,sz){const t=document.createElementNS(NS,'text');t.setAttribute('x',x);t.setAttribute('y',y);t.setAttribute('text-anchor','middle');t.setAttribute('fill',fill||'var(--text-light)');t.setAttribute('font-size',sz||11);t.setAttribute('font-family',"'Noto Serif TC',serif");t.setAttribute('font-weight','300');t.textContent=txt;$('ov-g').appendChild(t)}
+function addDash(x1,y1,x2,y2){const l=document.createElementNS(NS,'line');l.setAttribute('x1',x1);l.setAttribute('y1',y1);l.setAttribute('x2',x2);l.setAttribute('y2',y2);l.setAttribute('stroke','var(--rose-soft)');l.setAttribute('stroke-width','1');l.setAttribute('stroke-dasharray','6 4');$('prop-g').appendChild(l)}
+function addPulse(cx,cy){for(let i=0;i<3;i++){const c=document.createElementNS(NS,'circle');c.setAttribute('cx',cx);c.setAttribute('cy',cy);c.setAttribute('r','0');c.setAttribute('fill','none');c.setAttribute('stroke','var(--rose-soft)');c.setAttribute('stroke-width','1');c.style.animation=`pulse 2.5s ease-out ${i*.8}s infinite`;$('ov-g').appendChild(c)}}
+
+function scatter(n,s){const p=[];for(let i=0;i<n;i++)p.push([40+((i*137.5+(s||0))%480),30+((i*97.3+(s||0))%320)]);return p}
+
+/* BG formations */
+const BG={
+concert:(()=>{const p=[];for(let i=0;i<5;i++)p.push([180+i*50,55]);for(let r=0;r<3;r++)for(let c=0;c<8;c++)p.push([80+c*52,210+r*35+(c%2)*8]);return p})(),
+cities:(()=>{const p=[];for(let i=0;i<8;i++)p.push([40+(i%3)*22,140+Math.floor(i/3)*28]);for(let i=0;i<8;i++)p.push([430+(i%3)*22,140+Math.floor(i/3)*28]);for(let i=0;i<5;i++)p.push([160+i*55,195]);return p})(),
+sunset:(()=>{const p=[];for(let i=0;i<9;i++){const a=Math.PI*(.15+i*.088);p.push([280+Math.cos(a)*100,175-Math.sin(a)*80])}for(let i=0;i<12;i++)p.push([20+i*48,245]);for(let i=0;i<8;i++)p.push([60+i*60,265+(i%2)*10]);return p})(),
+heart:(()=>{const p=[];for(let i=0;i<30;i++){const t=(i/30)*Math.PI*2,x=16*Math.pow(Math.sin(t),3),y=-(13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t));p.push([280+x*7,180+y*7])}return p})(),
+fw:(()=>{const p=[];[{cx:180,cy:80,r:50,n:8},{cx:380,cy:100,r:40,n:8},{cx:280,cy:60,r:35,n:6}].forEach(b=>{for(let i=0;i<b.n;i++){const a=(i/b.n)*Math.PI*2;p.push([b.cx+Math.cos(a)*b.r,b.cy+Math.sin(a)*b.r])}});return p})(),
+airplane:(()=>{const p=[];for(let i=0;i<7;i++)p.push([170+i*35,180]);[[240,155],[260,145],[280,140],[300,145],[320,155],[240,205],[260,215],[280,220],[300,215],[320,205],[165,165],[165,175],[165,185],[165,195],[140,180],[115,182],[90,180],[420,120],[440,115],[460,120],[60,100],[80,95],[100,100]].forEach(c=>p.push(c));return p})(),
+globe:(()=>{const p=[];for(let i=0;i<20;i++){const a=(i/20)*Math.PI*2;p.push([280+Math.cos(a)*80,190+Math.sin(a)*80])}for(let i=0;i<5;i++)p.push([210+i*35,190]);for(let i=0;i<5;i++)p.push([280,120+i*35]);return p})(),
+xmas:(()=>{const p=[];for(let r=0;r<6;r++){const w=r*2+1;for(let c=0;c<w;c++)p.push([280-(w-1)*12+c*24,75+r*30])}p.push([280,260],[280,280],[280,55]);return p})(),
+};
+
+/* ═══ ANIMATION ENGINE ═══ */
+let animFrame=0,activeAnim=null;
+
+function stopAnim(){if(activeAnim){cancelAnimationFrame(activeAnim);activeAnim=null}}
+
+function startAnim(fn){
+  stopAnim();animFrame=0;
+  function loop(){fn(animFrame++);activeAnim=requestAnimationFrame(loop)}
+  activeAnim=requestAnimationFrame(loop);
+}
+
+// Breathing idle — subtle Y offset
+function breathe(frame){return Math.sin(frame*0.04)*2}
+
+// Walk cycle toggler
+function walkCycle(frame,spd){return Math.floor(frame/(spd||20))%2===0}
+
+/* ═══ SCENES ═══ */
+const SCENES=[
+// 0: Intro
+{date:'',title:'',desc:'在這個很大的世界裡，有兩個點⋯',setup(){
+  clearBg();clearP();setBg(scatter(20,42),{opacity:.12,r:2.5});
+},anim(f){
+  const b=breathe(f);
+  applyRaw(herD,P.stand,150,228+b,true,false);
+  applyRaw(meD,P.stand,410,248+b,true,false);
+  setGlow('glow-h',150,210+b,1);setGlow('glow-m',410,230+b,1);
+}},
+// 1: BP
+{date:'2023.03.19',title:'一起去看 BLACKPINK',desc:'高雄演唱會，在人群中靠得很近，卻還不認識彼此。',setup(){
+  clearP();setBg(BG.concert,{opacity:.25,r:3.5});
+},anim(f){
+  const j=walkCycle(f,12);const p=j?P.jump1:P.jump2;
+  applyRaw(herD,p,240,225,true,false);applyRaw(meD,p,320,228,true,false);
+  setGlow('glow-h',240,205,1);setGlow('glow-m',320,208,1);
+}},
+// 2: Grad
+{date:'2023.06.10',title:'高中畢業',desc:'一個階段的結束，也是我們故事真正的開始。',setup(){
+  clearP();setBg(scatter(12,88).map(p=>[p[0],p[1]-40]),{opacity:.2,r:3});
+},anim(f){
+  const b=breathe(f);
+  const w=walkCycle(f,18);
+  applyRaw(herD,w?P.wave1:P.wave2,220,228+b,true,false);
+  applyRaw(meD,w?P.jump1:P.jump2,340,222+b,true,false);
+  setGlow('glow-h',220,208+b,1);setGlow('glow-m',340,202+b,1);
+}},
+// 3: Louisa
+{date:'2023.07.07',title:'你說你愛上我的那天',desc:'路易莎的早餐，陽光灑進來的那個瞬間。',setup(){
+  clearP();setBg([[230,235],[250,235],[270,235],[290,235],[310,235],[255,218],[295,218]],{opacity:.2,r:3.5});
+  addEmoji(280,168,'♡',22);
+},anim(f){
+  const b=breathe(f)*0.5;
+  applyRaw(herD,P.sit,255,213+b,true,false);applyRaw(meD,P.sit,305,213+b,true,true);
+  setGlow('glow-h',255,193+b,1);setGlow('glow-m',305,193+b,1);
+  // Pulse heart
+  const hEl=$('ov-g').querySelector('foreignObject');
+  if(hEl){const s=1+Math.sin(f*0.06)*0.15;hEl.style.transform=`scale(${s})`}
+}},
+// 4: Together
+{date:'2023.07.11',title:'正式在一起',desc:'從這天起，世界變得不一樣了 ♡',setup(){
+  clearP();const b=[];for(let i=0;i<24;i++){const a=(i/24)*Math.PI*2;b.push([280+Math.cos(a)*(60+(i%3)*20),200+Math.sin(a)*(50+(i%3)*15)])}
+  setBg(b,{opacity:.3,r:2.5,fill:'var(--rose-soft)'});addEmoji(280,152,'♡',28);addPulse(280,215);
+},anim(f){
+  const b=breathe(f)*0.5;
+  applyRaw(herD,P.hold,260,213+b,true,false);applyRaw(meD,P.holdL,300,213+b,true,false);
+  setGlow('glow-h',260,193+b,1);setGlow('glow-m',300,193+b,1);
+}},
+// 5: Summer
+{date:'2023 夏天',title:'那個夏天的冒險',desc:'台中、西子灣、燙頭髮、第一次一起過生日⋯好多第一次。',setup(){
+  clearP();setBg(scatter(15,200),{opacity:.12,r:2});addEmoji(270,150,'🕶',20);
+},anim(f){
+  const w=walkCycle(f,14);const p=w?P.walk1:P.walk2;
+  const ox=Math.sin(f*0.015)*40;
+  applyRaw(herD,p,230+ox,228,true,false);applyRaw(meD,p,310+ox,226,true,false);
+  setGlow('glow-h',230+ox,208,1);setGlow('glow-m',310+ox,206,1);
+}},
+// 6: Uni
+{date:'2023.09',title:'一起開始大學生活',desc:'你在中興、我在中央。不同城市，同一份想念。',setup(){
+  clearP();setBg(BG.cities,{opacity:.3,r:3.5});addSvgT(80,275,'中興','var(--text-light)',11);addSvgT(480,275,'中央','var(--text-light)',11);addDash(110,207,450,207);
+},anim(f){
+  const b=breathe(f);
+  applyRaw(herD,P.stand,80,198+b,true,false);applyRaw(meD,P.stand,480,198+b,true,false);
+  setGlow('glow-h',80,178+b,1);setGlow('glow-m',480,178+b,1);
+}},
+// 7: Visit
+{date:'09.09 · 11.12',title:'你來找我、我去找你',desc:'異地也擋不住想見你的心。',setup(){
+  clearP();setBg(BG.cities,{opacity:.25,r:3});addDash(110,207,370,207);
+},anim(f){
+  // Her walks right toward me
+  const t=(f%240)/240;// cycle 4s at 60fps
+  const hx=80+t*340;
+  const w=walkCycle(f,10);
+  applyRaw(herD,w?P.walk1:P.walk2,hx,198,true,false);
+  const b=breathe(f);
+  const wv=walkCycle(f,16);
+  applyRaw(meD,wv?P.wave1:P.wave2,480,198+b,true,true);
+  setGlow('glow-h',hx,178,1);setGlow('glow-m',480,178+b,1);
+}},
+// 8: Xmas
+{date:'2023.12',title:'聖誕樹下牽手',desc:'新光三越的燈光下，牽著你的手看聖誕樹。',setup(){
+  clearP();setBg(BG.xmas,{opacity:.3,r:3,fill:'var(--rose-soft)'});addEmoji(280,42,'⭐',18);
+},anim(f){
+  const b=breathe(f)*0.5;
+  applyRaw(herD,P.lookUp,255,273+b,true,false);applyRaw(meD,P.hold,300,273+b,true,false);
+  setGlow('glow-h',255,253+b,1);setGlow('glow-m',300,253+b,1);
+  // Twinkle bg dots
+  bgD.forEach((d,i)=>{if(i<BG.xmas.length){const o=.2+Math.sin(f*0.05+i)*0.15;d.style.opacity=o}});
+}},
+// 9: NYE1
+{date:'2023.12.31',title:'第一次一起跨年',desc:'倒數計時的時候，身邊是你就夠了。',setup(){
+  clearP();setBg(BG.fw,{opacity:.35,r:3,fill:'var(--rose-soft)'});addEmoji(280,160,'🎆',26);
+},anim(f){
+  const b=breathe(f)*0.5;
+  applyRaw(herD,P.hold,260,248+b,true,false);applyRaw(meD,P.holdL,300,248+b,true,false);
+  setGlow('glow-h',260,228+b,1);setGlow('glow-m',300,228+b,1);
+  // Firework twinkle
+  bgD.forEach((d,i)=>{if(i<BG.fw.length){const o=.15+Math.sin(f*0.08+i*1.5)*0.25;d.style.opacity=o}});
+}},
+// 10: Tainan
+{date:'2024 初',title:'冰鄉、國華街、拍貼機',desc:'台南是屬於我們的城市。',setup(){clearP();setBg(scatter(10,333),{opacity:.12,r:2});addEmoji(280,155,'🍧',22);
+},anim(f){
+  const w=walkCycle(f,14);const p=w?P.walk1:P.walk2;
+  const ox=Math.sin(f*0.012)*30;
+  applyRaw(herD,p,240+ox,223,true,false);applyRaw(meD,p,320+ox,221,true,false);
+  setGlow('glow-h',240+ox,203,1);setGlow('glow-m',320+ox,201,1);
+}},
+// 11: Pokemon
+{date:'2024.03.30',title:'一起抓寶可夢',desc:'在校園裡跑來跑去，幼稚但快樂。',setup(){clearP();setBg(scatter(12,420),{opacity:.15,r:2});addEmoji(270,145,'⚡',22);
+},anim(f){
+  const w=walkCycle(f,8);const p=w?P.run1:P.run2;
+  const ox=Math.sin(f*0.02)*60;
+  const oy=Math.cos(f*0.025)*20;
+  applyRaw(herD,p,220+ox,218+oy,true,false);applyRaw(meD,p,320+ox*0.7,222+oy*0.8,true,false);
+  setGlow('glow-h',220+ox,198+oy,1);setGlow('glow-m',320+ox*0.7,202+oy*0.8,1);
+}},
+// 12: Cook
+{date:'2024.08.05',title:'你幫我煮麵',desc:'在我家廚房忙碌的你，很好吃，真的。',setup(){
+  clearP();setBg([[300,250],[310,250],[320,250],[330,250],[340,250],[350,250],[320,233],[340,233]],{opacity:.2,r:3});addEmoji(345,210,'🍜',18);
+},anim(f){
+  const b=breathe(f)*0.5;const c=walkCycle(f,15);
+  applyRaw(herD,c?P.cook1:P.cook2,325,218+b,true,false);
+  applyRaw(meD,P.stand,230,228+b,true,true);
+  setGlow('glow-h',325,198+b,1);setGlow('glow-m',230,208+b,1);
+}},
+// 13: Sunset
+{date:'2024.08.22',title:'漁光島看夕陽',desc:'夕陽很美，但沒有你好看。',setup(){
+  clearP();setBg(BG.sunset,{opacity:.3,r:3.5,fill:'var(--accent)'});
+},anim(f){
+  const b=breathe(f)*0.4;
+  applyRaw(herD,P.sit,250,248+b,true,false);applyRaw(meD,P.sit,310,248+b,true,false);
+  setGlow('glow-h',250,228+b,1);setGlow('glow-m',310,228+b,1);
+  // Sun glow
+  bgD.forEach((d,i)=>{if(i<9){const o=.2+Math.sin(f*0.03+i*0.5)*0.12;d.style.opacity=o}});
+}},
+// 14: NYE2
+{date:'2024.12.31',title:'第二次一起跨年',desc:'身邊依然是你。',setup(){
+  clearP();setBg(BG.fw,{opacity:.35,r:3,fill:'var(--accent-soft)'});addEmoji(280,155,'🎆',28);
+},anim(f){
+  const b=breathe(f)*0.5;
+  applyRaw(herD,P.hug,268,238+b,true,false);applyRaw(meD,P.hug,292,238+b,true,true);
+  setGlow('glow-h',268,218+b,1);setGlow('glow-m',292,218+b,1);
+  bgD.forEach((d,i)=>{if(i<BG.fw.length){const o=.15+Math.sin(f*0.08+i*1.5)*0.25;d.style.opacity=o}});
+}},
+// 15: Daily 2025
+{date:'2025',title:'日常裡全是你',desc:'散步、咖啡廳、披薩、LaLaport⋯每天都因為你而發光。',setup(){clearP();setBg(scatter(8,500),{opacity:.1,r:2});addEmoji(280,155,'☕',20);
+},anim(f){
+  const b=breathe(f)*0.5;
+  applyRaw(herD,P.hold,252,223+b,true,false);applyRaw(meD,P.holdL,308,223+b,true,false);
+  setGlow('glow-h',252,203+b,1);setGlow('glow-m',308,203+b,1);
+}},
+// 16: Korea
+{date:'2025.07',title:'一起去韓國',desc:'BLACKPINK、弘大、明洞、景福宮⋯我們的第一次出國！',setup(){
+  clearP();setBg(BG.airplane,{opacity:.25,r:3});addEmoji(280,125,'✈️',24);
+},anim(f){
+  const j=walkCycle(f,12);const p=j?P.jump1:P.jump2;
+  applyRaw(herD,p,255,190,true,false);applyRaw(meD,p,305,190,true,false);
+  setGlow('glow-h',255,170,1);setGlow('glow-m',305,170,1);
+}},
+// 17: Exchange
+{date:'之後',title:'我出國交換',desc:'不管距離多遠，心永遠在一起 ❤️',setup(){
+  clearP();setBg(BG.globe,{opacity:.2,r:2.5});addDash(160,217,400,217);addEmoji(280,182,'♡',24);
+},anim(f){
+  const b=breathe(f);
+  const wv=walkCycle(f,16);
+  applyRaw(herD,P.stand,130,208+b,true,false);
+  applyRaw(meD,wv?P.wave1:P.wave2,430,208+b,true,true);
+  setGlow('glow-h',130,188+b,1);setGlow('glow-m',430,188+b,1);
+  // Pulse heart
+  const hEl=$('ov-g').querySelector('foreignObject');
+  if(hEl){const s=1+Math.sin(f*0.06)*0.15;hEl.style.transform=`scale(${s})`}
+}},
+// 18: Finale
+{date:'',title:'',desc:'謝謝你，讓我成為世界上最幸運的人 ♡',setup(){
+  clearP();setBg(BG.heart,{opacity:.45,r:4,fill:'var(--rose)'});addPulse(280,210);
+},anim(f){
+  const b=breathe(f)*0.5;
+  applyRaw(herD,P.hug,268,210+b,true,false);applyRaw(meD,P.hug,292,210+b,true,true);
+  setGlow('glow-h',268,190+b,1);setGlow('glow-m',292,190+b,1);
+  // Heart bg pulsing
+  bgD.forEach((d,i)=>{if(i<30){const o=.3+Math.sin(f*0.04+i*0.3)*0.15;d.style.opacity=o}});
+}},
+];
+
+const TOTAL=SCENES.length;
+
+/* ═══ Story Controller ═══ */
+function initStory(){
+  const spacers=document.querySelectorAll('[data-scene]');
+  let current=-1;
+  let autoplay=false,autoTimer=null;
+  const guide=$('scroll-guide');
+  const progFill=$('prog-fill');
+  const counterEl=$('scene-counter');
+  const nD=$('n-date'),nT=$('n-title'),nDe=$('n-desc');
+
+  function switchTo(idx){
+    if(idx===current||idx<0||idx>=TOTAL)return;
+    current=idx;const s=SCENES[idx];
+    s.setup();
+    stopAnim();
+    startAnim(f=>s.anim(f));
+    // Narration
+    nD.classList.remove('show');nT.classList.remove('show');nDe.classList.remove('show');
+    setTimeout(()=>{
+      nD.textContent=s.date||'';nT.textContent=s.title||'';nDe.textContent=s.desc||'';
+      if(s.date)nD.classList.add('show');if(s.title)nT.classList.add('show');nDe.classList.add('show');
+    },200);
+    progFill.style.width=((idx+1)/TOTAL*100)+'%';
+    counterEl.textContent=(idx+1)+' / '+TOTAL;
+    if(idx>0)guide.classList.remove('show');
+  }
+
+  const obs=new IntersectionObserver(entries=>{
+    let best=null;
+    entries.forEach(e=>{if(e.isIntersecting&&(!best||e.intersectionRatio>best.intersectionRatio))best=e});
+    if(best){const idx=parseInt(best.target.getAttribute('data-scene'));if(!isNaN(idx))switchTo(idx)}
+  },{threshold:[0,.3,.6,.9],rootMargin:'-30% 0px -30% 0px'});
+  spacers.forEach(s=>obs.observe(s));
+
+  switchTo(0);
+
+  // Autoplay
+  const autoBtn=$('btn-auto');
+  function startAP(){autoplay=true;autoBtn.classList.add('active');
+    autoBtn.innerHTML='<svg viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16" fill="currentColor" stroke="none"/><rect x="14" y="4" width="4" height="16" fill="currentColor" stroke="none"/></svg>';
+    guide.classList.remove('show');doNext()}
+  function stopAP(){autoplay=false;autoBtn.classList.remove('active');
+    autoBtn.innerHTML='<svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21" fill="currentColor" stroke="none"/></svg>';
+    clearTimeout(autoTimer)}
+  function doNext(){if(!autoplay)return;const n=current+1;if(n>=TOTAL){stopAP();return}
+    spacers[n].scrollIntoView({behavior:'smooth',block:'center'});autoTimer=setTimeout(doNext,4200)}
+  autoBtn.addEventListener('click',()=>{if(autoplay)stopAP();else startAP()});
+  window.addEventListener('wheel',()=>{if(autoplay)stopAP()},{passive:true});
+  window.addEventListener('touchmove',()=>{if(autoplay)stopAP()},{passive:true});
+}
+/* ═══ Photo Wall ═══ */
+/*
+  照片放法：
+  📁 你的資料夾
+  ├── valentine.html
+  ├── music.mp3
+  └── photos/
+      ├── 1.jpg   ← BLACKPINK 演唱會
+      ├── 2.jpg   ← 路易莎的那天
+      ├── 3.jpg   ← 夏天的冒險
+      ├── 4.jpg   ← 聖誕節快樂
+      ├── 5.jpg   ← 國華街吃冰
+      ├── 6.jpg   ← 漁光島夕陽
+      ├── 7.jpg   ← 一起去韓國
+      └── 8.jpg   ← 我最愛的你
+
+  支援 .jpg .jpeg .png .webp
+  如果照片不存在，會顯示「+」讓你手動上傳
+*/
+
+const PHOTO_EXTS=['jpg','jpeg','png','webp'];
+
+function tryLoadPhoto(card,idx){
+  const imgBox=card.querySelector('.polaroid-img');
+  let tried=0;
+
+  function tryExt(extIdx){
+    if(extIdx>=PHOTO_EXTS.length){
+      // All extensions failed → keep placeholder
+      return;
+    }
+    const img=new Image();
+    const src=`photos/${idx+1}.${PHOTO_EXTS[extIdx]}`;
+    img.onload=()=>{
+      imgBox.innerHTML='';
+      img.alt='';
+      img.style.cssText='width:100%;height:100%;object-fit:cover;display:block';
+      imgBox.appendChild(img);
+    };
+    img.onerror=()=>tryExt(extIdx+1);
+    img.src=src;
+  }
+  tryExt(0);
+}
+
+// Auto-load all photos on init
+document.querySelectorAll('.polaroid').forEach(card=>{
+  const idx=parseInt(card.dataset.idx);
+  tryLoadPhoto(card,idx);
+});
+
+// Manual upload fallback
+const photoInput=document.createElement('input');
+photoInput.type='file';photoInput.accept='image/*';photoInput.style.display='none';
+document.body.appendChild(photoInput);
+
+let activePhotoIdx=-1;
+
+document.querySelectorAll('.polaroid').forEach(card=>{
+  card.addEventListener('click',e=>{
+    const imgEl=card.querySelector('.polaroid-img img');
+    if(imgEl){
+      $('lb-img').src=imgEl.src;
+      $('lb-cap').textContent=card.querySelector('.polaroid-caption').textContent;
+      $('lightbox').classList.add('open');
+      return;
+    }
+    activePhotoIdx=parseInt(card.dataset.idx);
+    photoInput.click();
+  });
+});
+
+photoInput.addEventListener('change',e=>{
+  const file=e.target.files[0];
+  if(!file||activePhotoIdx<0)return;
+  const card=document.querySelector(`.polaroid[data-idx="${activePhotoIdx}"]`);
+  if(!card)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    const imgBox=card.querySelector('.polaroid-img');
+    imgBox.innerHTML=`<img src="${ev.target.result}" alt="" style="width:100%;height:100%;object-fit:cover;display:block">`;
+  };
+  reader.readAsDataURL(file);
+  photoInput.value='';
+});
+
+$('lightbox').addEventListener('click',()=>$('lightbox').classList.remove('open'));
+
+const photoObs=new IntersectionObserver(es=>{
+  es.forEach((e,i)=>{
+    if(e.isIntersecting){
+      setTimeout(()=>e.target.classList.add('visible'),i*120);
+      photoObs.unobserve(e.target);
+    }
+  });
+},{threshold:.15});
+document.querySelectorAll('.polaroid').forEach(p=>photoObs.observe(p));
+</script>
+</body>
+</html>
