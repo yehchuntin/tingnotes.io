@@ -1,0 +1,48 @@
+html { scroll-behavior: smooth; }
+body { 
+    background-color: #f8fafc; 
+    background-image: radial-gradient(#e2e8f0 1px, transparent 1px); 
+    background-size: 24px 24px; 
+}
+.text-gradient { 
+    background-clip: text; 
+    -webkit-background-clip: text; 
+    -webkit-text-fill-color: transparent; 
+}
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+.device-bezel { box-shadow: 0 0 0 12px #0f172a, 0 0 0 14px #334155, 0 30px 60px -12px rgba(0, 0, 0, 0.5); }
+.dynamic-island { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 140px; height: 32px; background-color: #0f172a; border-bottom-left-radius: 18px; border-bottom-right-radius: 18px; z-index: 50; }
+.float-up { animation: floatUp 3s ease-in-out infinite; }
+.float-up-delay { animation: floatUp 3s ease-in-out 1s infinite; }
+@keyframes floatUp { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+
+.pulse-ring { animation: pulseRing 2s ease-out infinite; }
+@keyframes pulseRing { 
+    0% { box-shadow: 0 0 0 0 rgba(14, 165, 233, 0.4); } 
+    70% { box-shadow: 0 0 0 12px rgba(14, 165, 233, 0); } 
+    100% { box-shadow: 0 0 0 0 rgba(14, 165, 233, 0); } 
+}
+
+.step-line::before { content: ''; position: absolute; left: 23px; top: 48px; bottom: -8px; width: 2px; background: linear-gradient(to bottom, #0ea5e9, transparent); }
+.section-fade { opacity: 0; transform: translateY(30px); transition: all 0.6s ease-out; }
+.section-fade.visible { opacity: 1; transform: translateY(0); }
+
+.faq-content { max-height: 0; overflow: hidden; transition: max-height 0.35s ease-out; }
+.faq-icon { transition: transform 0.3s ease; }
+.faq-tab-btn.active { color: #0284c7; border-color: #0284c7; background-color: #f0f9ff; }
+
+.screen-container { display: none; opacity: 0; width: 100%; height: max-content; min-height: 100%; }
+.screen-container.active { display: block; animation: screenFadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+@keyframes screenFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+.custom-checkbox { appearance: none; width: 22px; height: 22px; border: 2px solid #cbd5e1; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; transition: all 0.2s; cursor: pointer; flex-shrink: 0; background-color: #fff; }
+.custom-checkbox:checked { background-color: #0284c7; border-color: #0284c7; }
+.custom-checkbox:checked::after { content: '✓'; color: white; font-size: 15px; font-weight: bold; }
+
+.edge-card-content { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out, padding 0.4s ease-out, opacity 0.3s ease-out; opacity: 0; }
+.edge-card.open .edge-card-content { max-height: 500px; opacity: 1; padding-top: 1.25rem; padding-bottom: 1.25rem; }
+.edge-card.open .chevron { transform: rotate(180deg); }
+
+.chart-container { position: relative; width: 100%; max-width: 900px; margin-left: auto; margin-right: auto; height: 350px; max-height: 400px; }

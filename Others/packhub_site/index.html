@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PackHub - 首頁</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: { extend: {
+                fontFamily: { sans: ['Inter', 'Noto Sans TC', 'sans-serif'] },
+                colors: {
+                    brand: { 50: '#f0f9ff', 100: '#e0f2fe', 200: '#bae6fd', 300: '#7dd3fc', 400: '#38bdf8', 500: '#0ea5e9', 600: '#0284c7', 700: '#0369a1', 800: '#075985', 900: '#0c4a6e' },
+                    merchant: { 50: '#ecfdf5', 100: '#d1fae5', 200: '#a7f3d0', 300: '#6ee7b7', 400: '#34d399', 500: '#10b981', 600: '#059669', 700: '#047857' },
+                    danger: { 50: '#fef2f2', 100: '#fee2e2', 500: '#ef4444', 600: '#dc2626' },
+                    amber: { 50: '#fffbeb', 100: '#fef3c7', 400: '#fbbf24', 500: '#f59e0b', 600: '#d97706' },
+                    rose: { 50: '#fff1f2', 100: '#ffe4e6', 400: '#fb7185', 500: '#f43f5e', 600: '#e11d48' }
+                }
+            }}
+        }
+    </script>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body class="min-h-screen font-sans text-slate-800 flex flex-col">
+
+    <div id="navbar"></div>
+
+    <main class="flex-grow">
+        <section class="relative overflow-hidden py-20 md:py-32 px-4">
+            <div class="absolute inset-0 bg-gradient-to-b from-brand-50/50 to-transparent pointer-events-none"></div>
+            <div class="max-w-6xl mx-auto text-center relative z-10">
+                <div class="inline-flex items-center gap-2 bg-brand-50 border border-brand-200 text-brand-700 px-4 py-1.5 rounded-full text-sm font-medium mb-6 shadow-sm">
+                    <i class="fa-solid fa-cube"></i> iOS App (用戶/商家) + 獨立 Web 管理後台
+                </div>
+                <h1 class="text-4xl md:text-6xl lg:text-7xl font-black tracking-tight mb-6 leading-tight">
+                    你的包裹<br>
+                    <span class="bg-gradient-to-r from-brand-500 via-brand-600 to-merchant-500 text-gradient">不再流浪</span>
+                </h1>
+                <p class="text-lg md:text-xl text-slate-500 max-w-2xl mx-auto mb-10 leading-relaxed">
+                    沒有管理員？白天不在家？<br>
+                    PackHub 結合你家附近的早餐店、雜貨店，打造<strong class="text-slate-700">社區代收網路</strong>，<br>
+                    讓每一件大型宅配都有人幫你安心收下。
+                </p>
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                    <a href="user.html" class="bg-slate-900 text-white px-8 py-4 rounded-2xl font-bold text-lg shadow-lg hover:bg-slate-800 transition-colors flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-user"></i> 用戶功能介紹
+                    </a>
+                    <a href="merchant.html" class="bg-white text-merchant-600 px-8 py-4 rounded-2xl font-bold text-lg border-2 border-merchant-200 hover:bg-merchant-50 transition-colors flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-store"></i> 商家加盟資訊
+                    </a>
+                </div>
+                <div class="hidden md:block absolute top-10 left-10 float-up">
+                    <div class="bg-white p-4 rounded-2xl shadow-lg border border-slate-100"><i class="fa-solid fa-box text-brand-400 text-3xl"></i></div>
+                </div>
+                <div class="hidden md:block absolute top-20 right-16 float-up-delay">
+                    <div class="bg-white p-4 rounded-2xl shadow-lg border border-slate-100"><i class="fa-solid fa-shop text-merchant-400 text-3xl"></i></div>
+                </div>
+                <div class="hidden md:block absolute bottom-10 left-1/4 float-up-delay">
+                    <div class="bg-white p-4 rounded-2xl shadow-lg border border-slate-100"><i class="fa-solid fa-qrcode text-amber-400 text-3xl"></i></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-20 px-4 section-fade">
+            <div class="max-w-6xl mx-auto">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl md:text-4xl font-extrabold mb-4">你有沒有遇過這些情境？</h2>
+                    <p class="text-slate-500 text-lg">每年台灣有超過 <strong class="text-slate-800">3 億件</strong> 宅配包裹，其中大量無人簽收</p>
+                </div>
+                
+                <div class="grid md:grid-cols-3 gap-6 mb-16">
+                    <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 hover:-translate-y-1 transition-transform">
+                        <div class="w-14 h-14 bg-danger-50 text-danger-500 rounded-2xl flex items-center justify-center text-2xl mb-5"><i class="fa-solid fa-house-circle-xmark"></i></div>
+                        <h3 class="font-bold text-xl mb-3">沒有管理員的公寓</h3>
+                        <p class="text-slate-500 text-sm leading-relaxed">沒有大樓管理室，宅配司機按了門鈴沒人應門，只好帶走包裹。下班回家只看到「配送失敗」簡訊。</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 hover:-translate-y-1 transition-transform">
+                        <div class="w-14 h-14 bg-amber-50 text-amber-500 rounded-2xl flex items-center justify-center text-2xl mb-5"><i class="fa-solid fa-tv"></i></div>
+                        <h3 class="font-bold text-xl mb-3">大件物品管理室拒收</h3>
+                        <p class="text-slate-500 text-sm leading-relaxed">即使有管理室，55 吋電視、大烤箱根本放不下。管理員也不願意承擔高價物品的保管責任。</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 hover:-translate-y-1 transition-transform">
+                        <div class="w-14 h-14 bg-brand-50 text-brand-500 rounded-2xl flex items-center justify-center text-2xl mb-5"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                        <h3 class="font-bold text-xl mb-3">超商取貨有尺寸限制</h3>
+                        <p class="text-slate-500 text-sm leading-relaxed">超商只收三邊總和 45cm 以下的小包裹。你的氣炸鍋、行李箱、空氣清淨機全都不符合超商規格。</p>
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-br from-brand-600 to-brand-800 rounded-[2.5rem] p-8 md:p-12 text-white relative overflow-hidden shadow-2xl mx-auto max-w-5xl">
+                    <div class="absolute top-0 right-0 w-80 h-80 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/3 blur-xl"></div>
+                    <div class="relative z-10 flex flex-col md:flex-row items-center gap-10">
+                        <div class="flex-1">
+                            <h2 class="text-3xl font-extrabold mb-4">PackHub 的創新解法</h2>
+                            <p class="text-brand-100 text-lg mb-8 leading-relaxed">
+                                把你家巷口的<strong class="text-white">早餐店、洗衣店、機車行</strong>變成「代收節點」。<br>
+                                商家利用閒置空間幫你收大件包裹，你下班後順路掃碼就能拿。
+                            </p>
+                            <div class="grid grid-cols-3 gap-4">
+                                <div class="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/10 text-center">
+                                    <div class="text-3xl font-black mb-1">3km</div>
+                                    <div class="text-xs text-brand-200 font-bold">GPS 搜尋代收點</div>
+                                </div>
+                                <div class="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/10 text-center">
+                                    <div class="text-3xl font-black mb-1">$50<span class="text-sm font-normal">起</span></div>
+                                    <div class="text-xs text-brand-200 font-bold">代收費透明公開</div>
+                                </div>
+                                <div class="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/10 text-center">
+                                    <div class="text-3xl font-black mb-1">3 重</div>
+                                    <div class="text-xs text-brand-200 font-bold">三重身分驗證</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="hidden md:block flex-shrink-0">
+                            <i class="fa-solid fa-box-open text-9xl text-white/20 transform -rotate-12"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="footer"></div>
+
+    <script src="js/loadComponents.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

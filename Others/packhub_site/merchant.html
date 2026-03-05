@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PackHub - 商家加盟</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: { extend: {
+                fontFamily: { sans: ['Inter', 'Noto Sans TC', 'sans-serif'] },
+                colors: {
+                    brand: { 50: '#f0f9ff', 100: '#e0f2fe', 200: '#bae6fd', 300: '#7dd3fc', 400: '#38bdf8', 500: '#0ea5e9', 600: '#0284c7', 700: '#0369a1', 800: '#075985', 900: '#0c4a6e' },
+                    merchant: { 50: '#ecfdf5', 100: '#d1fae5', 200: '#a7f3d0', 300: '#6ee7b7', 400: '#34d399', 500: '#10b981', 600: '#059669', 700: '#047857' }
+                }
+            }}
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body class="min-h-screen font-sans text-slate-800 flex flex-col bg-slate-900">
+
+    <div id="navbar"></div>
+
+    <main class="flex-grow text-white py-24 px-4 section-fade">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-5xl font-extrabold mb-4">
+                    商家加盟：<span class="bg-gradient-to-r from-merchant-400 to-merchant-500 text-gradient">階梯式分潤模型</span>
+                </h2>
+                <p class="text-slate-400 text-lg">月接越多件，平台抽成越低，最高可實拿 82% 分潤。</p>
+            </div>
+
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <div class="bg-slate-800 rounded-[2.5rem] border border-slate-700 overflow-hidden shadow-2xl">
+                    <div class="p-6 border-b border-slate-700 flex items-center gap-5">
+                        <div class="w-14 h-14 bg-slate-700 rounded-2xl flex items-center justify-center font-black text-slate-400 text-xl">T1</div>
+                        <div class="flex-1">
+                            <div class="flex justify-between items-end mb-2"><div class="font-bold text-lg">0 - 99 件/月</div><div class="text-base font-black text-merchant-400">商家 70%</div></div>
+                            <div class="h-3 bg-slate-900 rounded-full overflow-hidden"><div class="h-full bg-slate-500" style="width: 70%"></div></div>
+                        </div>
+                    </div>
+                    <div class="p-6 border-b border-slate-700 flex items-center gap-5">
+                        <div class="w-14 h-14 bg-merchant-900/50 rounded-2xl flex items-center justify-center font-black text-merchant-500 text-xl border border-merchant-700/50">T2</div>
+                        <div class="flex-1">
+                            <div class="flex justify-between items-end mb-2"><div class="font-bold text-lg">100 - 299 件/月</div><div class="text-base font-black text-merchant-400">商家 75%</div></div>
+                            <div class="h-3 bg-slate-900 rounded-full overflow-hidden"><div class="h-full bg-merchant-600" style="width: 75%"></div></div>
+                        </div>
+                    </div>
+                    <div class="p-6 border-b border-slate-700 flex items-center gap-5">
+                        <div class="w-14 h-14 bg-merchant-800/80 rounded-2xl flex items-center justify-center font-black text-merchant-400 text-xl border border-merchant-600">T3</div>
+                        <div class="flex-1">
+                            <div class="flex justify-between items-end mb-2"><div class="font-bold text-lg">300 - 499 件/月</div><div class="text-base font-black text-merchant-400">商家 78%</div></div>
+                            <div class="h-3 bg-slate-900 rounded-full overflow-hidden"><div class="h-full bg-merchant-500" style="width: 78%"></div></div>
+                        </div>
+                    </div>
+                    <div class="p-6 flex items-center gap-5 bg-merchant-900/20">
+                        <div class="w-14 h-14 bg-merchant-500 text-white rounded-2xl flex items-center justify-center font-black shadow-[0_0_20px_rgba(16,185,129,0.4)] text-xl">T4</div>
+                        <div class="flex-1">
+                            <div class="flex justify-between items-end mb-2"><div class="font-bold text-merchant-100 text-lg">500+ 件/月</div><div class="text-base font-black text-merchant-400">商家 82%</div></div>
+                            <div class="h-3 bg-slate-900 rounded-full overflow-hidden"><div class="h-full bg-merchant-400" style="width: 82%"></div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-800 rounded-[2.5rem] p-8 md:p-10 border border-slate-700 shadow-2xl">
+                    <h3 class="font-bold text-xl mb-2 text-white text-center">單筆費用 $1,000 拆解流向</h3>
+                    <p class="text-sm text-slate-400 mb-8 font-medium text-center">平台抽成實質隱含：金流手續費、簡訊費及呆帳風險準備金。</p>
+                    <div class="chart-container"><canvas id="revenueChart"></canvas></div>
+                    <button class="w-full mt-8 bg-merchant-600 text-white py-4 rounded-2xl font-bold text-xl shadow-[0_10px_20px_-10px_rgba(16,185,129,0.5)] hover:bg-merchant-500 transition-colors">立即填寫加盟意願表單</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="footer"></div>
+
+    <script src="js/loadComponents.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PackHub - 常見問題</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: { extend: {
+                fontFamily: { sans: ['Inter', 'Noto Sans TC', 'sans-serif'] },
+                colors: {
+                    brand: { 50: '#f0f9ff', 100: '#e0f2fe', 200: '#bae6fd', 300: '#7dd3fc', 400: '#38bdf8', 500: '#0ea5e9', 600: '#0284c7', 700: '#0369a1', 800: '#075985', 900: '#0c4a6e' },
+                    merchant: { 50: '#ecfdf5', 100: '#d1fae5', 200: '#a7f3d0', 300: '#6ee7b7', 400: '#34d399', 500: '#10b981', 600: '#059669', 700: '#047857' }
+                }
+            }}
+        }
+    </script>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body class="min-h-screen font-sans text-slate-800 flex flex-col bg-slate-50">
+
+    <div id="navbar"></div>
+
+    <main class="flex-grow py-24 px-4 section-fade">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-5xl font-extrabold mb-4 text-slate-900">
+                    <i class="fa-solid fa-circle-question text-amber-500 mr-3"></i>常見問題
+                </h2>
+                <p class="text-slate-500 text-lg">雙方最常遇到的狀況與權益保障，一次為您解答</p>
+            </div>
+
+            <div class="flex justify-center gap-4 mb-10">
+                <button onclick="switchFaqTab('user')" id="faq-tab-user" class="faq-tab-btn active flex items-center gap-2 px-6 py-3 rounded-full text-base font-bold border-2 border-brand-500 text-brand-600 bg-brand-50 transition-all">
+                    <i class="fa-solid fa-user"></i> 用戶端
+                </button>
+                <button onclick="switchFaqTab('merchant')" id="faq-tab-merchant" class="faq-tab-btn flex items-center gap-2 px-6 py-3 rounded-full text-base font-bold border-2 border-slate-200 text-slate-500 bg-white transition-all hover:border-slate-300">
+                    <i class="fa-solid fa-store"></i> 商家端
+                </button>
+            </div>
+
+            <div id="faq-user" class="faq-panel space-y-4">
+                
+                <div class="border border-slate-200 rounded-2xl overflow-hidden bg-white shadow-sm hover:border-brand-300 transition-colors">
+                    <button onclick="toggleFaq(this)" class="w-full text-left px-6 py-5 flex justify-between items-center font-bold text-lg">
+                        <span>寄件地址怎麼填？宅配司機會知道是代收嗎？</span>
+                        <i class="fa-solid fa-chevron-down faq-icon text-slate-400"></i>
+                    </button>
+                    <div class="faq-content bg-white">
+                        <div class="px-6 py-5 text-slate-600 border-t border-slate-100 font-medium leading-relaxed">
+                            預約成功後，系統會產生帶有代收碼的專屬模板。請直接一鍵複製貼到電商結帳頁面。例如：<br>
+                            收件人：<code class="bg-slate-100 px-2 py-1 rounded text-sm font-mono text-slate-800 inline-block mt-1">王小明 (PackHub代收:BW789)</code><br>
+                            宅配司機看到專用格式，就會知道是代收點，直接免打電話入店交付。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border border-slate-200 rounded-2xl overflow-hidden bg-white shadow-sm hover:border-brand-300 transition-colors">
+                    <button onclick="toggleFaq(this)" class="w-full text-left px-6 py-5 flex justify-between items-center font-bold text-lg">
+                        <span class="text-rose-600">我可以選「貨到付款 (C.O.D)」嗎？</span>
+                        <i class="fa-solid fa-chevron-down faq-icon text-slate-400"></i>
+                    </button>
+                    <div class="faq-content bg-white">
+                        <div class="px-6 py-5 text-slate-600 border-t border-slate-100 font-medium leading-relaxed">
+                            <strong class="text-rose-600">絕對不行。</strong>代收費必須在 App 內預繳，且電商包裹必須是「已付款」狀態。店家有嚴格的先查後簽 SOP，貨到付款的包裹會被直接拒收退回，且您預繳的代收費將不予退還。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border border-slate-200 rounded-2xl overflow-hidden bg-white shadow-sm hover:border-brand-300 transition-colors">
+                    <button onclick="toggleFaq(this)" class="w-full text-left px-6 py-5 flex justify-between items-center font-bold text-lg">
+                        <span>我不確定包裹實際有多大，預估錯誤會怎樣？</span>
+                        <i class="fa-solid fa-chevron-down faq-icon text-slate-400"></i>
+                    </button>
+                    <div class="faq-content bg-white">
+                        <div class="px-6 py-5 text-slate-600 border-t border-slate-100 font-medium leading-relaxed">
+                            沒關係，您可以先預估。包裹送達時，店家會使用 ARKit 進行測量。如果實際尺寸大於您的預估（例如 M 變成 L），系統會自動從您的綁定卡片扣除差價；若較小則自動退還差價。這不會影響您取件，若有爭議也可事後透過 App 提交客服申訴。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border border-slate-200 rounded-2xl overflow-hidden bg-white shadow-sm hover:border-brand-300 transition-colors">
+                    <button onclick="toggleFaq(this)" class="w-full text-left px-6 py-5 flex justify-between items-center font-bold text-lg">
+                        <span>如果臨時不想買了，可以取消預約退款嗎？</span>
+                        <i class="fa-solid fa-chevron-down faq-icon text-slate-400"></i>
+                    </button>
+                    <div class="faq-content bg-white">
+                        <div class="px-6 py-5 text-slate-600 border-t border-slate-100 font-medium leading-relaxed">
+                            採階梯式退款機制：<br>
+                            1. <strong class="text-brand-600">預約後 2 小時內</strong>：黃金猶豫期，可全額免費取消。<br>
+                            2. <strong class="text-brand-600">2 小時後至包裹入庫前</strong>：若取消將「沒收基本費」作為商家保留空間的補償，僅退還加購的額外天數費。<br>
+                            3. <strong class="text-brand-600">包裹入庫後</strong>：無法取消，只能到場領取或等待強制處置。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border border-slate-200 rounded-2xl overflow-hidden bg-white shadow-sm hover:border-brand-300 transition-colors">
+                    <button onclick="toggleFaq(this)" class="w-full text-left px-6 py-5 flex justify-between items-center font-bold text-lg">
+                        <span>如果物流大延遲，超過了我預約的天數才送到？</span>
+                        <i class="fa-solid fa-chevron-down faq-icon text-slate-400"></i>
+                    </button>
+                    <div class="faq-content bg-white">
+                        <div class="px-6 py-5 text-slate-600 border-t border-slate-100 font-medium leading-relaxed">
+                            為防幽靈佔位，若包裹在<strong class="text-brand-600">「預留天數 + 3 天緩衝期」</strong>內仍未送達，系統會自動判定預約失效（沒收基本費，退還天數費）並釋放店家容量。若您提早得知物流延遲，收到推播警告時可在 App 內手動「加購天數」延長保留期。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border border-slate-200 rounded-2xl overflow-hidden bg-white shadow-sm hover:border-brand-300 transition-colors">
+                    <button onclick="toggleFaq(this)" class="w-full text-left px-6 py-5 flex justify-between items-center font-bold text-lg">
+                        <span class="text-amber-600">超過保留天數才去拿包裹會怎樣？</span>
+                        <i class="fa-solid fa-chevron-down faq-icon text-slate-400"></i>
+                    </button>
+                    <div class="faq-content bg-white">
+                        <div class="px-6 py-5 text-slate-600 border-t border-slate-100 font-medium leading-relaxed">
+                            系統會每 24 小時自動從您綁定的卡片收取「超時滯留罰款」。<strong class="text-rose-600">若逾期達 14 天（或信用卡連續 3 天扣款失敗），包裹所有權將強制轉移給平台並進行法拍清運，同時您的帳號將被永久封鎖。</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="faq-merchant" class="faq-panel space-y-4 hidden">
+                
+                <div class="border border-slate-200 rounded-2xl overflow-hidden bg-white shadow-sm hover:border-merchant-300 transition-colors">
+                    <button onclick="toggleFaq(this)" class="w-full text-left px-6 py-5 flex justify-between items-center font-bold text-lg">
+                        <span>賺的錢什麼時候會匯到我的銀行帳戶？</span>
+                        <i class="fa-solid fa-chevron-down faq-icon text-slate-400"></i>
+                    </button>
+                    <div class="faq-content bg-white">
+                        <div class="px-6 py-5 text-slate-600 border-t border-slate-100 font-medium leading-relaxed">
+                            包裹交付或被強制清運後，該筆款項會進入 <strong class="text-merchant-600">T+7 天的結算護城河期</strong>（防範信用卡惡意退刷）。滿 7 天後轉為可提領收益。平台會在<strong class="text-merchant-600">每兩週的週一</strong>，自動將滿 $2,000 的款項免手續費匯入您綁定的銀行帳戶。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border border-slate-200 rounded-2xl overflow-hidden bg-white shadow-sm hover:border-merchant-300 transition-colors">
+                    <button onclick="toggleFaq(this)" class="w-full text-left px-6 py-5 flex justify-between items-center font-bold text-lg">
+                        <span class="text-rose-600">如果物流送來的是「貨到付款」包裹怎麼辦？</span>
+                        <i class="fa-solid fa-chevron-down faq-icon text-slate-400"></i>
+                    </button>
+                    <div class="faq-content bg-white">
+                        <div class="px-6 py-5 text-slate-600 border-t border-slate-100 font-medium leading-relaxed">
+                            <strong class="text-rose-600">請絕對拒收！</strong>依據平台的「先查後簽 SOP」，請務必確認包裹外箱不是貨到付款後再簽收。用戶在下單時已被強制同意此規範，商家拒收完全合乎規定，這是保護您不被詐騙的第一道防線。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border border-slate-200 rounded-2xl overflow-hidden bg-white shadow-sm hover:border-merchant-300 transition-colors">
+                    <button onclick="toggleFaq(this)" class="w-full text-left px-6 py-5 flex justify-between items-center font-bold text-lg">
+                        <span>用戶預約小尺寸，實際送來卻是超大包裹？</span>
+                        <i class="fa-solid fa-chevron-down faq-icon text-slate-400"></i>
+                    </button>
+                    <div class="faq-content bg-white">
+                        <div class="px-6 py-5 text-slate-600 border-t border-slate-100 font-medium leading-relaxed">
+                            入庫時，請依據 App 指示使用 <strong class="text-merchant-600">ARKit 功能掃描包裹</strong>，系統會自動判定實際三邊總和並即時向用戶扣取差額。您不需與用戶起爭執，一切交由系統作為客觀證據判定。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border border-slate-200 rounded-2xl overflow-hidden bg-white shadow-sm hover:border-merchant-300 transition-colors">
+                    <button onclick="toggleFaq(this)" class="w-full text-left px-6 py-5 flex justify-between items-center font-bold text-lg">
+                        <span class="text-amber-600">如果用戶一直不來領，店面被塞爆怎麼辦？</span>
+                        <i class="fa-solid fa-chevron-down faq-icon text-slate-400"></i>
+                    </button>
+                    <div class="faq-content bg-white">
+                        <div class="px-6 py-5 text-slate-600 border-t border-slate-100 font-medium leading-relaxed">
+                            系統會自動向用戶扣取高額的每日滯留費。若逾期滿 14 天，或者用戶信用卡「連續 3 天扣款失敗（啟動 3+2 加速處置）」，平台會自動觸發強制清運 SOP，派件（如 Lalamove）將大件包裹收回平台集中倉。這確保您的店面空間能及時清空，且您依然能獲得該筆代收的相關收益。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border border-slate-200 rounded-2xl overflow-hidden bg-white shadow-sm hover:border-merchant-300 transition-colors">
+                    <button onclick="toggleFaq(this)" class="w-full text-left px-6 py-5 flex justify-between items-center font-bold text-lg">
+                        <span>如果用戶預約了空間，但包裹一直沒送來？</span>
+                        <i class="fa-solid fa-chevron-down faq-icon text-slate-400"></i>
+                    </button>
+                    <div class="faq-content bg-white">
+                        <div class="px-6 py-5 text-slate-600 border-t border-slate-100 font-medium leading-relaxed">
+                            這稱為幽靈佔位。若包裹在「預留天數 + 3 天緩衝期」內仍未抵達，系統會自動判定預約失效，並立刻釋放您的容量額度供其他客人預約。同時，該用戶預繳的「基本費」將不予退還，會作為機會成本的補償分潤給您。
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <div id="footer"></div>
+
+    <script src="js/loadComponents.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
