@@ -123,6 +123,38 @@
         .app-tip-icon { font-size: 1.5rem; flex-shrink: 0; }
         .app-tip a { color: var(--accent-primary); text-decoration: none; }
         .app-tip a:hover { text-decoration: underline; }
+
+        /* ── 雜誌感排版 ── */
+        .photo-hero {
+            margin: 1.5rem 0;
+            border-radius: 14px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+        .photo-hero img {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+            display: block;
+        }
+        .section-lead {
+            font-size: 1.05rem;
+            color: var(--text-primary);
+            line-height: 1.9;
+            margin-bottom: 1rem;
+        }
+        .highlight-box {
+            border-left: 3px solid var(--accent-primary);
+            padding: 0.8rem 1.2rem;
+            background: var(--bg-secondary);
+            border-radius: 0 10px 10px 0;
+            margin: 1.2rem 0;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        .highlight-box a { color: var(--accent-primary); text-decoration: none; }
+        .highlight-box a:hover { text-decoration: underline; }
+        .article-content p { margin-bottom: 0.9rem; color: var(--text-secondary); }
     </style>
 </head>
 <body>
@@ -183,99 +215,109 @@
 
                 <section class="content-section" id="day1">
                     <div class="section-header"><div class="section-number">1️⃣</div><h2 class="section-title">Day 1 (7/5): 抵達與明洞初探</h2></div>
-                    <p class="content-text">凌晨從高雄出發，抵達仁川機場後辦理快速通關，搭 AREX 前往首爾市區...</p>
-                    <ul class="bullet-list">
-                        <li>小港機場 -> 仁川機場 (長榮 BR140)</li>
-                        <li>辦理 SES 快速通關</li>
-                        <li>搭乘 AREX 快線至首爾站</li>
-                        <li>購買 Wowpass / 氣候同行卡</li>
-                        <li>前往龍山站 IBIS 飯店寄放行李</li>
-                        <li>午餐：紅色炒年糕 Wonhyo 店</li>
-                        <li>Check-in 飯店稍作休息</li>
-                        <li>益善洞韓屋村散策</li>
-                        <li>前往明洞換錢、逛街</li>
-                        <li>返回龍山站飯店</li>
-                    </ul>
+                    <p class="section-lead">
+                        搭長榮 BR140 從小港飛仁川，降落後先辦 SES 快速通關，玻璃帷幕大廳一出現就覺得「對，這就是要來的地方」。
+                    </p>
+
+                    <div class="photo-hero">
+                        <img src="arex-station.jpg" alt="仁川機場第一航廈大廳" loading="lazy">
+                        <div class="photo-caption">仁川機場一航廈 — 玻璃帷幕大廳，剛降落就覺得值回票價</div>
+                    </div>
+
+                    <p>
+                        出關後直奔 AREX 直通列車月台。車票事先在 App 買好，掃 QR Code 就能進站，完全不用排隊換票。
+                        43 分鐘後抵達首爾站，再轉地鐵殺去龍山 IBIS 飯店寄放行李，順手購買 Wowpass 和氣候同行卡備用。
+                    </p>
 
                     <div class="photo-grid">
                         <div class="photo-block">
                             <img src="arex-ticket.jpg" alt="AREX 機場快線直通列車車票" loading="lazy">
-                            <div class="photo-caption">直通列車車票，仁川 T1 → 首爾站，43 分鐘</div>
+                            <div class="photo-caption">橘色直通列車車票，仁川 T1 → 首爾站，43 分鐘直達</div>
                         </div>
-                        <div class="photo-block">
-                            <img src="arex-station.jpg" alt="仁川機場第一航廈 AREX 月台大廳" loading="lazy">
-                            <div class="photo-caption">仁川機場一航廈 — 玻璃帷幕大廳超美</div>
-                        </div>
-                    </div>
-                    <div class="photo-grid" style="margin-top:0.8rem;">
                         <div class="photo-block">
                             <img src="arex-app.jpg" alt="A'REX Airport Express 購票 App" loading="lazy">
-                            <div class="photo-caption">出發前在 A'REX App 買好票，入站掃 QR Code 即可</div>
+                            <div class="photo-caption">出發前在 A'REX App 買好，入站掃碼即可</div>
                         </div>
                     </div>
-                    <div class="app-tip">
-                        <span class="app-tip-icon">📱</span>
-                        <span>車票在台灣出發前就用 <strong>A'REX app</strong> 購買好，入站直接掃 QR Code，省去現場排隊換票。
-                        <a href="../../Travel/korea-travel-apps/">→ 韓國旅遊必備 App 完整清單</a></span>
+
+                    <div class="highlight-box">
+                        💡 <strong>AREX 直通列車</strong>比普通列車省約 20 分鐘，強烈建議提前幾天在 App 購票，避免現場換票的隊伍。
+                        <br><a href="../../Travel/korea-travel-apps/">→ 韓國旅遊必備 App 完整清單</a>
                     </div>
+
+                    <p>
+                        下午去益善洞韓屋村悠閒晃了一圈，傍晚前往明洞換錢兼逛街，韓元一到手整個人才真的踏實了。
+                        晚餐在 Wonhyo 路的紅色炒年糕解決，辣得很爽，隔天更大的挑戰才要開始。
+                    </p>
                 </section>
 
                 <section class="content-section" id="day2">
                     <div class="section-header"><div class="section-number">🌟</div><h2 class="section-title">Day 2 (7/6): 景福宮與 BP 演唱會！</h2></div>
-                    <p class="content-text">今天的重頭戲！早上先去景福宮周邊逛逛，下午前往演唱會場地...</p>
-                     <ul class="bullet-list">
-                        <li>領取演唱會套票</li>
-                        <li>前往景福宮</li>
-                        <li>通仁市場午餐</li>
-                        <li>搭地鐵前往高陽體育園區 (大化站)</li>
-                        <li>領票 & 面交</li>
-                        <li>**BLACKPINK 演唱會 (19:00 - 21:30 預估)**</li>
-                        <li>搭乘接駁車回飯店</li>
-                    </ul>
+                    <p class="section-lead">
+                        這天是整趟旅程的核心，但還有充裕的早晨可以用——先去景福宮附近走走，再轉往演唱會會場。
+                    </p>
+                    <p>
+                        早上先領取演唱會套票，接著搭地鐵到景福宮站晃了一圈，順路在通仁市場買了幾樣小吃解決午餐。
+                        下午搭地鐵一路搖到大化站，轉接駁車前往高陽體育園區，現場領票、完成面交，然後等待那一刻的到來。
+                    </p>
+                    <div class="highlight-box">
+                        🎤 <strong>BLACKPINK 演唱會 19:00 開場</strong>，高陽體育園區超大，建議提早抵達熟悉場地動線。
+                        演唱會結束後接駁車超多人，有耐心等一下或走一段路到地鐵站會快一點。
+                    </div>
                 </section>
 
                 <section class="content-section" id="day3">
                      <div class="section-header"><div class="section-number">3️⃣</div><h2 class="section-title">Day 3 (7/7): 弘大、YG 與汝矣島</h2></div>
-                     <p class="content-text">更換飯店到東大門，下午安排了弘大商圈和 YG 公司朝聖...</p>
-                     <ul class="bullet-list">
-                         <li>IBIS Check out，前往 IBC 東大門寄放行李</li>
-                         <li>弘大入口站：逛街與午餐</li>
-                         <li>合井站：YG 娛樂公司外觀打卡</li>
-                         <li>汝矣島站：逛汝矣島現代百貨</li>
-                         <li>回新設洞站，Check-in IBC 飯店</li>
-                     </ul>
+                     <p class="section-lead">
+                         換飯店日，從龍山 IBIS Check out，把行李寄放到東大門 IBC 後，展開一整天的市區移動。
+                     </p>
+                     <p>
+                         弘大一帶逛了不少，街邊小攤、獨立品牌和韓妝店輪番轟炸錢包，午餐也在這裡解決。
+                         吃完直奔合井站——YG 娛樂公司就在附近，特地繞過去拍了照，雖然只是一棟辦公樓，但粉絲朝聖的儀式感很重要。
+                         傍晚去汝矣島現代百貨逛了一圈，接著回新設洞站辦理 IBC 飯店入住。
+                     </p>
+                     <div class="highlight-box">
+                         💡 弘大到合井站步行約 10 分鐘，YG 公司外觀不大，拍個照就可以繼續行程，不用特別安排太多時間。
+                     </div>
                 </section>
 
                 <section class="content-section" id="day4">
                     <div class="section-header"><div class="section-number">4️⃣</div><h2 class="section-title">Day 4 (7/8): 市場、聖水洞與圖書館</h2></div>
-                    <p class="content-text">體驗傳統市場的活力，接著前往新興的聖水洞，最後到知名的星空圖書館...</p>
-                    <ul class="bullet-list">
-                        <li>鍾路五街站：廣藏市場品嚐小吃</li>
-                        <li>聖水站：逛聖水洞特色店家</li>
-                        <li>三成站：參觀 COEX 星空圖書館</li>
-                        <li>回飯店休息，晚上逛東大門周邊</li>
-                        <li>宵夜：訂炸雞</li>
-                    </ul>
+                    <p class="section-lead">
+                        傳統市場、韓系設計街區、網紅圖書館，三種完全不同的氛圍全塞進一天。
+                    </p>
+                    <p>
+                        早上先去鍾路五街廣藏市場，綠豆煎餅、麻藥飯捲、生牛肉全都吃了一遍，吃到撐才依依不捨離開。
+                        中午移動到聖水站，這裡是首爾近年最熱門的新興區域，各種選品店和咖啡廳沿著工業感街道排開，逛起來很有質感。
+                        下午去三成站的 COEX 星空圖書館，書牆包圍的那種壓迫感和震撼感，照片根本拍不出來，只能親眼感受。
+                    </p>
+                    <div class="highlight-box">
+                        🍗 回飯店稍作休息後，晚上用 Baemin（배달의민족）訂了炸雞宵夜，在飯店配啤酒——這才是最韓國的夜晚。
+                    </div>
                 </section>
 
                  <section class="content-section" id="day5">
                     <div class="section-header"><div class="section-number">5️⃣</div><h2 class="section-title">Day 5 (7/9): 韓屋、大學與布帳馬車</h2></div>
-                    <p class="content-text">感受傳統韓屋氛圍，走訪著名大學校園，晚上體驗路邊攤文化...</p>
-                    <ul class="bullet-list">
-                         <li>安國站：逛北村韓屋村、三清洞、仁寺洞</li>
-                         <li>新村站：參觀延世大學、梨花女子大學周邊</li>
-                         <li>鍾路三街站：體驗布帳馬車晚餐</li>
-                    </ul>
+                    <p class="section-lead">
+                        倒數第二天，用最韓國的方式走完——傳統韓屋、大學街區、路邊攤一條龍。
+                    </p>
+                    <p>
+                        上午從安國站開始，北村韓屋村的窄巷很適合慢慢走，三清洞和仁寺洞接連逛過去，傳統工藝品、茶屋和小藝廊穿插其中。
+                        下午轉到新村，延世大學的正門廣場很氣派，梨花女大的玻璃建築也很值得一看，附近奶茶店和輕食隨手可得。
+                    </p>
+                    <div class="highlight-box">
+                        🏮 晚上到鍾路三街體驗布帳馬車，黃色帆布帳篷、露天塑膠椅、熱騙辣炒年糕配啤酒，這頓是整趟旅程最有韓劇感的一餐。
+                    </div>
                 </section>
 
                  <section class="content-section" id="day6">
                     <div class="section-header"><div class="section-number">6️⃣</div><h2 class="section-title">Day 6 (7/10): 歸途</h2></div>
-                    <p class="content-text">悠閒地 Check out，準備前往機場搭機返家...</p>
-                     <ul class="bullet-list">
-                         <li>IBC 東大門 Check out</li>
-                         <li>(這裡可以補充去機場前的活動，或直接去機場)</li>
-                         <li>仁川機場 -> 高雄小港機場 (長榮 BR171)</li>
-                     </ul>
+                    <p class="section-lead">
+                        最後一天，Check out IBC 東大門，帶著滿滿的戰利品和回憶出發往仁川機場。
+                    </p>
+                    <p>
+                        搭 AREX 回機場，長榮 BR171 飛回高雄小港，降落的那一刻回頭看這六天，覺得每一分鐘都花得很值。
+                    </p>
                 </section>
 
                 <section class="content-section" id="packing-list">

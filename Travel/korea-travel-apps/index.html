@@ -62,6 +62,23 @@
             transition: border-color 0.15s;
         }
         .app-card:hover { border-color: var(--accent-primary); }
+
+        /* ── 必裝大卡 ── */
+        .app-card-featured {
+            display: flex;
+            gap: 1.2rem;
+            align-items: flex-start;
+            padding: 1.3rem 1.5rem;
+            border: 1px solid var(--accent-primary);
+            border-radius: 14px;
+            background: var(--bg-card);
+            margin-bottom: 0.9rem;
+            transition: opacity 0.15s;
+        }
+        .app-card-featured:hover { opacity: 0.9; }
+        .app-card-featured .app-icon { font-size: 2.2rem; flex-shrink: 0; }
+        .app-card-featured .app-body { flex: 1; }
+        .app-card-featured .app-card-desc { font-size: 0.88rem; }
         .app-card-header {
             display: flex;
             align-items: center;
@@ -173,52 +190,49 @@
 
                 <!-- 必裝 -->
                 <div class="group-label">// 必裝（每天都會用到）</div>
-                <div class="app-grid">
 
-                    <div class="app-card">
-                        <div class="app-card-header">
-                            <span class="app-icon">🗺️</span>
-                            <div><div class="app-name">NAVER Maps <span class="app-tag">導航</span></div></div>
-                        </div>
+                <div class="app-card-featured">
+                    <span class="app-icon">🗺️</span>
+                    <div class="app-body">
+                        <div class="app-name">NAVER Maps <span class="app-tag">導航</span></div>
                         <div class="app-card-desc">
                             韓國導航首選。Google Maps 在韓國的路線規劃常有誤差，NAVER Maps 更新即時、步行路線更準，徒步、大眾運輸都靠它。
                         </div>
                         <div class="app-card-tip">💡 建議設定語言為中文或英文，介面更好讀</div>
                     </div>
+                </div>
 
-                    <div class="app-card">
-                        <div class="app-card-header">
-                            <span class="app-icon">🚇</span>
-                            <div><div class="app-name">Subway <span class="app-tag">地鐵</span></div></div>
+                <div class="app-card-featured">
+                    <span class="app-icon">🦜</span>
+                    <div class="app-body">
+                        <div class="app-name">Papago <span class="app-tag">翻譯</span></div>
+                        <div class="app-card-desc">
+                            NAVER 出品的翻譯 App，韓文翻譯準確度遠超 Google 翻譯。相機即時翻譯菜單、拍照翻牌子都很好用，韓國餐廳點菜必備。
                         </div>
+                        <div class="app-card-tip">💡 拍菜單翻譯是最常用功能，不認識的字直接對著它拍</div>
+                    </div>
+                </div>
+
+                <div class="app-card-featured">
+                    <span class="app-icon">🚇</span>
+                    <div class="app-body">
+                        <div class="app-name">Subway <span class="app-tag">地鐵</span></div>
                         <div class="app-card-desc">
                             首爾地鐵路線規劃專用 App。查轉乘站、幾號出口、搭幾號車廂都很清楚，首爾地鐵線路複雜，這個 App 救了很多次。
                         </div>
                         <div class="app-card-tip">💡 離線也能查路線，不用擔心沒網路</div>
                     </div>
+                </div>
 
-                    <div class="app-card">
-                        <div class="app-card-header">
-                            <span class="app-icon">🦜</span>
-                            <div><div class="app-name">Papago <span class="app-tag">翻譯</span></div></div>
-                        </div>
-                        <div class="app-card-desc">
-                            NAVER 出品的翻譯 App，韓文翻譯準確度遠超 Google 翻譯。相機即時翻譯菜單、拍照翻牌子都很好用，韓國餐廳很常用到。
-                        </div>
-                        <div class="app-card-tip">💡 拍菜單翻譯是最常用功能，點菜必備</div>
-                    </div>
-
-                    <div class="app-card">
-                        <div class="app-card-header">
-                            <span class="app-icon">🍗</span>
-                            <div><div class="app-name">배달의민족 <span class="app-tag">外送</span></div></div>
-                        </div>
+                <div class="app-card-featured">
+                    <span class="app-icon">🍗</span>
+                    <div class="app-body">
+                        <div class="app-name">배달의민족 <span class="app-tag">外送</span></div>
                         <div class="app-card-desc">
                             韓國最大外送平台，俗稱「Baemin（배민）」。飯店懶得出門的晚上，炸雞加啤酒直接送上門，是最韓國的體驗之一。
                         </div>
                         <div class="app-card-tip">💡 需要韓國手機號驗證，建議用飯店 WiFi 試看看</div>
                     </div>
-
                 </div>
 
                 <!-- 交通類 -->
