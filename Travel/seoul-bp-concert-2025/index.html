@@ -547,6 +547,11 @@
                     e.preventDefault();
                     el.scrollLeft = scrollLeft - (e.pageX - el.offsetLeft - startX) * 1.2;
                 });
+                // 滾輪也可橫向滾動
+                el.addEventListener('wheel', function(e) {
+                    e.preventDefault();
+                    el.scrollLeft += e.deltaY * 1.2;
+                }, { passive: false });
             });
         });
     </script>
