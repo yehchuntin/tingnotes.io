@@ -155,6 +155,42 @@
         .highlight-box a { color: var(--accent-primary); text-decoration: none; }
         .highlight-box a:hover { text-decoration: underline; }
         .article-content p { margin-bottom: 0.9rem; color: var(--text-secondary); }
+
+        /* ── 地圖卡片 ── */
+        .map-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            overflow: hidden;
+            margin: 1.5rem 0;
+        }
+        .map-card img { width: 100%; height: auto; display: block; }
+        .map-card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 1.2rem;
+            background: var(--bg-secondary);
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .map-card-info { font-size: 0.84rem; color: var(--text-secondary); }
+        .map-card-link {
+            font-size: 0.82rem;
+            color: var(--accent-primary);
+            text-decoration: none;
+            font-family: 'Fira Code', monospace;
+            white-space: nowrap;
+        }
+        .map-card-link:hover { text-decoration: underline; }
+
+        /* ── 小節標題 ── */
+        .sub-section-title {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 2rem 0 0.6rem;
+        }
     </style>
 </head>
 <body>
@@ -246,9 +282,72 @@
                     </div>
 
                     <p>
-                        下午去益善洞韓屋村悠閒晃了一圈，傍晚前往明洞換錢兼逛街，韓元一到手整個人才真的踏實了。
-                        晚餐在 Wonhyo 路的紅色炒年糕解決，辣得很爽，隔天更大的挑戰才要開始。
+                        行李放好，Check-in 完換件輕鬆的衣服，先去附近的益善洞韓屋村走走，傍晚再出發往明洞。
                     </p>
+
+                    <h3 class="sub-section-title">📍 明洞：追星族的廣告看板天地</h3>
+
+                    <div class="map-card">
+                        <img src="myeongdong-map.jpg" alt="明洞周邊地圖" loading="lazy">
+                        <div class="map-card-footer">
+                            <div class="map-card-info">🚇 地鐵 4 號線「明洞站」— 5 號或 6 號出口直達商圈</div>
+                            <a href="https://naver.me/FBMwUSZZ" target="_blank" rel="noopener" class="map-card-link">↗ NAVER Maps 開啟</a>
+                        </div>
+                    </div>
+
+                    <p class="section-lead">
+                        明洞是首爾最密集的購物街，但對粉絲來說，這裡更像一個戶外追星展場——每走幾步就是一塊偶像代言的大型廣告看板。
+                    </p>
+                    <p>
+                        MLB Korea 的 MARINA 看板掛在街口，BANILA CO 的玻璃帷幕貼滿了 BABYMONSTER；走進美妝店才發現整面牆都是螢幕，輪播各家偶像的廣告片。
+                        換錢這件事幾乎是邊走邊忘，因為根本走不快。
+                    </p>
+
+                    <div class="photo-grid">
+                        <div class="photo-block">
+                            <img src="myeongdong-marina-billboard.jpg" alt="MARINA MLB Korea 廣告看板" loading="lazy">
+                            <div class="photo-caption">MARINA × MLB Korea — 街口必拍大型看板</div>
+                        </div>
+                        <div class="photo-block">
+                            <img src="myeongdong-babymonster-billboard.jpg" alt="BABYMONSTER BANILA CO 聯名看板" loading="lazy">
+                            <div class="photo-caption">BABYMONSTER × BANILA CO 聯名廣告</div>
+                        </div>
+                    </div>
+
+                    <div class="photo-grid">
+                        <div class="photo-block">
+                            <img src="myeongdong-cosmetics.jpg" alt="明洞美妝店 K-pop 偶像螢幕牆" loading="lazy">
+                            <div class="photo-caption">美妝店內螢幕牆，全部都在播偶像廣告</div>
+                        </div>
+                        <div class="photo-block">
+                            <img src="myeongdong-kpop-ads.jpg" alt="明洞 AMUSÉE BANILA CO 偶像廣告" loading="lazy">
+                            <div class="photo-caption">AMUSÉE & BANILA CO，哪裡都是偶像的臉</div>
+                        </div>
+                    </div>
+
+                    <div class="photo-hero">
+                        <img src="myeongdong-neon-night.jpg" alt="明洞霓虹夜景" loading="lazy">
+                        <div class="photo-caption">入夜後的明洞，霓虹招牌一整排亮起來</div>
+                    </div>
+
+                    <div class="highlight-box">
+                        🚇 地鐵站月台廣告也不放過你——換乘途中隨時可能撞見喜歡的偶像廣告，建議慢慢走。
+                    </div>
+
+                    <div class="photo-block" style="max-width: 420px; margin: 1rem auto;">
+                        <img src="subway-kpop-ads.jpg" alt="首爾地鐵站 K-pop 偶像廣告牆" loading="lazy">
+                        <div class="photo-caption">地鐵站月台廣告欄，連等車都在看偶像</div>
+                    </div>
+
+                    <p>
+                        換完錢買了幾包零食，晚餐在 Wonhyo 路的紅色炒年糕解決，辣得很爽。
+                        回到飯店推開房門，整潔的雙床加上窗外首爾夜景，終於可以好好喘口氣。
+                    </p>
+
+                    <div class="photo-block">
+                        <img src="ibis-room.jpg" alt="龍山 IBIS 飯店房間" loading="lazy">
+                        <div class="photo-caption">IBIS 龍山站飯店，乾淨整齊，高樓層視野不錯</div>
+                    </div>
                 </section>
 
                 <section class="content-section" id="day2">
