@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DCA 定期定額計算器｜每月存多少才夠？複利試算 | TingNotes</title>
+    <meta name="description" content="免費定期定額（DCA）計算器。輸入每月金額、年數與報酬率，即時試算最終資產、總報酬與複利成長曲線。附教學說明與 ETF 報酬率參考。">
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2436395949894310" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="../../style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Fira+Code&display=swap" rel="stylesheet">
+
+    <style>
+        /* ── 計算器卡片 ── */
+        .calc-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        /* ── 輸入區 ── */
+        .inputs-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        @media (max-width: 680px) {
+            .inputs-grid { grid-template-columns: 1fr; gap: 1.2rem; }
+        }
+
+        .field-label {
+            display: block;
+            font-size: 0.83rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            font-family: 'Fira Code', monospace;
+            letter-spacing: 0.03em;
+        }
+        .field-input {
+            width: 100%;
+            padding: 0.7rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            box-sizing: border-box;
+            transition: border-color 0.15s;
+        }
+        .field-input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+        }
+        .rate-slider {
+            width: 100%;
+            accent-color: var(--accent-primary);
+            margin: 0.5rem 0 0.3rem;
+        }
+        .rate-val {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--accent-primary);
+            font-family: 'Fira Code', monospace;
+        }
+        .rate-hints {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            margin-top: 0.15rem;
+            padding: 0 2px;
+        }
+
+        /* ── 結果區 ── */
+        .results-grid {
+            display: grid;
+            grid-template-columns: 1.4fr 1fr 1fr;
+            gap: 1.2rem;
+        }
+        @media (max-width: 600px) {
+            .results-grid { grid-template-columns: 1fr 1fr; }
+            .result-main { grid-column: 1 / -1; }
+        }
+
+        .result-box {
+            padding: 1.2rem 1.4rem;
+            border-radius: 12px;
+            background: var(--bg-secondary);
+        }
+        .result-box.result-main {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+        }
+        .res-label {
+            font-size: 0.76rem;
+            color: var(--text-muted);
+            font-family: 'Fira Code', monospace;
+            margin-bottom: 0.3rem;
+        }
+        .res-value {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1.1;
+        }
+        .res-value.big {
+            font-size: 2.4rem;
+            color: var(--career-color, #27ae60);
+            letter-spacing: -0.02em;
+        }
+        .res-value.profit {
+            color: var(--accent-primary);
+        }
+
+        /* ── 圖表 ── */
+        .chart-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+        .chart-card canvas { max-height: 280px; }
+
+        /* ── SEO 文章區 ── */
+        .seo-section {
+            max-width: 760px;
+            margin: 0 auto 3rem;
+            color: var(--text-secondary);
+            line-height: 1.85;
+            font-size: 0.95rem;
+        }
+        .seo-section h2 {
+            font-size: 1.25rem;
+            color: var(--text-primary);
+            margin: 2.5rem 0 0.8rem;
+            padding-bottom: 0.4rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .seo-section p { margin-bottom: 1rem; }
+        .seo-section strong { color: var(--text-primary); }
+        .formula-block {
+            background: var(--bg-secondary);
+            border-left: 3px solid var(--accent-primary);
+            padding: 0.85rem 1.2rem;
+            border-radius: 0 8px 8px 0;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.88rem;
+            margin: 1rem 0;
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+        .example-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 1.1rem 1.3rem;
+            margin: 1rem 0;
+        }
+        .example-box ul {
+            padding-left: 1.2rem;
+            margin: 0.5rem 0 0;
+        }
+        .example-box li { margin-bottom: 0.4rem; }
+        .etf-ref-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+        }
+        .etf-ref-table th, .etf-ref-table td {
+            padding: 0.6rem 0.8rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .etf-ref-table th {
+            font-family: 'Fira Code', monospace;
+            color: var(--text-muted);
+            font-size: 0.78rem;
+        }
+        .etf-ref-table tr:hover td { background: var(--bg-secondary); }
+        .disclaimer {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            line-height: 1.7;
+            padding: 1rem 1.2rem;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            margin-top: 2rem;
+        }
+
+        /* ── CTA ── */
+        .cta-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            justify-content: center;
+            margin: 2rem 0;
+        }
+        .cta-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.65rem 1.4rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            background: var(--bg-card);
+            transition: border-color 0.2s;
+        }
+        .cta-btn:hover { border-color: var(--accent-primary); }
+        .cta-btn.primary {
+            background: var(--accent-primary);
+            color: #fff;
+            border-color: var(--accent-primary);
+        }
+    </style>
+</head>
+<body>
+
+    <script>
+        (function() {
+            var t = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', t);
+        })();
+    </script>
+
+    <header class="zen-header">
+        <div class="container">
+            <nav>
+                <a href="../../index.html" class="logo">TingNotes</a>
+                <div class="nav-controls">
+                    <button class="theme-toggle" onclick="toggleTheme()" title="切換模式">
+                        <svg class="theme-icon" id="theme-icon" width="20" height="20" viewBox="0 0 24 24"></svg>
+                    </button>
+                    <button class="menu-trigger" onclick="toggleMobileMenu()">
+                        <span class="menu-label">MENU</span>
+                        <div class="hamburger-icon"><span></span><span></span></div>
+                    </button>
+                </div>
+                <div class="hidden-nav-overlay">
+                    <ul class="nav-links-vertical">
+                        <li><a href="../../Learning/index.html" class="nav-item"><span class="nav-num">01.</span> 學習 Learning</a></li>
+                        <li><a href="../../Investment/index.html" class="nav-item"><span class="nav-num">02.</span> 投資 Investment</a></li>
+                        <li><a href="../../Travel/index.html" class="nav-item"><span class="nav-num">03.</span> 旅遊 Travel</a></li>
+                        <li><a href="../../Others/index.html" class="nav-item"><span class="nav-num">04.</span> 雜事 Others</a></li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+
+            <div class="zen-page-header fade-in">
+                <div class="breadcrumb"><a href="../../index.html">Home</a> / <a href="../index.html">Others</a> / DCA 計算機</div>
+                <h1 class="page-title">DCA 定期定額計算器_</h1>
+                <p class="page-subtitle">輸入三個數字，30 秒看到你的投資未來</p>
+            </div>
+
+            <!-- 計算器 -->
+            <div class="calc-card fade-in">
+
+                <!-- 輸入 -->
+                <div class="inputs-grid">
+                    <div>
+                        <label class="field-label" for="inp-pmt">每月投資金額（元）</label>
+                        <input type="number" id="inp-pmt" class="field-input" value="10000" min="100" step="100" oninput="updateAll()">
+                    </div>
+                    <div>
+                        <label class="field-label" for="inp-years">投資年數</label>
+                        <input type="number" id="inp-years" class="field-input" value="10" min="1" max="50" oninput="updateAll()">
+                    </div>
+                    <div>
+                        <label class="field-label">年化報酬率 &nbsp;<span class="rate-val" id="rate-val">8%</span></label>
+                        <input type="range" id="inp-rate" class="rate-slider" min="1" max="20" step="0.5" value="8" oninput="onRate()">
+                        <div class="rate-hints">
+                            <span>1%</span>
+                            <span>4% 保守</span>
+                            <span>8% 市場平均</span>
+                            <span>12% 成長型</span>
+                            <span>20%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 結果 -->
+                <div class="results-grid">
+                    <div class="result-box result-main">
+                        <div class="res-label">最終資產</div>
+                        <div class="res-value big" id="out-fv">$0</div>
+                    </div>
+                    <div class="result-box">
+                        <div class="res-label">總投入金額</div>
+                        <div class="res-value" id="out-invested">$0</div>
+                    </div>
+                    <div class="result-box">
+                        <div class="res-label">複利報酬</div>
+                        <div class="res-value profit" id="out-profit">$0</div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- 圖表 -->
+            <div class="chart-card fade-in">
+                <canvas id="main-chart"></canvas>
+            </div>
+
+            <!-- SEO 文章區 -->
+            <section class="seo-section fade-in">
+
+                <h2>什麼是定期定額（DCA）？</h2>
+                <p>
+                    定期定額（Dollar-Cost Averaging，DCA）是一種長期投資策略：每個月在固定日期，投入固定金額購買同一支股票或 ETF，不論當時市場價格高低。
+                </p>
+                <p>
+                    這樣做的好處是「攤平成本」——市場跌的時候能買到更多單位，長期下來平均買入成本往往低於一次性投入。
+                    更重要的是，定期定額不需要擇時，消除了「等低點再買」的心理壓力，讓一般投資人更能持之以恆。
+                </p>
+
+                <h2>複利怎麼計算？</h2>
+                <p>本計算機使用<strong>月複利定期定額公式</strong>，與實際 ETF 運作最接近：</p>
+                <div class="formula-block">
+                    monthly_rate = annual_rate / 100 / 12<br>
+                    months = years × 12<br>
+                    <br>
+                    future_value = 0<br>
+                    for each month:<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;future_value = (future_value + monthly_payment) × (1 + monthly_rate)<br>
+                    <br>
+                    profit = future_value − (monthly_payment × months)
+                </div>
+                <p>
+                    每個月先加入本月的投入金額，再乘以當月複利，讓每一筆新投入的錢都從當月就開始計算報酬。
+                    這種「月初扣款」的方式比年複利公式更貼近券商實際的定期定額機制。
+                </p>
+
+                <h2>實際案例：每月 10,000 元投資 10 年</h2>
+                <div class="example-box">
+                    <strong>條件：每月 10,000 元 × 10 年 × 年報酬率 8%</strong>
+                    <ul>
+                        <li>總投入本金：120 個月 × 10,000 = <strong>120 萬元</strong></li>
+                        <li>預估最終資產：<strong>約 184 萬元</strong></li>
+                        <li>複利報酬：<strong>約 64 萬元</strong>（什麼都沒做，時間幫你賺的）</li>
+                        <li>若持續到 20 年：最終資產約 <strong>589 萬元</strong>（本金只多 120 萬，資產卻多 4 倍）</li>
+                    </ul>
+                </div>
+                <p>
+                    這就是複利的威力：時間越長，後段成長越快。20 年的資產不是 10 年的兩倍，而是三倍多——
+                    因為前 10 年累積的資產，還有額外 10 年繼續生長。
+                </p>
+
+                <h2>常見 ETF 歷史年化報酬率參考</h2>
+                <p>不確定要輸入什麼報酬率？以下是幾個常見標的的歷史參考值（非保證未來表現）：</p>
+                <table class="etf-ref-table">
+                    <thead>
+                        <tr>
+                            <th>ETF</th>
+                            <th>全名</th>
+                            <th>歷史年化報酬（參考）</th>
+                            <th>特性</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><strong>0050</strong></td><td>元大台灣50</td><td>約 10–12%</td><td>台灣市值前50，含股息</td></tr>
+                        <tr><td><strong>0056</strong></td><td>元大高股息</td><td>約 8–10%</td><td>高殖利率，季配息</td></tr>
+                        <tr><td><strong>00878</strong></td><td>國泰永續高股息</td><td>約 9–11%</td><td>ESG，月配息</td></tr>
+                        <tr><td><strong>VOO</strong></td><td>Vanguard S&amp;P 500</td><td>約 10–11%</td><td>美國500大企業</td></tr>
+                        <tr><td><strong>QQQ</strong></td><td>Invesco Nasdaq 100</td><td>約 15–17%</td><td>科技股集中，波動較大</td></tr>
+                    </tbody>
+                </table>
+                <p style="font-size:0.82rem; color:var(--text-muted);">
+                    以上數據為歷史年化報酬率估算，包含股息再投入。過去表現不代表未來，請依個人風險承受能力評估。
+                </p>
+
+                <div class="cta-row">
+                    <a href="../../Investment/etf-guide/" class="cta-btn">📖 ETF 定期定額入門指南 →</a>
+                </div>
+
+                <div class="disclaimer">
+                    ⚠️ 免責聲明：本計算機僅供教育與參考用途，所有試算結果均基於假設報酬率，不代表任何投資建議或保證。實際投資報酬受市場波動、手續費、稅務等因素影響，可能與試算結果有顯著差異。投資前請評估自身財務狀況與風險承受能力。
+                </div>
+
+            </section>
+
+        </div>
+    </main>
+
+    <footer class="zen-footer">
+        <div class="container">
+            <div class="footer-links">
+                <a href="../../about.html">About</a>
+                <span class="separator">/</span>
+                <a href="mailto:contact@tingnotes.io">Contact</a>
+            </div>
+            <p class="copyright">© 2025 TingNotes.io</p>
+        </div>
+    </footer>
+
+    <script>
+        // ── Theme / Menu ──
+        function toggleTheme() {
+            var cur = document.documentElement.getAttribute('data-theme');
+            var next = cur === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', next);
+            localStorage.setItem('theme', next);
+            refreshChartTheme();
+        }
+        function toggleMobileMenu() {
+            var o = document.querySelector('.hidden-nav-overlay');
+            if (o) o.classList.toggle('active');
+        }
+
+        // ── Rate slider ──
+        function onRate() {
+            var val = parseFloat(document.getElementById('inp-rate').value);
+            document.getElementById('rate-val').textContent = val + '%';
+            updateAll();
+        }
+
+        // ── Core calculation ──
+        function calculate(pmt, years, rate) {
+            var r = rate / 100 / 12;
+            var n = years * 12;
+            var fv = 0;
+            for (var i = 0; i < n; i++) {
+                fv = (fv + pmt) * (1 + r);
+            }
+            var invested = pmt * n;
+            return { fv: fv, invested: invested, profit: fv - invested };
+        }
+
+        // ── Format ──
+        function fmt(n) {
+            n = Math.round(Math.max(0, n));
+            if (n >= 100000000) return '$' + (n / 100000000).toFixed(2) + ' 億';
+            if (n >= 10000)     return '$' + (n / 10000).toFixed(1) + ' 萬';
+            return '$' + n.toLocaleString('zh-TW');
+        }
+        function fmtFull(n) {
+            return '$' + Math.round(Math.max(0, n)).toLocaleString('zh-TW');
+        }
+
+        // ── Animated counter ──
+        var _af = {};
+        function animTo(id, target) {
+            if (_af[id]) cancelAnimationFrame(_af[id]);
+            var el = document.getElementById(id);
+            var start = el._v !== undefined ? el._v : 0;
+            var t0 = performance.now();
+            (function step(now) {
+                var p = Math.min((now - t0) / 400, 1);
+                var e = 1 - Math.pow(1 - p, 3);
+                var cur = start + (target - start) * e;
+                el.textContent = fmt(cur);
+                el._v = cur;
+                if (p < 1) _af[id] = requestAnimationFrame(step);
+                else { el._v = target; el.textContent = fmt(target); }
+            })(t0);
+        }
+
+        // ── Chart ──
+        var chart = null;
+
+        function cc() {
+            var dk = document.documentElement.getAttribute('data-theme') === 'dark';
+            return {
+                grid: dk ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.05)',
+                tick: dk ? '#94a3b8' : '#6c757d',
+                tipBg: dk ? '#1e293b' : '#fff',
+                tipBd: dk ? '#334155' : '#e9ecef'
+            };
+        }
+
+        function buildData(pmt, years, rate) {
+            var labels = [], fvs = [], invs = [];
+            for (var y = 0; y <= years; y++) {
+                var res = calculate(pmt, y, rate);
+                labels.push(y + '年');
+                fvs.push(Math.round(res.fv));
+                invs.push(pmt * y * 12);
+            }
+            return { labels: labels, fvs: fvs, invs: invs };
+        }
+
+        function yFmt(v) {
+            if (v >= 100000000) return '$' + (v / 100000000).toFixed(1) + '億';
+            if (v >= 10000)     return '$' + (v / 10000).toFixed(0) + '萬';
+            return '$' + v;
+        }
+
+        function initChart(pmt, years, rate) {
+            var ctx = document.getElementById('main-chart').getContext('2d');
+            var d = buildData(pmt, years, rate);
+            var c = cc();
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: d.labels,
+                    datasets: [
+                        {
+                            label: '資產成長',
+                            data: d.fvs,
+                            borderColor: '#3498db',
+                            backgroundColor: 'rgba(52,152,219,0.12)',
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 3,
+                            borderWidth: 2.5
+                        },
+                        {
+                            label: '本金累積',
+                            data: d.invs,
+                            borderColor: '#94a3b8',
+                            backgroundColor: 'transparent',
+                            fill: false,
+                            tension: 0,
+                            borderDash: [5, 5],
+                            pointRadius: 0,
+                            borderWidth: 1.5
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: {
+                        legend: { labels: { color: c.tick, font: { family: 'Inter', size: 12 } } },
+                        tooltip: {
+                            backgroundColor: c.tipBg,
+                            borderColor: c.tipBd,
+                            borderWidth: 1,
+                            bodyColor: '#6c757d',
+                            callbacks: {
+                                label: function(x) {
+                                    return ' ' + x.dataset.label + ': ' + fmtFull(x.raw);
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { grid: { color: c.grid }, ticks: { color: c.tick } },
+                        y: { grid: { color: c.grid }, ticks: { color: c.tick, callback: yFmt } }
+                    }
+                }
+            });
+        }
+
+        function refreshChartTheme() {
+            if (!chart) return;
+            var c = cc();
+            chart.options.scales.x.grid.color = c.grid;
+            chart.options.scales.x.ticks.color = c.tick;
+            chart.options.scales.y.grid.color = c.grid;
+            chart.options.scales.y.ticks.color = c.tick;
+            chart.options.plugins.legend.labels.color = c.tick;
+            chart.update();
+        }
+
+        // ── Main update ──
+        function updateAll() {
+            var pmt   = parseFloat(document.getElementById('inp-pmt').value) || 0;
+            var years = Math.max(1, Math.min(50, parseInt(document.getElementById('inp-years').value) || 1));
+            var rate  = parseFloat(document.getElementById('inp-rate').value) || 0;
+            var res = calculate(pmt, years, rate);
+            animTo('out-fv', res.fv);
+            document.getElementById('out-invested').textContent = fmt(res.invested);
+            document.getElementById('out-profit').textContent   = fmt(res.profit);
+            if (chart) {
+                var d = buildData(pmt, years, rate);
+                chart.data.labels = d.labels;
+                chart.data.datasets[0].data = d.fvs;
+                chart.data.datasets[1].data = d.invs;
+                chart.update('none');
+            }
+        }
+
+        // ── Fade-in ──
+        function initAnim() {
+            var obs = new IntersectionObserver(function(entries) {
+                entries.forEach(function(e) {
+                    if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
+                });
+            }, { threshold: 0.05 });
+            document.querySelectorAll('.fade-in').forEach(function(el) { obs.observe(el); });
+        }
+
+        // ── Init ──
+        document.addEventListener('DOMContentLoaded', function() {
+            initAnim();
+            initChart(10000, 10, 8);
+            updateAll();
+        });
+    </script>
+
+</body>
+</html>

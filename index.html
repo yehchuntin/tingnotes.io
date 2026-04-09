@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TingNotes - 探索筆記</title>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2436395949894310" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Fira+Code&display=swap" rel="stylesheet">
 </head>
@@ -30,7 +29,7 @@
                 <div class="hidden-nav-overlay">
                     <ul class="nav-links-vertical">
                         <li><a href="Learning/index.html" class="nav-item"><span class="nav-num">01.</span> 學習 Learning</a></li>
-                        <li><a href="Career/index.html" class="nav-item"><span class="nav-num">02.</span> 職涯 Career</a></li>
+                        <li><a href="Investment/index.html" class="nav-item"><span class="nav-num">02.</span> 投資 Investment</a></li>
                         <li><a href="Travel/index.html" class="nav-item"><span class="nav-num">03.</span> 旅遊 Travel</a></li>
                         <li><a href="Others/index.html" class="nav-item"><span class="nav-num">04.</span> 雜事 Others</a></li>
                     </ul>
@@ -48,18 +47,15 @@
                     <div class="search-underline"></div>
                 </div>
                 
-                <div class="zen-tags fade-in">
-                    <button onclick="filterByTag('programming')">#code</button>
-                    <button onclick="filterByTag('career')">#career</button>
-                    <button onclick="filterByTag('travel')">#travel</button>
+                <div class="zen-tags fade-in" id="topic-filter-row">
+                    <button onclick="filterByTopic('')"            class="topic-btn active" id="tf-all">全部</button>
+                    <button onclick="filterByTopic('learning')"    class="topic-btn" id="tf-learning">學習</button>
+                    <button onclick="filterByTopic('investment')"  class="topic-btn" id="tf-investment">投資</button>
+                    <button onclick="filterByTopic('travel')"      class="topic-btn" id="tf-travel">旅遊</button>
+                    <button onclick="filterByTopic('others')"      class="topic-btn" id="tf-others">其他</button>
                 </div>
 
-                <div class="sort-controls fade-in">
-                    <span class="sort-label">SORT BY:</span>
-                    <button id="sort-latest" class="sort-btn active" onclick="switchSort('latest')">LATEST</button>
-                    <span class="sort-divider">/</span>
-                    <button id="sort-popular" class="sort-btn" onclick="switchSort('popular')">POPULAR</button>
-                </div>
+
             </section>
 
             <section class="zen-list-section fade-in">

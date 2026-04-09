@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ETF 定期定額入門指南｜0050、VOO、QQQ 怎麼選？複利怎麼算？| TingNotes</title>
+    <meta name="description" content="ETF 定期定額完整入門指南。什麼是 ETF？複利怎麼計算？0050、VOO、QQQ 怎麼選？附實際案例與報酬計算器。">
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2436395949894310" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="../../style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Fira+Code&display=swap" rel="stylesheet">
+
+    <style>
+        .article-content {
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.85;
+            color: var(--text-secondary);
+        }
+        .article-content h2 {
+            font-size: 1.35rem;
+            color: var(--text-primary);
+            margin: 2.5rem 0 0.9rem;
+            padding-bottom: 0.45rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .article-content p { margin-bottom: 1rem; }
+        .article-content strong { color: var(--text-primary); }
+
+        .formula-block {
+            background: var(--bg-secondary);
+            border-left: 3px solid var(--accent-primary);
+            padding: 0.9rem 1.2rem;
+            border-radius: 0 8px 8px 0;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+            margin: 1rem 0;
+            color: var(--text-primary);
+        }
+
+        .case-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 1.2rem 1.4rem;
+            margin: 1.2rem 0;
+        }
+        .case-box ul {
+            padding-left: 1.2rem;
+            margin: 0.5rem 0 0;
+        }
+        .case-box li { margin-bottom: 0.4rem; }
+
+        .etf-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.92rem;
+        }
+        .etf-table th, .etf-table td {
+            padding: 0.65rem 0.9rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .etf-table th {
+            font-family: 'Fira Code', monospace;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+        .etf-table tr:hover td { background: var(--bg-secondary); }
+
+        /* CTA 計算器按鈕 */
+        .cta-calc {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.8rem;
+            background: var(--accent-primary);
+            color: #fff;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            transition: opacity 0.2s;
+        }
+        .cta-calc:hover { opacity: 0.88; }
+        .cta-section {
+            text-align: center;
+            padding: 2rem 0 1rem;
+        }
+        .cta-section p {
+            color: var(--text-muted);
+            font-size: 0.88rem;
+            margin-top: 0.6rem;
+        }
+
+        .tip-box {
+            background: var(--bg-secondary);
+            border-left: 3px solid var(--career-color, #27ae60);
+            padding: 0.8rem 1.2rem;
+            border-radius: 0 8px 8px 0;
+            margin: 1rem 0;
+            font-size: 0.92rem;
+        }
+    </style>
+</head>
+<body>
+
+    <script>
+        (function() {
+            var t = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', t);
+        })();
+    </script>
+
+    <header class="zen-header">
+        <div class="container">
+            <nav>
+                <a href="../../index.html" class="logo">TingNotes</a>
+                <div class="nav-controls">
+                    <button class="theme-toggle" onclick="toggleTheme()" title="切換模式">
+                        <svg class="theme-icon" id="theme-icon" width="20" height="20" viewBox="0 0 24 24"></svg>
+                    </button>
+                    <button class="menu-trigger" onclick="toggleMobileMenu()">
+                        <span class="menu-label">MENU</span>
+                        <div class="hamburger-icon">
+                            <span></span><span></span>
+                        </div>
+                    </button>
+                </div>
+                <div class="hidden-nav-overlay">
+                    <ul class="nav-links-vertical">
+                        <li><a href="../../Learning/index.html" class="nav-item"><span class="nav-num">01.</span> 學習 Learning</a></li>
+                        <li><a href="../../Investment/index.html" class="nav-item"><span class="nav-num">02.</span> 投資 Investment</a></li>
+                        <li><a href="../../Travel/index.html" class="nav-item"><span class="nav-num">03.</span> 旅遊 Travel</a></li>
+                        <li><a href="../../Others/index.html" class="nav-item"><span class="nav-num">04.</span> 雜事 Others</a></li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="zen-page-header fade-in">
+                <div class="breadcrumb"><a href="../../index.html">Home</a> / <a href="../index.html">Investment</a> / ETF 入門指南</div>
+                <h1 class="page-title">ETF 定期定額入門指南_</h1>
+                <p class="page-subtitle">從零開始理解 ETF、複利與選股邏輯，附實際案例</p>
+            </div>
+
+            <article class="article-content fade-in">
+
+                <h2>ETF 定期定額是什麼？</h2>
+                <p>
+                    ETF（Exchange-Traded Fund，交易所交易基金）是一種追蹤特定指數的投資工具，可以在股票市場上像股票一樣買賣。
+                    舉例來說，0050 追蹤「台灣市值前 50 大公司」，買一張 0050 等於同時持有台積電、聯發科、鴻海等台灣最大的企業。
+                </p>
+                <p>
+                    「定期定額」是指每個月固定投入一筆錢，不論市場高低都持續買入，藉此攤平成本、降低選時風險。
+                    市場跌的時候反而能買到更多單位，長期下來平均成本往往低於一次性買進。
+                </p>
+                <div class="tip-box">
+                    💡 定期定額最大的優點：<strong>不需要擇時</strong>。你不用猜高點低點，只要每個月固定扣款，讓時間幫你累積。
+                </div>
+                <p>
+                    對於剛開始投資的人來說，定期定額 ETF 是最簡單、最低風險的入門方式。
+                    不需要盯盤、不需要選股，只要持續紀律執行，時間就是你最大的資本。
+                </p>
+
+                <!-- CTA -->
+                <div class="cta-section">
+                    <a href="../../Others/etf-calculator/" class="cta-calc">🧮 立即試算我的報酬</a>
+                    <p>輸入金額、年數，看看你 10 年後的資產有多少</p>
+                </div>
+
+                <h2>複利是怎麼計算的？</h2>
+                <p>
+                    定期定額的威力來自「複利」——利息也會產生利息，隨時間呈指數成長。
+                    本站計算器使用的是「月複利定期定額終值公式」：
+                </p>
+                <div class="formula-block">
+                    FV = PMT × ((1 + r/12)^(n×12) − 1) / (r/12) × (1 + r/12)
+                </div>
+                <p>
+                    其中 <strong>FV</strong> 是最終資產，<strong>PMT</strong> 是每月投入金額，<strong>r</strong> 是年報酬率（小數形式），<strong>n</strong> 是年數。
+                    每月複利代表你的利息每個月都會重新計入本金，比年複利更貼近實際 ETF 的運作方式。
+                </p>
+                <p>
+                    複利的關鍵在於「時間」。同樣每月 10,000 元、同樣 10% 報酬率：
+                </p>
+                <div class="case-box">
+                    <strong>投資年數對最終資產的影響</strong>
+                    <ul>
+                        <li>投 10 年 → 最終資產約 <strong>205 萬</strong>（本金 120 萬）</li>
+                        <li>投 20 年 → 最終資產約 <strong>765 萬</strong>（本金 240 萬）</li>
+                        <li>投 30 年 → 最終資產約 <strong>2,280 萬</strong>（本金 360 萬）</li>
+                    </ul>
+                </div>
+                <p>
+                    從 10 年到 30 年，本金只多了 3 倍，但資產成長了超過 11 倍。這就是複利的力量，越早開始差距越大。
+                </p>
+
+                <h2>實際案例：0050 每月 10,000 元投資 10 年</h2>
+                <p>
+                    假設你從現在開始每月投入 <strong>10,000 元</strong>買入 0050，持續 10 年，以年化報酬率 10% 計算：
+                </p>
+                <div class="case-box">
+                    <strong>📊 試算結果</strong>
+                    <ul>
+                        <li>總投入本金：120 × 10,000 = <strong>120 萬元</strong></li>
+                        <li>預估最終資產：<strong>約 205 萬元</strong></li>
+                        <li>投資報酬：<strong>約 85 萬元</strong>（純靠複利，不勞而獲）</li>
+                        <li>資產倍數：<strong>×1.71 倍</strong></li>
+                    </ul>
+                </div>
+                <p>
+                    如果再撐 10 年（共 20 年），最終資產預估達 <strong>765 萬元</strong>，本金只有 240 萬——複利多給了你 525 萬。
+                    這個數字不是幻想，而是過去 20 年投資 0050 的人實際經歷過的回報水準。
+                </p>
+                <div class="tip-box">
+                    ⚠️ 以上數字僅供參考，基於歷史報酬率估算。過去表現不代表未來，投資前請評估自身風險承受能力。
+                </div>
+
+                <h2>選哪支 ETF？0050 vs VOO vs QQQ 比較</h2>
+                <p>
+                    這三支是台灣投資人最常討論的 ETF，各有不同的市場定位與風險特性：
+                </p>
+                <table class="etf-table">
+                    <thead>
+                        <tr>
+                            <th>ETF</th>
+                            <th>追蹤指數</th>
+                            <th>市場</th>
+                            <th>歷史年化報酬（參考）</th>
+                            <th>適合對象</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>0050</strong></td>
+                            <td>台灣 50 指數</td>
+                            <td>台灣</td>
+                            <td>約 10–12%</td>
+                            <td>用台幣投資、偏好台灣市場</td>
+                        </tr>
+                        <tr>
+                            <td><strong>VOO</strong></td>
+                            <td>S&amp;P 500</td>
+                            <td>美國</td>
+                            <td>約 10–11%</td>
+                            <td>分散持有美國 500 大企業</td>
+                        </tr>
+                        <tr>
+                            <td><strong>QQQ</strong></td>
+                            <td>Nasdaq-100</td>
+                            <td>美國</td>
+                            <td>約 15–17%</td>
+                            <td>科技股集中、報酬高但波動大</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p>
+                    沒有「最好」的 ETF，只有「最適合你」的選擇。如果你剛入門、不想承擔匯率風險，0050 是最直接的起點。
+                    如果你願意接受美元計價、看好長期美股，VOO 是公認最穩健的選項。QQQ 報酬高但波動也大，適合風險承受度較高的人。
+                </p>
+                <p>
+                    三支也可以混搭，例如 0050 + VOO，兼顧台灣與美國市場。重點是選定之後持續紀律執行，不要因為短期波動頻繁進出。
+                </p>
+
+            </article>
+
+            <!-- 底部 CTA -->
+            <div class="cta-section fade-in">
+                <a href="../../Others/etf-calculator/" class="cta-calc">🧮 前往 ETF 報酬計算器</a>
+                <p>輸入你的每月金額和年數，馬上看到複利成長圖表</p>
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="zen-footer">
+        <div class="container">
+            <div class="footer-links">
+                <a href="../../about.html">About</a>
+                <span class="separator">/</span>
+                <a href="mailto:contact@tingnotes.io">Contact</a>
+            </div>
+            <p class="copyright">© 2025 TingNotes.io</p>
+        </div>
+    </footer>
+
+    <script>
+        function toggleTheme() {
+            var cur = document.documentElement.getAttribute('data-theme');
+            var next = cur === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', next);
+            localStorage.setItem('theme', next);
+        }
+        function toggleMobileMenu() {
+            var overlay = document.querySelector('.hidden-nav-overlay');
+            if (overlay) overlay.classList.toggle('active');
+        }
+        function initAnimations() {
+            var obs = new IntersectionObserver(function(entries) {
+                entries.forEach(function(e) {
+                    if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
+                });
+            }, { threshold: 0.05 });
+            document.querySelectorAll('.fade-in').forEach(function(el) { obs.observe(el); });
+        }
+        document.addEventListener('DOMContentLoaded', initAnimations);
+    </script>
+
+</body>
+</html>

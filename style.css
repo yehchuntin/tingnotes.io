@@ -350,6 +350,13 @@ body {
     transform: translateY(-2px);
 }
 
+.zen-tags .topic-btn.active {
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
+    background: var(--bg-secondary);
+    font-weight: 600;
+}
+
 /* --- 排序控制區 (Sort Controls) --- */
 .sort-controls {
     margin-top: 25px;
