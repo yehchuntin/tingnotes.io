@@ -86,9 +86,13 @@
         }
         .photo-block img {
             width: 100%;
-            height: auto;
+            height: 240px;
+            object-fit: cover;
             display: block;
+            cursor: zoom-in;
+            transition: opacity 0.15s;
         }
+        .photo-block img:hover { opacity: 0.93; }
         .photo-caption {
             font-size: 0.78rem;
             color: var(--text-muted);
@@ -106,6 +110,7 @@
             .photo-grid { grid-template-columns: 1fr; }
         }
         .photo-grid .photo-block { margin: 0; }
+        .photo-grid .photo-block img { height: 200px; }
 
         /* ── 橫向滑動相簿 ── */
         .photo-scroll {
@@ -116,7 +121,9 @@
             -webkit-overflow-scrolling: touch;
             padding-bottom: 6px;
             margin: 1.2rem 0;
+            cursor: grab;
         }
+        .photo-scroll.grabbing { cursor: grabbing; user-select: none; }
         .photo-scroll::-webkit-scrollbar { height: 3px; }
         .photo-scroll::-webkit-scrollbar-track { background: var(--bg-secondary); border-radius: 2px; }
         .photo-scroll::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 2px; }
@@ -156,10 +163,13 @@
         }
         .photo-hero img {
             width: 100%;
-            height: 280px;
+            height: 240px;
             object-fit: cover;
             display: block;
+            cursor: zoom-in;
+            transition: opacity 0.15s;
         }
+        .photo-hero img:hover { opacity: 0.93; }
         .section-lead {
             font-size: 1.05rem;
             color: var(--text-primary);
@@ -214,6 +224,39 @@
             color: var(--text-primary);
             margin: 2rem 0 0.6rem;
         }
+
+        /* ── Lightbox ── */
+        #lb {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.88);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            cursor: zoom-out;
+        }
+        #lb.open { display: flex; }
+        #lb-img {
+            max-width: min(92vw, 960px);
+            max-height: 90vh;
+            object-fit: contain;
+            border-radius: 8px;
+            cursor: default;
+            display: block;
+        }
+        #lb-close {
+            position: fixed;
+            top: 1rem;
+            right: 1.4rem;
+            color: rgba(255,255,255,0.75);
+            font-size: 2rem;
+            cursor: pointer;
+            line-height: 1;
+            font-weight: 300;
+            z-index: 10000;
+        }
+        #lb-close:hover { color: #fff; }
     </style>
 </head>
 <body>
@@ -284,8 +327,8 @@
                             <div class="photo-caption">橘色直通列車車票，仁川 T1 → 首爾站，43 分鐘直達</div>
                         </div>
                         <div class="photo-block">
-                            <img src="arex-app.jpg" alt="A'REX Airport Express 購票 App" loading="lazy">
-                            <div class="photo-caption">出發前在 A'REX App 買好，入站掃碼即可</div>
+                            <img src="arex-app.jpg" alt="AREX Airport Express 購票 App" loading="lazy">
+                            <div class="photo-caption">出發前在 AREX App 買好，入站掃碼即可</div>
                         </div>
                     </div>
 
@@ -462,5 +505,50 @@
     </footer>
 
     <script type="module" src="../../script.js"></script>
+
+    <!-- Lightbox -->
+    <div id="lb" onclick="lbClose()">
+        <span id="lb-close" onclick="lbClose()">✕</span>
+        <img id="lb-img" src="" alt="" onclick="event.stopPropagation()">
+    </div>
+
+    <script>
+        function lbOpen(src, alt) {
+            document.getElementById('lb-img').src = src;
+            document.getElementById('lb-img').alt = alt || '';
+            document.getElementById('lb').classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+        function lbClose() {
+            document.getElementById('lb').classList.remove('open');
+            document.body.style.overflow = '';
+        }
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') lbClose();
+        });
+        document.addEventListener('DOMContentLoaded', function() {
+            // Lightbox: 所有照片可點擊放大
+            document.querySelectorAll('.photo-block img, .photo-hero img').forEach(function(img) {
+                img.addEventListener('click', function() { lbOpen(this.src, this.alt); });
+            });
+            // Drag-to-scroll: 桌機可拖拽橫向滾動
+            document.querySelectorAll('.photo-scroll').forEach(function(el) {
+                var down = false, startX, scrollLeft;
+                el.addEventListener('mousedown', function(e) {
+                    down = true;
+                    el.classList.add('grabbing');
+                    startX = e.pageX - el.offsetLeft;
+                    scrollLeft = el.scrollLeft;
+                });
+                el.addEventListener('mouseleave', function() { down = false; el.classList.remove('grabbing'); });
+                el.addEventListener('mouseup', function() { down = false; el.classList.remove('grabbing'); });
+                el.addEventListener('mousemove', function(e) {
+                    if (!down) return;
+                    e.preventDefault();
+                    el.scrollLeft = scrollLeft - (e.pageX - el.offsetLeft - startX) * 1.2;
+                });
+            });
+        });
+    </script>
 </body>
 </html>
