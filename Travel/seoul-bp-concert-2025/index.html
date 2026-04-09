@@ -122,9 +122,10 @@
             padding-bottom: 6px;
             margin: 1.2rem 0;
         }
-        .photo-scroll::-webkit-scrollbar { height: 3px; }
-        .photo-scroll::-webkit-scrollbar-track { background: var(--bg-secondary); border-radius: 2px; }
-        .photo-scroll::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 2px; }
+        .photo-scroll::-webkit-scrollbar { height: 6px; }
+        .photo-scroll::-webkit-scrollbar-track { background: var(--bg-secondary); border-radius: 6px; }
+        .photo-scroll::-webkit-scrollbar-thumb { background: var(--text-muted); border-radius: 6px; cursor: pointer; }
+        .photo-scroll::-webkit-scrollbar-thumb:hover { background: var(--text-secondary); }
         .photo-scroll .photo-block {
             flex: 0 0 calc(50% - 0.3rem);
             scroll-snap-align: start;
