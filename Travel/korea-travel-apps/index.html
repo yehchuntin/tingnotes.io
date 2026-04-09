@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>韓國旅遊必備 App 清單｜自由行出發前必裝 9 款 | TingNotes</title>
+    <meta name="description" content="韓國自由行必裝 App 推薦：NAVER Maps、Papago、AREX、T locker、배달의민족等 9 款，涵蓋導航、翻譯、交通、寄物、外送，出發前裝好省時省力。">
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2436395949894310" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="../../style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Fira+Code&display=swap" rel="stylesheet">
+
+    <style>
+        .article-content {
+            max-width: 800px;
+            margin: 0 auto;
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+        .article-content h2 {
+            font-size: 1.25rem;
+            color: var(--text-primary);
+            margin: 2.5rem 0 0.8rem;
+            padding-bottom: 0.4rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .article-content p { margin-bottom: 1rem; }
+
+        /* ── 截圖區 ── */
+        .screenshot-block {
+            margin: 1.5rem 0;
+            text-align: center;
+        }
+        .screenshot-block img {
+            max-width: 340px;
+            width: 100%;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+        }
+        .screenshot-caption {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.6rem;
+        }
+
+        /* ── App 卡片 grid ── */
+        .app-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+        @media (max-width: 600px) {
+            .app-grid { grid-template-columns: 1fr; }
+        }
+        .app-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.1rem 1.3rem;
+            transition: border-color 0.15s;
+        }
+        .app-card:hover { border-color: var(--accent-primary); }
+        .app-card-header {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            margin-bottom: 0.6rem;
+        }
+        .app-icon { font-size: 1.6rem; flex-shrink: 0; }
+        .app-name { font-weight: 600; color: var(--text-primary); font-size: 0.95rem; }
+        .app-tag {
+            display: inline-block;
+            font-size: 0.68rem;
+            padding: 0.15rem 0.5rem;
+            border-radius: 10px;
+            background: var(--bg-secondary);
+            color: var(--text-muted);
+            font-family: 'Fira Code', monospace;
+            margin-left: 0.3rem;
+        }
+        .app-card-desc {
+            font-size: 0.84rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+        .app-card-tip {
+            margin-top: 0.5rem;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            padding-top: 0.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        /* ── 必裝 vs 視需要 分組標題 ── */
+        .group-label {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            letter-spacing: 0.06em;
+            margin: 2rem 0 0.8rem;
+        }
+
+        /* ── 底部連結 ── */
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.88rem;
+            color: var(--accent-primary);
+            text-decoration: none;
+            font-family: 'Fira Code', monospace;
+            margin: 2rem 0 1rem;
+        }
+        .back-link:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+    <script>
+        (function() {
+            var t = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', t);
+        })();
+    </script>
+
+    <header class="zen-header">
+        <div class="container">
+            <nav>
+                <a href="../../index.html" class="logo">TingNotes</a>
+                <div class="nav-controls">
+                    <button class="theme-toggle" onclick="toggleTheme()" title="切換模式">
+                        <svg class="theme-icon" id="theme-icon" width="20" height="20" viewBox="0 0 24 24"></svg>
+                    </button>
+                    <button class="menu-trigger" onclick="toggleMobileMenu()">
+                        <span class="menu-label">MENU</span>
+                        <div class="hamburger-icon"><span></span><span></span></div>
+                    </button>
+                </div>
+                <div class="hidden-nav-overlay">
+                    <ul class="nav-links-vertical">
+                        <li><a href="../../Learning/index.html" class="nav-item"><span class="nav-num">01.</span> 學習 Learning</a></li>
+                        <li><a href="../../Investment/index.html" class="nav-item"><span class="nav-num">02.</span> 投資 Investment</a></li>
+                        <li><a href="../../Travel/index.html" class="nav-item"><span class="nav-num">03.</span> 旅遊 Travel</a></li>
+                        <li><a href="../../Others/index.html" class="nav-item"><span class="nav-num">04.</span> 雜事 Others</a></li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+
+            <div class="zen-page-header fade-in">
+                <div class="breadcrumb"><a href="../../index.html">Home</a> / <a href="../index.html">Travel</a> / 韓國旅遊必備 App</div>
+                <h1 class="page-title">韓國旅遊必備 App 清單_</h1>
+                <p class="page-subtitle">從導航到寄物，出發前裝好這 9 款，旅程順暢加倍</p>
+            </div>
+
+            <div class="article-content fade-in">
+
+                <p>
+                    第一次去韓國，光是 App 就需要裝一堆——有些是韓國獨有的服務，有些是台灣熟悉的工具在韓國根本用不上。
+                    這份清單整理了我實際用過、確實有幫助的 9 款 App，按類型分組，出發前半小時裝完就能出發。
+                </p>
+
+                <div class="screenshot-block fade-in">
+                    <img src="apps.jpg" alt="韓國旅遊必備 App 截圖整理">
+                    <div class="screenshot-caption">行前在手機裝好這幾個，到了韓國基本上什麼都搞定</div>
+                </div>
+
+                <!-- 必裝 -->
+                <div class="group-label">// 必裝（每天都會用到）</div>
+                <div class="app-grid">
+
+                    <div class="app-card">
+                        <div class="app-card-header">
+                            <span class="app-icon">🗺️</span>
+                            <div><div class="app-name">NAVER Maps <span class="app-tag">導航</span></div></div>
+                        </div>
+                        <div class="app-card-desc">
+                            韓國導航首選。Google Maps 在韓國的路線規劃常有誤差，NAVER Maps 更新即時、步行路線更準，徒步、大眾運輸都靠它。
+                        </div>
+                        <div class="app-card-tip">💡 建議設定語言為中文或英文，介面更好讀</div>
+                    </div>
+
+                    <div class="app-card">
+                        <div class="app-card-header">
+                            <span class="app-icon">🚇</span>
+                            <div><div class="app-name">Subway <span class="app-tag">地鐵</span></div></div>
+                        </div>
+                        <div class="app-card-desc">
+                            首爾地鐵路線規劃專用 App。查轉乘站、幾號出口、搭幾號車廂都很清楚，首爾地鐵線路複雜，這個 App 救了很多次。
+                        </div>
+                        <div class="app-card-tip">💡 離線也能查路線，不用擔心沒網路</div>
+                    </div>
+
+                    <div class="app-card">
+                        <div class="app-card-header">
+                            <span class="app-icon">🦜</span>
+                            <div><div class="app-name">Papago <span class="app-tag">翻譯</span></div></div>
+                        </div>
+                        <div class="app-card-desc">
+                            NAVER 出品的翻譯 App，韓文翻譯準確度遠超 Google 翻譯。相機即時翻譯菜單、拍照翻牌子都很好用，韓國餐廳很常用到。
+                        </div>
+                        <div class="app-card-tip">💡 拍菜單翻譯是最常用功能，點菜必備</div>
+                    </div>
+
+                    <div class="app-card">
+                        <div class="app-card-header">
+                            <span class="app-icon">🍗</span>
+                            <div><div class="app-name">배달의민족 <span class="app-tag">外送</span></div></div>
+                        </div>
+                        <div class="app-card-desc">
+                            韓國最大外送平台，俗稱「Baemin（배민）」。飯店懶得出門的晚上，炸雞加啤酒直接送上門，是最韓國的體驗之一。
+                        </div>
+                        <div class="app-card-tip">💡 需要韓國手機號驗證，建議用飯店 WiFi 試看看</div>
+                    </div>
+
+                </div>
+
+                <!-- 交通類 -->
+                <div class="group-label">// 交通相關</div>
+                <div class="app-grid">
+
+                    <div class="app-card">
+                        <div class="app-card-header">
+                            <span class="app-icon">🚄</span>
+                            <div><div class="app-name">Airport Railr... (A'REX) <span class="app-tag">機場快線</span></div></div>
+                        </div>
+                        <div class="app-card-desc">
+                            仁川機場快線直通列車購票 App。在台灣出發前就買好，到機場直接掃 QR Code 入站，省去現場排隊換票的時間。
+                        </div>
+                        <div class="app-card-tip">💡 直通列車 43 分鐘到首爾站，比普通車省約 20 分鐘</div>
+                    </div>
+
+                    <div class="app-card">
+                        <div class="app-card-header">
+                            <span class="app-icon">🚅</span>
+                            <div><div class="app-name">KORAILTALK <span class="app-tag">KTX</span></div></div>
+                        </div>
+                        <div class="app-card-desc">
+                            韓國高速鐵路 KTX 官方訂票 App。如果行程有跨城市（例如首爾→釜山），提前在 App 訂票比現場排隊購票省很多時間。
+                        </div>
+                        <div class="app-card-tip">💡 外國旅客可用信用卡支付，介面有英文版</div>
+                    </div>
+
+                    <div class="app-card">
+                        <div class="app-card-header">
+                            <span class="app-icon">🧳</span>
+                            <div><div class="app-name">T locker <span class="app-tag">寄物</span></div></div>
+                        </div>
+                        <div class="app-card-desc">
+                            首爾地鐵站內行李寄放服務。換飯店的空檔，或早上 Check out 後還想繼續逛，可以把行李寄放在地鐵站的儲物櫃，按時計費。
+                        </div>
+                        <div class="app-card-tip">💡 主要大站都有，龍山、弘大、明洞站都找得到</div>
+                    </div>
+
+                </div>
+
+                <!-- 入境 & 其他 -->
+                <div class="group-label">// 入境 & 其他</div>
+                <div class="app-grid">
+
+                    <div class="app-card">
+                        <div class="app-card-header">
+                            <span class="app-icon">🛂</span>
+                            <div><div class="app-name">ICNSMART PASS <span class="app-tag">快速通關</span></div></div>
+                        </div>
+                        <div class="app-card-desc">
+                            仁川機場入境快速通關（SES 系統）登記 App。事先在 App 登記護照與指紋資訊，入境時走快速通關通道，比一般排隊快很多。
+                        </div>
+                        <div class="app-card-tip">💡 需要在出發前 72 小時內完成登記，記得提前辦</div>
+                    </div>
+
+                    <div class="app-card">
+                        <div class="app-card-header">
+                            <span class="app-icon">📇</span>
+                            <div><div class="app-name">NAMANE <span class="app-tag">名片</span></div></div>
+                        </div>
+                        <div class="app-card-desc">
+                            韓國人常用的數位名片 App。交換聯絡方式時，韓國當地人可能會用這個 App 分享，裝了比較不會一臉茫然，非必裝但有備無患。
+                        </div>
+                        <div class="app-card-tip">💡 類似台灣 LINE 名片功能，不常用但偶爾會碰到</div>
+                    </div>
+
+                </div>
+
+                <h2>行前 Checklist</h2>
+                <p>
+                    建議在出發前 1-2 天把這些 App 全部裝好並登入：
+                </p>
+                <ul style="padding-left:1.2rem; color:var(--text-secondary); line-height:2;">
+                    <li>✅ NAVER Maps — 下載離線地圖（首爾地區）</li>
+                    <li>✅ Papago — 測試相機翻譯功能</li>
+                    <li>✅ Subway — 查一次飯店到第一個景點的路線</li>
+                    <li>✅ AREX App — 購買機場快線票（出發日當天或前幾天）</li>
+                    <li>✅ ICNSMART PASS — 提前 72 小時內登記快速通關</li>
+                    <li>⬜ KORAILTALK — 若有跨城市行程才需要</li>
+                    <li>⬜ T locker — 換飯店或早退時才需要</li>
+                    <li>⬜ 배달의민족 — 住飯店的夜晚可以試看看</li>
+                </ul>
+
+                <a href="../seoul-bp-concert-2025/" class="back-link">← 回到 2025 首爾 BLACKPINK 演唱會追星之旅</a>
+
+            </div>
+        </div>
+    </main>
+
+    <footer class="zen-footer">
+        <div class="container">
+            <div class="footer-links">
+                <a href="../../about.html">About</a>
+                <span class="separator">/</span>
+                <a href="mailto:contact@tingnotes.io">Contact</a>
+            </div>
+            <p class="copyright">© 2025 TingNotes.io</p>
+        </div>
+    </footer>
+
+    <script>
+        function toggleTheme() {
+            var cur = document.documentElement.getAttribute('data-theme');
+            var next = cur === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', next);
+            localStorage.setItem('theme', next);
+        }
+        function toggleMobileMenu() {
+            var o = document.querySelector('.hidden-nav-overlay');
+            if (o) o.classList.toggle('active');
+        }
+        function initAnim() {
+            var obs = new IntersectionObserver(function(entries) {
+                entries.forEach(function(e) {
+                    if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
+                });
+            }, { threshold: 0.05 });
+            document.querySelectorAll('.fade-in').forEach(function(el) { obs.observe(el); });
+        }
+        document.addEventListener('DOMContentLoaded', initAnim);
+    </script>
+
+</body>
+</html>

@@ -53,6 +53,21 @@ const allProjectsData = {
     },
 
     // ==================== 旅遊區 ====================
+    'korea-travel-apps': {
+        id: 'korea-travel-apps',
+        topic: 'travel',
+        category: 'international',
+        title: '韓國旅遊必備 App 清單',
+        subtitle: '從導航到寄物，9 款讓旅程更順暢的 App',
+        desc: '整理韓國自由行必裝的 9 款 App，包含導航、地鐵、翻譯、機場通關、外送、行李寄放等，出發前裝好省時省力。',
+        status: 'completed',
+        publishDate: '2026-04',
+        estimatedTime: '5 分鐘',
+        difficulty: '攻略',
+        url: '/Travel/korea-travel-apps/',
+        icon: '📱',
+    },
+
     'seoul-bp-concert-2025': {
         id: 'seoul-bp-concert-2025',
         topic: 'travel',
