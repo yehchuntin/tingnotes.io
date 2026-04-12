@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在台灣申請 J-1 簽證完整流程｜DS-2019、SEVIS、DS-160 到 AIT 面談 | TingNotes</title>
+    <meta name="description" content="在台灣申請 J-1 交換學生簽證的完整步驟，從收到 DS-2019、繳 SEVIS 費用、填 DS-160，到預約 AIT 面談，附官方連結與截圖。">
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2436395949894310" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="../../style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Fira+Code&display=swap" rel="stylesheet">
+
+    <style>
+        .article-content {
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.85;
+            color: var(--text-secondary);
+        }
+        .article-content p { margin-bottom: 1rem; }
+        .article-content strong { color: var(--text-primary); }
+
+        /* ── Step 標籤 ── */
+        .step-badge {
+            display: inline-block;
+            background: var(--accent-primary);
+            color: #fff;
+            font-size: 0.72rem;
+            padding: 0.2rem 0.65rem;
+            border-radius: 20px;
+            font-family: 'Fira Code', monospace;
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.03em;
+        }
+        .step-section {
+            margin: 2.5rem 0;
+            padding-top: 0.5rem;
+        }
+        .step-section h2 {
+            font-size: 1.25rem;
+            color: var(--text-primary);
+            margin: 0.3rem 0 0.8rem;
+            padding-bottom: 0.4rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .section-lead {
+            font-size: 1.02rem;
+            color: var(--text-primary);
+            line-height: 1.9;
+            margin-bottom: 0.9rem;
+        }
+
+        /* ── 照片 ── */
+        .photo-block {
+            margin: 1.2rem 0;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+        .photo-block img {
+            width: 100%;
+            height: 240px;
+            object-fit: cover;
+            display: block;
+            cursor: zoom-in;
+            transition: opacity 0.15s;
+        }
+        .photo-block img:hover { opacity: 0.93; }
+        .photo-caption {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            text-align: center;
+            padding: 0.5rem 1rem;
+            background: var(--bg-secondary);
+        }
+        .photo-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.8rem;
+            margin: 1.2rem 0;
+        }
+        @media (max-width: 600px) { .photo-grid { grid-template-columns: 1fr; } }
+        .photo-grid .photo-block { margin: 0; }
+        .photo-grid .photo-block img { height: 200px; }
+
+        /* ── 提示框 ── */
+        .highlight-box {
+            border-left: 3px solid var(--accent-primary);
+            padding: 0.8rem 1.2rem;
+            background: var(--bg-secondary);
+            border-radius: 0 10px 10px 0;
+            margin: 1.2rem 0;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        .highlight-box a { color: var(--accent-primary); text-decoration: none; }
+        .highlight-box a:hover { text-decoration: underline; }
+
+        /* ── 流程總覽 ── */
+        .timeline {
+            display: flex;
+            gap: 0;
+            margin: 1.8rem 0;
+            overflow-x: auto;
+            padding-bottom: 4px;
+        }
+        .timeline-step {
+            flex: 0 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 0;
+        }
+        .timeline-node {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 0.55rem 0.9rem;
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            font-family: 'Fira Code', monospace;
+            transition: border-color 0.15s;
+        }
+        .timeline-node:hover { border-color: var(--accent-primary); color: var(--text-primary); }
+        .timeline-arrow {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            padding: 0 0.3rem;
+            flex-shrink: 0;
+        }
+
+        /* ── 文件清單 ── */
+        .checklist {
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0;
+        }
+        .checklist li {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.7rem;
+            padding: 0.6rem 0;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.92rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+        .checklist li:last-child { border-bottom: none; }
+        .checklist .ck-icon { flex-shrink: 0; font-size: 1rem; margin-top: 0.05rem; }
+        .checklist .ck-label strong { color: var(--text-primary); }
+        .checklist .ck-note {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.1rem;
+        }
+        .checklist-title {
+            font-size: 0.78rem;
+            font-family: 'Fira Code', monospace;
+            color: var(--text-muted);
+            letter-spacing: 0.06em;
+            margin: 1.5rem 0 0.5rem;
+        }
+
+        /* ── Lightbox ── */
+        #lb {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.88);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            cursor: zoom-out;
+        }
+        #lb.open { display: flex; }
+        #lb-img {
+            max-width: min(92vw, 960px);
+            max-height: 90vh;
+            object-fit: contain;
+            border-radius: 8px;
+            cursor: default;
+            display: block;
+        }
+        #lb-close {
+            position: fixed;
+            top: 1rem;
+            right: 1.4rem;
+            color: rgba(255,255,255,0.75);
+            font-size: 2rem;
+            cursor: pointer;
+            line-height: 1;
+            font-weight: 300;
+            z-index: 10000;
+        }
+        #lb-close:hover { color: #fff; }
+    </style>
+</head>
+<body>
+
+    <script>
+        (function() {
+            var t = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', t);
+        })();
+    </script>
+
+    <header class="zen-header">
+        <div class="container">
+            <nav>
+                <a href="../../index.html" class="logo">TingNotes</a>
+                <div class="nav-controls">
+                    <button class="theme-toggle" onclick="toggleTheme()" title="切換模式">
+                        <svg class="theme-icon" id="theme-icon" width="20" height="20" viewBox="0 0 24 24"></svg>
+                    </button>
+                    <button class="menu-trigger" onclick="toggleMobileMenu()">
+                        <span class="menu-label">MENU</span>
+                        <div class="hamburger-icon"><span></span><span></span></div>
+                    </button>
+                </div>
+                <div class="hidden-nav-overlay">
+                    <ul class="nav-links-vertical">
+                        <li><a href="../../Learning/index.html" class="nav-item"><span class="nav-num">01.</span> 學習 Learning</a></li>
+                        <li><a href="../../Investment/index.html" class="nav-item"><span class="nav-num">02.</span> 投資 Investment</a></li>
+                        <li><a href="../../Travel/index.html" class="nav-item"><span class="nav-num">03.</span> 旅遊 Travel</a></li>
+                        <li><a href="../../Others/index.html" class="nav-item"><span class="nav-num">04.</span> 雜事 Others</a></li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+
+            <div class="zen-page-header fade-in">
+                <div class="breadcrumb"><a href="../../index.html">Home</a> / <a href="../index.html">Others</a> / J-1 簽證申請</div>
+                <h1 class="page-title">在台灣申請 J-1 簽證完整流程_</h1>
+                <p class="page-subtitle">從 DS-2019 到 AIT 面談，赴美交換的簽證準備一次搞清楚</p>
+            </div>
+
+            <article class="article-content fade-in">
+
+                <p>
+                    確定要去美國交換的那一刻，開心歸開心，但緊接著就是一堆陌生縮寫撲面而來——DS-2019、SEVIS、DS-160、AIT……
+                    當時我也是一頭霧水，花了不少時間東拼西湊才搞清楚整個流程。
+                    這篇就是我希望當初能找到的那種文章：按順序走完，每一步說清楚要做什麼、在哪裡做、要注意什麼。
+                </p>
+
+                <!-- 流程總覽 -->
+                <div class="timeline">
+                    <div class="timeline-step"><div class="timeline-node">① 取得 DS-2019</div><span class="timeline-arrow">→</span></div>
+                    <div class="timeline-step"><div class="timeline-node">② 繳 SEVIS 費用</div><span class="timeline-arrow">→</span></div>
+                    <div class="timeline-step"><div class="timeline-node">③ 填 DS-160</div><span class="timeline-arrow">→</span></div>
+                    <div class="timeline-step"><div class="timeline-node">④ 預約 AIT</div><span class="timeline-arrow">→</span></div>
+                    <div class="timeline-step"><div class="timeline-node">⑤ AIT 面談</div><span class="timeline-arrow">→</span></div>
+                    <div class="timeline-step"><div class="timeline-node">⑥ 收到簽證</div></div>
+                </div>
+
+                <!-- Step 1 -->
+                <div class="step-section" id="step1">
+                    <span class="step-badge">Step 01</span>
+                    <h2>取得 DS-2019</h2>
+                    <p class="section-lead">
+                        拿到 DS-2019 的那一刻，感覺這件事才真的算是開始了。
+                    </p>
+                    <p>
+                        DS-2019（Certificate of Eligibility for Exchange Visitor Status）是 J-1 簽證專用的資格證明文件，
+                        由你的美國交換學校（Sponsor）負責核發。通常是在你完成學校那邊的入學手續後，
+                        學校的 International Office 會以掛號郵件或電子郵件寄給你。
+                    </p>
+                    <p>
+                        收到之後，最重要的是確認上面的 <strong>SEVIS ID</strong>（格式為 N 開頭的 10 位數），
+                        後續繳費和填表都會用到這組號碼。
+                    </p>
+                    <div class="photo-block">
+                        <img src="ds2019.jpg" alt="DS-2019 表格" loading="lazy">
+                        <div class="photo-caption">DS-2019 表格，確認 SEVIS ID（N 開頭）和 Program 起訖日期</div>
+                    </div>
+                    <div class="highlight-box">
+                        💡 DS-2019 上的 <strong>Program 起訖日期</strong>決定了你能待在美國的時間，確認跟你的交換期間一致，有問題趕快聯絡學校修改。
+                    </div>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="step-section" id="step2">
+                    <span class="step-badge">Step 02</span>
+                    <h2>繳交 SEVIS I-901 費用</h2>
+                    <p class="section-lead">
+                        這個費用我一開始完全不知道要繳，是後來查才發現的——差點忘掉。
+                    </p>
+                    <p>
+                        SEVIS（Student and Exchange Visitor Information System）是美國政府追蹤交換生狀態的系統，
+                        申請 J-1 前需要先在 <strong>fmjfee.com</strong> 繳交 I-901 費用（目前 J-1 為 USD $220）。
+                        繳完之後會收到一封確認信，記得截圖或存 PDF，面談時要帶去。
+                    </p>
+                    <div class="photo-grid">
+                        <div class="photo-block">
+                            <img src="sevis-01-home.jpg" alt="fmjfee.com 首頁" loading="lazy">
+                            <div class="photo-caption">fmjfee.com 首頁，點「Pay I-901 Fee」進入</div>
+                        </div>
+                        <div class="photo-block">
+                            <img src="sevis-02-form.jpg" alt="SEVIS 費用填寫頁" loading="lazy">
+                            <div class="photo-caption">輸入 DS-2019 上的 SEVIS ID（N 開頭）</div>
+                        </div>
+                    </div>
+                    <div class="photo-block">
+                        <img src="sevis-confirm.jpg" alt="SEVIS 繳費確認截圖" loading="lazy">
+                        <div class="photo-caption">繳費完成確認頁，記得存下來或列印</div>
+                    </div>
+                    <div class="highlight-box">
+                        ⚠️ 繳費後至少等 <strong>3 個工作天</strong>再去填 DS-160，系統需要時間同步，否則 DS-160 驗證可能會失敗。
+                        <br>→ <a href="https://www.fmjfee.com" target="_blank" rel="noopener">fmjfee.com 前往繳費</a>
+                    </div>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="step-section" id="step3">
+                    <span class="step-badge">Step 03</span>
+                    <h2>填寫 DS-160 線上申請表</h2>
+                    <p class="section-lead">
+                        DS-160 是所有美國非移民簽證都要填的線上申請表，內容很多，建議留一個下午慢慢填。
+                    </p>
+                    <p>
+                        DS-160 在 <strong>ceac.state.gov</strong> 填寫，填完送出後會產生一頁有條碼的確認頁（Application ID 開頭的那頁），
+                        <strong>一定要列印出來</strong>，面談時需要帶著去。
+                    </p>
+                    <p>
+                        過程中需要上傳一張符合規格的照片（白底、正面、近期），建議提前準備好。
+                        填到一半可以儲存 Application ID 之後繼續，但注意系統有 30 天失效限制。
+                    </p>
+                    <div class="photo-grid">
+                        <div class="photo-block">
+                            <img src="ds160-01-home.jpg" alt="DS-160 申請頁首頁" loading="lazy">
+                            <div class="photo-caption">ceac.state.gov，點「Start an Application」開始</div>
+                        </div>
+                        <div class="photo-block">
+                            <img src="ds160-02-location.jpg" alt="DS-160 選擇 Taiwan" loading="lazy">
+                            <div class="photo-caption">Location 選 Taiwan（Taipei），才會連結到 AIT</div>
+                        </div>
+                    </div>
+                    <div class="photo-block">
+                        <img src="ds160-03-confirm.jpg" alt="DS-160 確認頁含條碼" loading="lazy">
+                        <div class="photo-caption">送出後的確認頁，Application ID 那頁要列印，面談當天要帶</div>
+                    </div>
+                    <div class="highlight-box">
+                        💡 Location 一定要選 <strong>Taiwan（Taipei）</strong>，否則系統會導到錯誤的領事館。
+                        <br>→ <a href="https://ceac.state.gov/genniv/" target="_blank" rel="noopener">ceac.state.gov 前往填寫 DS-160</a>
+                    </div>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="step-section" id="step4">
+                    <span class="step-badge">Step 04</span>
+                    <h2>預約 AIT 面談</h2>
+                    <p class="section-lead">
+                        預約 AIT 這一步比我想像的麻煩，介面不太直覺，還要先建立帳號。
+                    </p>
+                    <p>
+                        在 <strong>ustraveldocs.com</strong> 建立帳號後，選擇簽證類型（Exchange Visitor / J），
+                        按照指示完成 profile 填寫，再選擇面談日期。
+                        預約成功後會收到一封確認信，同樣需要列印帶去 AIT。
+                    </p>
+                    <div class="photo-grid">
+                        <div class="photo-block">
+                            <img src="ait-appt-01-home.jpg" alt="ustraveldocs.com 首頁" loading="lazy">
+                            <div class="photo-caption">ustraveldocs.com，選 Taiwan 進入</div>
+                        </div>
+                        <div class="photo-block">
+                            <img src="ait-appt-02-visa-type.jpg" alt="選擇 J 簽證類型" loading="lazy">
+                            <div class="photo-caption">Visa Category 選 Exchange Visitor（J）</div>
+                        </div>
+                    </div>
+                    <div class="photo-block">
+                        <img src="ait-appt-03-schedule.jpg" alt="AIT 預約時間選擇" loading="lazy">
+                        <div class="photo-caption">選擇面談日期與時段，盡量提前預約以免名額被搶光</div>
+                    </div>
+                    <div class="photo-block">
+                        <img src="ait-exterior.jpg" alt="AIT 台北辦事處外觀" loading="lazy">
+                        <div class="photo-caption">AIT 台北辦事處，面談當天提前到比較穩</div>
+                    </div>
+                    <div class="highlight-box">
+                        ⚠️ AIT 面談名額常常不好搶，建議 DS-160 填完就立刻去預約，不要等到最後一刻。
+                        <br>→ <a href="https://www.ustraveldocs.com/tw" target="_blank" rel="noopener">ustraveldocs.com 前往預約</a>
+                    </div>
+                </div>
+
+                <!-- Step 5 -->
+                <div class="step-section" id="step5">
+                    <span class="step-badge">Step 05</span>
+                    <h2>AIT 面談當天</h2>
+                    <p class="section-lead">
+                        面談前一晚我把所有文件排了好幾次，緊張程度完全不亞於考試前。
+                    </p>
+                    <p>
+                        提前 10–15 分鐘到 AIT，依照排隊指示進入。
+                        面談官英文提問，通常問的是：你去哪所學校、讀什麼、交換多久、資金來源，以及結束後是否會回台灣。
+                        回答簡潔、誠實就好，J-1 學生簽的核准率通常不低，只要文件齊全問題不大。
+                    </p>
+                    <div class="highlight-box">
+                        💡 面談過程很快，通常 2–5 分鐘就結束。當場會告知結果，核准後護照會用快遞寄回（約 3–5 個工作天）。
+                    </div>
+                </div>
+
+                <!-- Step 6 -->
+                <div class="step-section" id="step6">
+                    <span class="step-badge">Step 06</span>
+                    <h2>收到護照與簽證</h2>
+                    <p class="section-lead">
+                        快遞送來的那天，打開護照翻到那頁貼紙，整個人才真的放鬆了。
+                    </p>
+                    <p>
+                        面談通過後，護照會交由 AIT 委託的快遞公司寄回你填寫的地址，
+                        通常 3–5 個工作天內會到。
+                        收到後確認 J-1 簽證上的 <strong>ENTER BEFORE 日期</strong>（簽證有效期）
+                        以及 <strong>Annotation 欄</strong>（通常會寫你的 SEVIS ID）是否正確。
+                    </p>
+                    <div class="photo-block">
+                        <img src="passport-visa.jpg" alt="護照 J-1 簽證頁" loading="lazy">
+                        <div class="photo-caption">J-1 簽證貼紙，確認 ENTER BEFORE 日期和 Annotation 欄</div>
+                    </div>
+                    <div class="highlight-box">
+                        ⚠️ 簽證上的 ENTER BEFORE 是<strong>入境有效期</strong>，不是你能待到的日期——真正的停留期限看 DS-2019 上的 Program End Date。
+                    </div>
+                </div>
+
+                <!-- 文件清單 -->
+                <div class="step-section" id="checklist">
+                    <span class="step-badge">Checklist</span>
+                    <h2>📋 面談完整文件清單</h2>
+                    <p>把這些文件在面談前一天全部整理好，用夾鏈袋或資料夾裝好帶去。</p>
+
+                    <div class="checklist-title">// 必帶文件</div>
+                    <ul class="checklist">
+                        <li>
+                            <span class="ck-icon">✅</span>
+                            <div class="ck-label">
+                                <strong>有效護照</strong>
+                                <span class="ck-note">效期須超過預計離美日期至少 6 個月</span>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="ck-icon">✅</span>
+                            <div class="ck-label">
+                                <strong>DS-2019 原件</strong>
+                                <span class="ck-note">由美國交換學校核發，需攜帶原始紙本</span>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="ck-icon">✅</span>
+                            <div class="ck-label">
+                                <strong>SEVIS I-901 繳費收據</strong>
+                                <span class="ck-note">fmjfee.com 繳費後的確認頁，列印或截圖皆可</span>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="ck-icon">✅</span>
+                            <div class="ck-label">
+                                <strong>DS-160 確認頁</strong>
+                                <span class="ck-note">需列印含條碼的那一頁，不能只用手機截圖</span>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="ck-icon">✅</span>
+                            <div class="ck-label">
+                                <strong>AIT 面談預約確認信</strong>
+                                <span class="ck-note">ustraveldocs.com 預約後收到的 Email，列印帶去</span>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="ck-icon">✅</span>
+                            <div class="ck-label">
+                                <strong>1 吋白底彩色照片 1 張</strong>
+                                <span class="ck-note">符合 AIT 規格（近期、正面、無眼鏡），有時當場不需要但備著比較保險</span>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="ck-icon">✅</span>
+                            <div class="ck-label">
+                                <strong>財力證明</strong>
+                                <span class="ck-note">銀行存摺近 3 個月對帳單、獎學金核准信，擇一或合併</span>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="ck-icon">✅</span>
+                            <div class="ck-label">
+                                <strong>在學證明或在籍學生證</strong>
+                                <span class="ck-note">台灣學校出具的英文版在學證明</span>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="ck-icon">✅</span>
+                            <div class="ck-label">
+                                <strong>交換錄取通知書</strong>
+                                <span class="ck-note">美國學校寄來的英文錄取信或 Acceptance Letter</span>
+                            </div>
+                        </li>
+                    </ul>
+
+                    <div class="checklist-title">// 選帶（備而不用）</div>
+                    <ul class="checklist">
+                        <li>
+                            <span class="ck-icon">⬜</span>
+                            <div class="ck-label">
+                                <strong>成績單（英文版）</strong>
+                                <span class="ck-note">面談官不一定會看，但備著不吃虧</span>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="ck-icon">⬜</span>
+                            <div class="ck-label">
+                                <strong>語言能力證明</strong>
+                                <span class="ck-note">TOEFL / IELTS 成績單或校內認可的英語能力文件</span>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="ck-icon">⬜</span>
+                            <div class="ck-label">
+                                <strong>機票訂位紀錄</strong>
+                                <span class="ck-note">若已訂機票，可作為計劃返台的佐證</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+            </article>
+        </div>
+    </main>
+
+    <footer class="zen-footer">
+        <div class="container">
+            <div class="footer-links">
+                <a href="../../about.html">About</a>
+                <span class="separator">/</span>
+                <a href="mailto:contact@tingnotes.io">Contact</a>
+            </div>
+            <p class="copyright">© 2025 TingNotes.io</p>
+        </div>
+    </footer>
+
+    <!-- Lightbox -->
+    <div id="lb" onclick="lbClose()">
+        <span id="lb-close" onclick="lbClose()">✕</span>
+        <img id="lb-img" src="" alt="" onclick="event.stopPropagation()">
+    </div>
+
+    <script>
+        function toggleTheme() {
+            var cur = document.documentElement.getAttribute('data-theme');
+            document.documentElement.setAttribute('data-theme', cur === 'dark' ? 'light' : 'dark');
+            localStorage.setItem('theme', cur === 'dark' ? 'light' : 'dark');
+        }
+        function toggleMobileMenu() {
+            var o = document.querySelector('.hidden-nav-overlay');
+            if (o) o.classList.toggle('active');
+        }
+        function lbOpen(src, alt) {
+            document.getElementById('lb-img').src = src;
+            document.getElementById('lb-img').alt = alt || '';
+            document.getElementById('lb').classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+        function lbClose() {
+            document.getElementById('lb').classList.remove('open');
+            document.body.style.overflow = '';
+        }
+        document.addEventListener('keydown', function(e) { if (e.key === 'Escape') lbClose(); });
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.photo-block img').forEach(function(img) {
+                img.addEventListener('click', function() { lbOpen(this.src, this.alt); });
+            });
+            var obs = new IntersectionObserver(function(entries) {
+                entries.forEach(function(e) {
+                    if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
+                });
+            }, { threshold: 0.05 });
+            document.querySelectorAll('.fade-in').forEach(function(el) { obs.observe(el); });
+        });
+    </script>
+</body>
+</html>

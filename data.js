@@ -52,6 +52,22 @@ const allProjectsData = {
         icon: '💰',
     },
 
+    // ==================== 雜事分享區（續） ====================
+    'j1-visa-taiwan': {
+        id: 'j1-visa-taiwan',
+        topic: 'others',
+        category: 'life',
+        title: '在台灣申請 J-1 簽證完整流程',
+        subtitle: '赴美交換必看：DS-2019、SEVIS、DS-160 到 AIT 面談',
+        desc: '整理在台灣申請 J-1 交換學生簽證的完整步驟，從收到 DS-2019 到 AIT 面談一次說清楚，附官方連結與截圖。',
+        status: 'completed',
+        publishDate: '2026-04',
+        estimatedTime: '10 分鐘',
+        difficulty: '攻略',
+        url: '/Others/j1-visa-taiwan/',
+        icon: '🇺🇸',
+    },
+
     // ==================== 旅遊區 ====================
     'korea-travel-apps': {
         id: 'korea-travel-apps',
